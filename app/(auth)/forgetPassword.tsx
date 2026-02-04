@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Checkbox from "expo-checkbox";
 import {
   View,
   Text,
@@ -11,21 +12,29 @@ import {
   ScrollView,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
-import { useRouter } from "expo-router";
 
-export default function StartRegisterScreen() {
-  const router = useRouter(); // <- hook pour naviguer
+export default function forgetPassword() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleCreateAccount = () => {
-    router.push("/register");
+  const rules = [
+    { label: "Au moins 8 caractères.", test: (pw: string | any[]) => pw.length >= 8 },
+    { label: "Au moins une lettre en majuscule.", test: (pw: string) => /[A-Z]/.test(pw) },
+    { label: "Au moins une lettre en minuscule.", test: (pw: string) => /[a-z]/.test(pw) },
+    { label: "Au moins un chiffre.", test: (pw: string) => /\d/.test(pw) },
+  ];
+  const allValid = rules.every((rule) => rule.test(password));
+  const handleLogin = async () => {
+    try {
+      await login(email, password);
+    } catch (e) {
+      console.error("Login failed", e);
+    }
   };
-  const handleLogin = () => {
-    router.push("/login");
+
+  const handleForgotPassword = () => {
+    alert("Redirection vers mot de passe oublié !");
   };
 
   return (
@@ -43,18 +52,52 @@ export default function StartRegisterScreen() {
           style={styles.image}
           resizeMode="contain"
         />
-        <Text style={styles.title}>Le sport n'attend que toi !</Text>
+        <Text style={styles.title}>Sécurise ton compte</Text>
 
-        <Text style={styles.label}>Connecte-toi ou crée ton compte et découvre le sport près de chez toi</Text>
-
+        <Text style={styles.label}>Mot de passe</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={[styles.input, { flex: 1, marginBottom: 0, borderWidth: 0 }]}
+            placeholder="Ton mot de passe"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.eyeButton}
+          >
+            <Text>{showPassword ? "🙈" : "👁️"}</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.rulesContainer}>
+          {rules.map((rule, idx) => {
+            const valid = rule.test(password);
+            return (
+              <View key={idx} style={styles.ruleItem}>
+                <Checkbox
+                  value={valid}
+                  color={valid ? "green" : undefined}
+                  style={{ marginRight: 8 }}
+                  disabled
+                />
+                <Text style={{ color: valid ? "green" : "gray" }}>{rule.label}</Text>
+              </View>
+            );
+          })}
+        </View>
         <TouchableOpacity
-          style={[styles.button, { marginTop: 40 }]}
-          onPress={handleCreateAccount}
+          style={[
+            styles.button,
+            { backgroundColor: allValid ? "#0E011A" : "#ccc" },
+          ]}
+          disabled={!allValid}
+          onPress={() => console.log("Compte créé")}
         >
           <Text style={styles.buttonText}>Créer un compte</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#ECEAE8" }]} onPress={handleLogin}>
-          <Text style={[styles.buttonText, { color: "#0E011A" }]}>J'ai déjà un compte</Text>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text style={styles.forgotPassword}>J'ai déjà mon compte</Text>
         </TouchableOpacity>
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
@@ -100,7 +143,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     alignSelf: "flex-start",
     marginLeft: 20,
-    marginRight: 20,
     marginBottom: 8,
   },
   input: {
@@ -111,6 +153,16 @@ const styles = StyleSheet.create({
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
+  },
+  rulesContainer: {
+    width: "90%",
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  ruleItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 4,
   },
   button: {
     backgroundColor: "#0E011A",

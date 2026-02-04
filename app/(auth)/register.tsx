@@ -11,25 +11,29 @@ import {
   ScrollView,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
+import { router } from "expo-router";
 
 export default function RegisterScreen() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async () => {
+  const handleCreatePassword = async () => {
     try {
-      await login(email, password);
+      router.push("/passwordCreation");
     } catch (e) {
       console.error("Login failed", e);
     }
   };
 
   const handleForgotPassword = () => {
-    alert("Redirection vers mot de passe oublié !");
+    router.push("/forgetPassword");
   };
+
+  const handleAlreadyAccount = () => {
+    router.push("/login");
+  }
 
   return (
     <KeyboardAvoidingView
@@ -66,10 +70,10 @@ export default function RegisterScreen() {
           autoCapitalize="none"
         />
 
-        <TouchableOpacity style={[styles.button, { marginTop: 40 }]} onPress={handleLogin}>
+        <TouchableOpacity style={[styles.button, { marginTop: 40 }]} onPress={handleCreatePassword}>
           <Text style={styles.buttonText}>Créer un mot de passe</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleForgotPassword}>
+        <TouchableOpacity onPress={handleAlreadyAccount}>
           <Text style={styles.forgotPassword}>J'ai déjà un compte</Text>
         </TouchableOpacity>
         <View style={styles.separatorContainer}>

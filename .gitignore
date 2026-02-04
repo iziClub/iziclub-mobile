@@ -1,0 +1,83 @@
+# ----------------------------
+# Node / JS
+# ----------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ----------------------------
+# Expo
+# ----------------------------
+.expo/
+.expo-shared/
+web-build/
+
+# Expo local config
+expo-env.d.ts
+
+# ----------------------------
+# React Native
+# ----------------------------
+ios/Pods/
+ios/build/
+android/build/
+android/.gradle/
+android/app/build/
+
+# Native config files (local only)
+android/local.properties
+
+# ----------------------------
+# Environment variables
+# ----------------------------
+.env
+.env.*
+!.env.example
+
+# ----------------------------
+# Cache
+# ----------------------------
+.cache/
+.metro-cache/
+.parcel-cache/
+.babel.cache/
+
+# ----------------------------
+# Logs
+# ----------------------------
+logs/
+*.log
+
+# ----------------------------
+# OS / Editors
+# ----------------------------
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+
+# IntelliJ / WebStorm
+.idea/
+*.iml
+
+# ----------------------------
+# TypeScript
+# ----------------------------
+*.tsbuildinfo
+
+# ----------------------------
+# Tests / Coverage
+# ----------------------------
+coverage/
+
+# ----------------------------
+# Temporary files
+# ----------------------------
+tmp/
+temp/

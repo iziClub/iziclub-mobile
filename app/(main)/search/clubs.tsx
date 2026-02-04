@@ -147,7 +147,7 @@ export default function ClubsTab({ query, type, city, radius = 50, locationEnabl
             tags={[item.type]}
             onPress={() =>
               router.push({
-                pathname: "/(main)/search/club/[id]",
+                pathname: "/search/club/[id]",
                 params: { id: item.id.toString() },
               })
             }

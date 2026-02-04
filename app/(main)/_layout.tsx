@@ -6,11 +6,14 @@ export default function MainLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
         tabBarHideOnKeyboard: true,
+        headerStyle: {
+          height: 44,
+        },
+        headerShadowVisible: false,
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
-          height: 40,
+          height: 60,
           paddingBottom: 4,
           paddingTop: 4,
           borderTopWidth: 0.5,

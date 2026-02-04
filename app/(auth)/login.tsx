@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
+import { router } from "expo-router";
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -27,8 +28,12 @@ export default function LoginScreen() {
   };
 
   const handleForgotPassword = () => {
-    alert("Redirection vers mot de passe oublié !");
+    router.push("/forgetPassword");
   };
+
+  const handleCreateAccount = () => {
+    router.push("/register");
+  }
 
   return (
     <KeyboardAvoidingView
@@ -79,7 +84,7 @@ export default function LoginScreen() {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Connexion</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleForgotPassword}>
+        <TouchableOpacity onPress={handleCreateAccount}>
           <Text style={styles.forgotPassword}>Pas encore de compte ?</Text>
         </TouchableOpacity>
         <View style={styles.separatorContainer}>
