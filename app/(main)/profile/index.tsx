@@ -42,6 +42,19 @@ export default function ProfileScreen() {
       >
         <Text style={{ color: "white" }}>PasswordCreationScreen</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => router.push("/forgetPassword")}
+        style={{
+          marginTop: 20,
+          padding: 12,
+          backgroundColor: "#007AFF",
+          borderRadius: 8,
+          width: 200,
+        }}
+      >
+        <Text style={{ color: "white" }}>Forget Password</Text>
+      </TouchableOpacity>
     </View>
   );
 }
