@@ -25,6 +25,7 @@ export default function EventsTab({ data }: Props) {
         columnWrapperStyle={{ justifyContent: "space-between" }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
+            <View style={{ width: "49%" }}>
           <Card
             title={item.name}
             banner={item.bannerImageUrl}
@@ -40,6 +41,7 @@ export default function EventsTab({ data }: Props) {
               })
             }
           />
+            </View>
         )}
       />
     </View>
