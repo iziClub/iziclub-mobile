@@ -31,7 +31,7 @@ const MOCK_CLUBS = Array.from({ length: 80 }).map((_, i) => ({
     distance: (Math.random() * 15 + 0.5).toFixed(1),
 }));
 
-const SECTIONS = ["Informations", "Événements", "Galerie", "Calendrier"];
+const SECTIONS = ["Informations", "Événements", "Galerie", "Calendrier", "Contact"];
 
 export default function ClubDetail() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -212,6 +212,15 @@ export default function ClubDetail() {
                     <View>
                         <Text style={styles.sectionTitle}>Calendrier des activités</Text>
                         <Text>[Calendrier ici]</Text>
+                    </View>
+                )}
+
+                {activeSection === "Contact" && (
+                    <View>
+                        <Text style={styles.sectionTitle}>Contactez-nous</Text>
+                        <Text>Adresse : {club.addressLine1}, {club.city}</Text>
+                        <Text>Téléphone : 01 23 45 67 89</Text>
+                        <Text>Email : contact@{club.name.toLowerCase().replace(/\s/g, "")}.com</Text>
                     </View>
                 )}
             </View>
