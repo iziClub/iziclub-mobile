@@ -24,6 +24,7 @@ export default function ClubsTab({ data }: Props) {
         columnWrapperStyle={{justifyContent:"space-between"}}
         showsVerticalScrollIndicator={false}
         renderItem={({item})=>(
+            <View style={{ width: "49%" }}>
           <Card
             title={item.name}
             banner={item.bannerImageUrl}
@@ -34,6 +35,7 @@ export default function ClubsTab({ data }: Props) {
             type="club"
             onPress={() => router.push(`/search/club/${item.id}`)}
           />
+            </View>
         )}
       />
     </View>

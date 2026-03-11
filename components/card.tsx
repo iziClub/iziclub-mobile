@@ -101,7 +101,7 @@ export default function Card({
 
 const styles = StyleSheet.create({
   card: {
-    width: "49%",
+    width: "100%",
     backgroundColor: "white",
     borderRadius: 14,
     overflow: "hidden",

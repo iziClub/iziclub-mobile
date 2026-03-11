@@ -10,7 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
-import { router, useGlobalSearchParams } from "expo-router";
+import { useRouter, useGlobalSearchParams } from "expo-router";
 import * as Calendar from "expo-calendar";
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from "expo-sharing";
@@ -149,13 +149,25 @@ async function addToCalendar(event: Event) {
   }
 }
 
+function confirmAddToCalendar(event: Event) {
+  Alert.alert(
+    "Ajouter au calendrier",
+    `Nom : ${event.name}\nDate : ${event.date}\nHeure : ${event.startTime} - ${event.endTime}\nLieu : ${event.location}`,
+    [
+      { text: "Annuler", style: "cancel" },
+      { text: "Ajouter", onPress: () => addToCalendar(event) },
+    ],
+    { cancelable: true }
+  );
+}
+
 // -------------------
 // Composant principal
 // -------------------
 export default function EventDetailScreen() {
   const params = useGlobalSearchParams();
   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
-
+    const router = useRouter();
   const event: Event = {
     id: eventId,
     name: "Coupe de Moselle CSG vs AS TALANGE",
@@ -218,7 +230,7 @@ export default function EventDetailScreen() {
 
           <TouchableOpacity
             style={styles.calendarButton}
-            onPress={() => addToCalendar(event)}
+            onPress={() => confirmAddToCalendar(event)}
           >
             <Ionicons name="calendar-outline" size={20} color="white" />
             <Text style={styles.calendarButtonText}>Ajouter</Text>

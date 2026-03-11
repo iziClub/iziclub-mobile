@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, StyleSheet, Text, Switch } from "react-native";
+import { View, TextInput, StyleSheet, Text, Switch, TouchableOpacity } from "react-native";
 import Slider from "@react-native-community/slider";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 import ClubsTab from "./ClubsTab";
 import EventsTab from "./EventsTabs";
 import { useSearch } from "../../../components/search/useSearch";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -18,7 +20,8 @@ export default function SearchScreen() {
 
   const [radius, setRadius] = useState(50);
   const [useRadius, setUseRadius] = useState(true);
-
+  
+  
   // Debounce query
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
@@ -35,7 +38,7 @@ export default function SearchScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      
+
       {/* SEARCH BAR */}
       <View style={styles.searchWrapper}>
         <TextInput
@@ -57,50 +60,50 @@ export default function SearchScreen() {
       </View>
 
       {/* RADIUS */}
-<View style={styles.sliderBlock}>
-  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-    <Text style={{ fontWeight: "500" }}>Activer rayon</Text>
-    <Switch value={useRadius} onValueChange={setUseRadius} />
-  </View>
+      <View style={styles.sliderBlock}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <Text style={{ fontWeight: "500" }}>Activer rayon</Text>
+          <Switch value={useRadius} onValueChange={setUseRadius} />
+        </View>
 
-  {useRadius && (
-    <View style={{ marginTop: 8 }}>
-      <Text style={styles.radiusLabel}>Rayon : {radius} km</Text>
-      <Slider
-        minimumValue={1}
-        maximumValue={200}
-        step={1}
-        value={radius}
-        onValueChange={setRadius}
-      />
-    </View>
-  )}
-</View>
+        {useRadius && (
+          <View style={{ marginTop: 8 }}>
+            <Text style={styles.radiusLabel}>Rayon : {radius} km</Text>
+            <Slider
+              minimumValue={1}
+              maximumValue={200}
+              step={1}
+              value={radius}
+              onValueChange={setRadius}
+            />
+          </View>
+        )}
+      </View>
 
       {/* TABS */}
       <View style={{ flex: 1 }}>
         <Tab.Navigator
-  screenOptions={{
-    tabBarIndicatorStyle: { backgroundColor: "black" },
-    tabBarLabelStyle: { fontWeight: "600", textTransform: "none" },
-  }}
->
-  <Tab.Screen
-  name="Clubs"
-  options={{
-    tabBarLabel: `Clubs (${clubs.length})`
-  }}
->
-  {() => <ClubsTab data={clubs} />}
-</Tab.Screen>
-  <Tab.Screen
-    name="Événements"
-    options={{
-      tabBarLabel: `Événements (${events.length})`
-    }}
-    children={() => <EventsTab data={events} />}
-  />
-</Tab.Navigator>
+          screenOptions={{
+            tabBarIndicatorStyle: { backgroundColor: "black" },
+            tabBarLabelStyle: { fontWeight: "600", textTransform: "none" },
+          }}
+        >
+          <Tab.Screen
+            name="Clubs"
+            options={{
+              tabBarLabel: `Clubs (${clubs.length})`
+            }}
+          >
+            {() => <ClubsTab data={clubs} />}
+          </Tab.Screen>
+          <Tab.Screen
+            name="Événements"
+            options={{
+              tabBarLabel: `Événements (${events.length})`
+            }}
+            children={() => <EventsTab data={events} />}
+          />
+        </Tab.Navigator>
       </View>
     </View>
   );
@@ -126,5 +129,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 4
-  }
+  },
+  fab: {
+  position: "absolute",
+  bottom: 24,
+  right: 24,
+  backgroundColor: "#1C52D2",
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+  alignItems: "center",
+  justifyContent: "center",
+  elevation: 5,
+},
 });
