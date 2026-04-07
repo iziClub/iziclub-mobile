@@ -56,7 +56,7 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Entre ton nom complet"
-          value={email}
+          value={name}
           onChangeText={setName}
           autoCapitalize="none"
         />

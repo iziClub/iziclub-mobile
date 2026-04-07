@@ -14,6 +14,7 @@ import { useRouter, useGlobalSearchParams } from "expo-router";
 import * as Calendar from "expo-calendar";
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from "expo-sharing";
+import { Share } from "react-native";
 
 type Event = {
   id: string;
@@ -27,71 +28,101 @@ type Event = {
   price: string;
   tags: string[];
   club: {
-  id: string;
-  name: string;
-  image?: string;
-}
+    id: string;
+    name: string;
+    image?: string;
+  }
 };
 
 // -------------------
 // Partage
 // -------------------
+// async function shareItem(item: {
+//   name: string;
+//   type: string; // "Club" ou "Événement"
+//   location?: string;
+//   image?: string; // URL de l'image
+// }) {
+//   try {
+//     const appLink = "https://example.com/download"; // lien vers l'app
+//     const hashtags = "#club #sport #iziclub";
+
+//     let message = `${item.type} : ${item.name}\n`;
+//     if (item.location) message += `📍 ${item.location}\n`;
+//     message += `Rejoignez-nous sur Iziclub ! ${appLink}\n${hashtags}`;
+
+//     // Vérifie si le partage est disponible
+//     if (!(await Sharing.isAvailableAsync())) {
+//       Alert.alert(
+//         "Partage non disponible",
+//         "Le partage n'est pas disponible sur cet appareil"
+//       );
+//       return;
+//     }
+
+//     if (item.image) {
+//       // Télécharge l'image dans le cache
+//       const fileUri =
+//         FileSystem.cacheDirectory +
+//         item.name.replace(/\s/g, "_").toLowerCase() +
+//         ".jpg";
+//       const download = await FileSystem.downloadAsync(item.image, fileUri);
+
+//       // Partage image + message
+//       await Sharing.shareAsync(download.uri, {
+//         mimeType: "image/jpeg",
+//         dialogTitle: `Partager ${item.name}`,
+//         UTI: "public.jpeg",
+//       });
+//     } else {
+//       // Partage texte seul via fichier temporaire
+//       const fileUri = FileSystem.cacheDirectory + "message.txt";
+//       await FileSystem.writeAsStringAsync(fileUri, message, {
+//         encoding: "utf8", // ✅ ok pour la version actuelle
+//       });
+
+//       await Sharing.shareAsync(fileUri, {
+//         mimeType: "text/plain",
+//         dialogTitle: `Partager ${item.name}`,
+//         UTI: "public.plain-text",
+//       });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     Alert.alert("Erreur", "Impossible de partager cet item.");
+//   }
+// }
 async function shareItem(item: {
   name: string;
-  type: string; // "Club" ou "Événement"
+  type: string;
   location?: string;
-  image?: string; // URL de l'image
+  image?: string;
+  date?: string;
+  startTime?: string;
+  endTime?: string;
+  price?: string;
 }) {
   try {
-    const appLink = "https://example.com/download"; // lien vers l'app
+    const appLink = "https://example.com/download";
     const hashtags = "#club #sport #iziclub";
 
     let message = `${item.type} : ${item.name}\n`;
     if (item.location) message += `📍 ${item.location}\n`;
-    message += `Rejoignez-nous sur Iziclub ! ${appLink}\n${hashtags}`;
+    if (item.date && item.startTime && item.endTime) message += `🗓️ ${item.date} ${item.startTime} - ${item.endTime}\n`;
+    if (item.price) message += `💰 ${item.price}\n`;
+    message += `Partagé depuis Iziclub ! ${appLink}\n${hashtags}`;
 
-    // Vérifie si le partage est disponible
-    if (!(await Sharing.isAvailableAsync())) {
-      Alert.alert(
-        "Partage non disponible",
-        "Le partage n'est pas disponible sur cet appareil"
-      );
-      return;
-    }
+    await Share.share({
+      message: message,
+      url: item.image, // iOS utilise ça
+      title: item.name,
+    });
 
-    if (item.image) {
-      // Télécharge l'image dans le cache
-      const fileUri =
-        FileSystem.cacheDirectory +
-        item.name.replace(/\s/g, "_").toLowerCase() +
-        ".jpg";
-      const download = await FileSystem.downloadAsync(item.image, fileUri);
-
-      // Partage image + message
-      await Sharing.shareAsync(download.uri, {
-        mimeType: "image/jpeg",
-        dialogTitle: `Partager ${item.name}`,
-        UTI: "public.jpeg",
-      });
-    } else {
-      // Partage texte seul via fichier temporaire
-      const fileUri = FileSystem.cacheDirectory + "message.txt";
-      await FileSystem.writeAsStringAsync(fileUri, message, {
-  encoding: "utf8", // ✅ ok pour la version actuelle
-});
-
-      await Sharing.shareAsync(fileUri, {
-        mimeType: "text/plain",
-        dialogTitle: `Partager ${item.name}`,
-        UTI: "public.plain-text",
-      });
-    }
-  } catch (err) {
-    console.error(err);
-    Alert.alert("Erreur", "Impossible de partager cet item.");
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erreur", "Impossible de partager cet événement");
   }
 }
-
 // -------------------
 // Calendrier
 // -------------------
@@ -167,7 +198,7 @@ function confirmAddToCalendar(event: Event) {
 export default function EventDetailScreen() {
   const params = useGlobalSearchParams();
   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
-    const router = useRouter();
+  const router = useRouter();
   const event: Event = {
     id: eventId,
     name: "Coupe de Moselle CSG vs AS TALANGE",
@@ -206,16 +237,16 @@ export default function EventDetailScreen() {
           </View>
         ))}
       </View>
-// Après les TAGS, avant DESCRIPTION
-<TouchableOpacity
-  style={styles.clubContainer}
-  onPress={() => router.push(`/search/club/${event.club.id}`)}
->
-  {event.club.image && (
-    <Image source={{ uri: event.club.image }} style={styles.clubImage} />
-  )}
-  <Text style={styles.clubName}>Publié par {event.club.name}</Text>
-</TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.clubContainer}
+        onPress={() => router.push(`/search/club/${event.club.id}`)}
+      >
+        {event.club.image && (
+          <Image source={{ uri: event.club.image }} style={styles.clubImage} />
+        )}
+        <Text style={styles.clubName}>Publié par {event.club.name}</Text>
+      </TouchableOpacity>
       {/* DESCRIPTION */}
       <Text style={styles.description}>{event.description}</Text>
 
@@ -236,7 +267,7 @@ export default function EventDetailScreen() {
             <Text style={styles.calendarButtonText}>Ajouter</Text>
           </TouchableOpacity>
 
-          
+
         </View>
 
         {/* LOCALISATION */}
@@ -251,24 +282,29 @@ export default function EventDetailScreen() {
           <Text style={styles.infoText}>{event.price}</Text>
         </View>
       </View>
-        <TouchableOpacity
-            style={[styles.calendarButton, { backgroundColor: "#28a745", justifyContent: "center", marginHorizontal: 16,
-    marginTop: 20,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    borderRadius: 12 }]}
-            onPress={() =>
-              shareItem({
-                name: event.name,
-                type: "Événement",
-                location: event.location,
-                image: event.image,
-              })
-            }
-          >
-            <Ionicons name="share-social-outline" size={20} color="white" />
-            <Text style={styles.calendarButtonText}>Partager</Text>
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.calendarButton, {
+          backgroundColor: "#28a745", justifyContent: "center", marginHorizontal: 16,
+          marginTop: 20,
+          paddingVertical: 16,
+          paddingHorizontal: 12,
+          borderRadius: 12
+        }]}
+        onPress={() =>
+          shareItem({
+            name: event.name,
+            type: "Événement",
+            location: event.location,
+            image: event.image,
+            date: event.date,
+            startTime: event.startTime,
+            endTime: event.endTime,
+          })
+        }
+      >
+        <Ionicons name="share-social-outline" size={20} color="white" />
+        <Text style={styles.calendarButtonText}>Partager</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -354,21 +390,21 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   clubContainer: {
-  flexDirection: "row",
-  alignItems: "center",
-  marginHorizontal: 16,
-  marginTop: 8,
-  paddingVertical: 6,
-},
-clubImage: {
-  width: 36,
-  height: 36,
-  borderRadius: 18,
-  marginRight: 8,
-},
-clubName: {
-  fontSize: 16,
-  fontWeight: "600",
-  color: "#0E011A",
-},
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 16,
+    marginTop: 8,
+    paddingVertical: 6,
+  },
+  clubImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    marginRight: 8,
+  },
+  clubName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#0E011A",
+  },
 });

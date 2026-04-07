@@ -56,7 +56,7 @@ export default function Card({
               </Text>
             </View>
             {distance && (
-              <Text style={styles.address}>{distance} km away</Text>
+              <Text style={styles.address}>à {distance} km de vous</Text>
             )}
             {!distance && (
               <Text style={styles.address}>Distance unavailable</Text>

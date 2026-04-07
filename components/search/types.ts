@@ -5,8 +5,8 @@ export interface SearchItem {
   imageUrl?: string
   addressLine1: string
   city: string
-  latitude: number
-  longitude: number
+  latitude: string
+  longitude: string
   type: string
   distance?: number
 }
