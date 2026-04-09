@@ -75,3 +75,8 @@ export const getClubs = async (
 
   return response.data;
 };
+
+export const getClubById = async (id: string) => {
+  const response = await api.get(`/clubs/${id}`);
+  return response.data;
+}

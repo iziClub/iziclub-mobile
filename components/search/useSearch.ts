@@ -189,42 +189,58 @@
 import { useEffect, useState } from "react";
 import { getClubs } from "@/services/clubs.service";
 import { mapClubToSearchItem } from "@/mappers/club.mapper";
-import { SearchItem } from "./types";
+import { ClubSearchItem, EventSearchItem, SearchItem } from "./types";
+import { getEvents } from "@/services/events.service";
+import { mapEventToSearchItem } from "@/mappers/event.mapper";
 
 export const useSearch = (
   query: string,
   radius: number,
   useRadius: boolean,
-  city: string
+  city: string,
+  // 1. Ajout d'un paramètre optionnel pour les coordonnées de la carte
+  mapCoords?: { latitude: number; longitude: number } 
 ) => {
-  const [clubs, setClubs] = useState<SearchItem[]>([]);
-  const [events, setEvents] = useState<SearchItem[]>([]);
+  const [clubs, setClubs] = useState<ClubSearchItem[]>([]);
+  const [events, setEvents] = useState<EventSearchItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      // 📍 FAKE POSITION (Nancy → proche de tes données API)
-      const latitude = 48.692;
-      const longitude = 6.184;
+      // 📍 Position par défaut (Nancy) si mapCoords n'est pas fourni
+      const defaultLat = 48.692;
+      const defaultLon = 6.184;
 
+      const lat = 48.692;
+      const lon = 6.184;
+
+      const params = {
+      search: query || undefined,
+      city: city || undefined,
+      latitude: lat,
+      longitude: lon,
+      radius: useRadius || mapCoords ? radius : undefined,
+    };
       const res = await getClubs({
         search: query || undefined,
         city: city || undefined,
-        latitude: useRadius ? latitude : undefined,
-        longitude: useRadius ? longitude : undefined,
-        radius: useRadius ? radius : undefined,
+        // 2. On utilise mapCoords en priorité, sinon la position par défaut si useRadius est vrai
+        latitude: mapCoords ? mapCoords.latitude : (useRadius ? defaultLat : undefined),
+        longitude: mapCoords ? mapCoords.longitude : (useRadius ? defaultLon : undefined),
+        radius: useRadius || mapCoords ? radius : undefined,
         limit: 20,
         page: 1,
       });
-
-      const mapped = res.data.map(mapClubToSearchItem);
-
-      setClubs(mapped);
-
-      // 👉 events pas encore branché
-      setEvents([]);
+      const [clubsRes, eventsRes] = await Promise.all([
+        getClubs(params),
+        getEvents(params) // Ajoute cette fonction dans ton services/events.service
+      ]);
+      const mappedClubs = clubsRes.data.map(mapClubToSearchItem);
+      const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
+      setClubs(mappedClubs);
+      setEvents(mappedEvents);
     } catch (err) {
       console.error("Erreur fetch clubs:", err);
     } finally {
@@ -234,7 +250,9 @@ export const useSearch = (
 
   useEffect(() => {
     fetchData();
-  }, [query, radius, useRadius, city]);
+    // 3. On ajoute les coordonnées de la carte dans les dépendances
+    // On surveille les valeurs primitives (lat/lon) pour éviter les boucles infinies
+  }, [query, radius, useRadius, city, mapCoords?.latitude, mapCoords?.longitude]);
 
-  return { clubs, events, loading };
+  return { clubs, events, loading, refresh: fetchData };
 };
