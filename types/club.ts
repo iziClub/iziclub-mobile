@@ -17,6 +17,7 @@ export interface Club {
   banner_url: string | null;
   gallery: string[];
   address: Address;
+  sport: string | null;
 }
 
 export interface ClubsResponse {

@@ -54,6 +54,10 @@ export default function MainLayout() {
           ),
         }}
       />
+      <Tabs.Screen name="profile/likedEvents" options={{ href: null }} />
+<Tabs.Screen name="profile/savedClubs" options={{ href: null }} />
+<Tabs.Screen name="profile/upcomingEvents" options={{ href: null }} />
+<Tabs.Screen name="profile/pastEvents" options={{ href: null }} />
     </Tabs>
   );
 }

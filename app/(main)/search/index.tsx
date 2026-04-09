@@ -1,145 +1,199 @@
-import React, { useState, useEffect } from "react";
-import { View, TextInput, StyleSheet, Text, Switch, TouchableOpacity } from "react-native";
-import Slider from "@react-native-community/slider";
+import React, { useState, useRef, useEffect } from "react";
+import { View, TextInput, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-
+import { Ionicons } from "@expo/vector-icons";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { useRouter } from 'expo-router';
+// Tes imports
 import ClubsTab from "./ClubsTab";
 import EventsTab from "./EventsTabs";
+import FilterBottomSheet from "../../../components/search/FilterModal";
 import { useSearch } from "../../../components/search/useSearch";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useLocalSearchParams } from 'expo-router';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function SearchScreen() {
-  const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState(query);
-
-  const [city, setCity] = useState("");
-  const [debouncedCity, setDebouncedCity] = useState(city);
-
-  const [radius, setRadius] = useState(50);
+  const { q, tab } = useLocalSearchParams<{ q?: string, tab?: string }>();
+  const [query, setQuery] = useState(q || "");
+  const [debouncedQuery, setDebouncedQuery] = useState(q || "");
+  const [radius, setRadius] = useState(30);
+  const [selectedSort, setSelectedSort] = useState("Plus pertinent");
   const [useRadius, setUseRadius] = useState(true);
-  
-  
-  // Debounce query
+  // Debounce pour éviter de spammer l'API à chaque lettre tapée
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
     return () => clearTimeout(handler);
   }, [query]);
 
-  // Debounce city
   useEffect(() => {
-    const handler = setTimeout(() => setDebouncedCity(city), 300);
-    return () => clearTimeout(handler);
-  }, [city]);
+    if (q) {
+      setQuery(q);
+      setDebouncedQuery(q);
+    }
+  }, [q]);
 
-  const { clubs, events } = useSearch(debouncedQuery, radius, useRadius, debouncedCity);
+  const router = useRouter();
+  // Récupération des données
+  const { clubs, events, loading, refresh } = useSearch(debouncedQuery, radius, useRadius, "");
+  
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // Un filtre est considéré comme "actif" si le rayon n'est plus à sa valeur par défaut
+  const hasActiveFilters = radius !== 30;
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-
-      {/* SEARCH BAR */}
-      <View style={styles.searchWrapper}>
-        <TextInput
-          placeholder="Rechercher un club ou événement..."
-          value={query}
-          onChangeText={setQuery}
-          style={styles.search}
-        />
-      </View>
-
-      {/* CITY FILTER */}
-      <View style={styles.searchWrapper}>
-        <TextInput
-          placeholder="Ville (optionnel)..."
-          value={city}
-          onChangeText={setCity}
-          style={styles.search}
-        />
-      </View>
-
-      {/* RADIUS */}
-      <View style={styles.sliderBlock}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-          <Text style={{ fontWeight: "500" }}>Activer rayon</Text>
-          <Switch value={useRadius} onValueChange={setUseRadius} />
-        </View>
-
-        {useRadius && (
-          <View style={{ marginTop: 8 }}>
-            <Text style={styles.radiusLabel}>Rayon : {radius} km</Text>
-            <Slider
-              minimumValue={1}
-              maximumValue={200}
-              step={1}
-              value={radius}
-              onValueChange={setRadius}
-            />
-          </View>
-        )}
-      </View>
-
-      {/* TABS */}
-      <View style={{ flex: 1 }}>
-        <Tab.Navigator
-          screenOptions={{
-            tabBarIndicatorStyle: { backgroundColor: "black" },
-            tabBarLabelStyle: { fontWeight: "600", textTransform: "none" },
-          }}
-        >
-          <Tab.Screen
-            name="Clubs"
-            options={{
-              tabBarLabel: `Clubs (${clubs.length})`
-            }}
-          >
-            {() => <ClubsTab data={clubs} />}
-          </Tab.Screen>
-          <Tab.Screen
-            name="Événements"
-            options={{
-              tabBarLabel: `Événements (${events.length})`
-            }}
-            children={() => <EventsTab data={events} />}
+      
+      {/* HEADER DE RECHERCHE */}
+      <View style={styles.headerArea}>
+        <View style={styles.searchBar}>
+          <TextInput
+            placeholder="Rechercher"
+            value={query}
+            onChangeText={setQuery}
+            placeholderTextColor="#999"
+            style={{ flex: 1, fontSize: 16 }}
           />
-        </Tab.Navigator>
+          {query.length > 0 ? (
+            <TouchableOpacity onPress={() => setQuery("")}>
+               <Ionicons name="close-circle" size={20} color="#CCC" />
+            </TouchableOpacity>
+          ) : (
+            <Ionicons name="search" size={20} color="#999" />
+          )}
+        </View>
       </View>
+
+      {/* TABS NAVIGATION */}
+      <Tab.Navigator
+        initialRouteName={tab === "Événements" ? "Événements" : "Clubs"}
+        screenOptions={{
+          tabBarIndicatorStyle: { backgroundColor: "black", height: 2 },
+          tabBarLabelStyle: { fontWeight: "bold", textTransform: "none", fontSize: 15 },
+        }}
+      >
+        <Tab.Screen 
+          name="Clubs" 
+          options={{ tabBarLabel: `Clubs (${clubs?.length || 0})` }}
+        >
+          {() => <ClubsTab data={clubs} refreshing={loading} onRefresh={refresh} />}
+        </Tab.Screen>
+
+        <Tab.Screen 
+          name="Événements" 
+          options={{ tabBarLabel: `Événements (${events?.length || 0})` }}
+        >
+          {() => <EventsTab data={events} refreshing={loading} onRefresh={refresh} />}
+        </Tab.Screen>
+      </Tab.Navigator>
+
+      {/* BOUTONS FLOTTANTS (FABs) */}
+      <View style={styles.fabContainer}>
+        {/* BOUTON FILTRES */}
+        <TouchableOpacity 
+          style={styles.fabWhite} 
+          onPress={() => bottomSheetRef.current?.expand()}
+        >
+          <Ionicons name="options-outline" size={20} color="black" />
+          <Text style={styles.fabTextBlack}>Filtres</Text>
+          {hasActiveFilters && <View style={styles.badge} />}
+        </TouchableOpacity>
+
+        {/* BOUTON CARTE */}
+        <TouchableOpacity 
+          style={styles.fabBlue}
+          onPress={() => router.push('/(main)/search/map')}
+        >
+          <Text style={styles.fabTextWhite}>Carte</Text>
+          <Ionicons name="map-outline" size={20} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* OVERLAY FILTRES (GORHOM) */}
+      <FilterBottomSheet 
+        sheetRef={bottomSheetRef}
+        radius={radius}
+        setRadius={setRadius}
+        selectedSort={selectedSort}
+        setSelectedSort={setSelectedSort}
+        useRadius={useRadius}
+        setUseRadius={setUseRadius}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  searchWrapper: {
-    paddingHorizontal: 16,
-    paddingTop: 10
+  headerArea: { 
+    paddingHorizontal: 20, 
+    paddingTop: 20, 
+    paddingBottom: 15 
   },
-  search: {
-    backgroundColor: "#F3F3F3",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    height: 42,
-    fontSize: 16
+  searchBar: {
+    flexDirection: 'row',
+    backgroundColor: '#F3F3F3',
+    paddingHorizontal: 15,
+    height: 48,
+    borderRadius: 15,
+    alignItems: 'center'
   },
-  sliderBlock: {
-    paddingHorizontal: 16,
-    marginTop: 10
+  fabContainer: {
+    position: 'absolute',
+    bottom: 30, // Un peu plus haut que le bord
+    flexDirection: 'row',
+    alignSelf: 'center',
+    gap: 12,
+    zIndex: 0, // Pour être sûr qu'il passe au dessus des listes
   },
-  radiusLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 4
+  fabWhite: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    borderRadius: 30,
+    // Ombre pour Android
+    elevation: 8,
+    // Ombre pour iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
   },
-  fab: {
-  position: "absolute",
-  bottom: 24,
-  right: 24,
-  backgroundColor: "#1C52D2",
-  width: 56,
-  height: 56,
-  borderRadius: 28,
-  alignItems: "center",
-  justifyContent: "center",
-  elevation: 5,
-},
+  fabBlue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A78FF',
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    borderRadius: 30,
+    elevation: 8,
+    shadowColor: '#4A78FF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  fabTextBlack: { 
+    marginLeft: 8, 
+    fontWeight: 'bold', 
+    fontSize: 16 
+  },
+  fabTextWhite: { 
+    marginRight: 8, 
+    fontWeight: 'bold', 
+    fontSize: 16, 
+    color: 'white' 
+  },
+  badge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#FF4B4B',
+    borderWidth: 2,
+    borderColor: 'white'
+  }
 });

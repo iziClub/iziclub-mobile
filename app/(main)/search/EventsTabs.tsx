@@ -1,14 +1,16 @@
 import React, { use, useEffect, useState } from "react";
-import { View, FlatList } from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import Card from "@/components/card";
-import { SearchItem } from "../../../components/search/types";
+import { EventSearchItem } from "../../../components/search/types";
 import { useRouter } from "expo-router";
 
 interface Props {
-  data: SearchItem[]
+  data: EventSearchItem[],
+  refreshing: boolean;
+  onRefresh: () => void;
 }
 
-export default function EventsTab({ data }: Props) {
+export default function EventsTab({ data, refreshing, onRefresh }: Props) {
   const [localData, setLocalData] = useState(data);
 
   useEffect(() => {
@@ -24,15 +26,23 @@ export default function EventsTab({ data }: Props) {
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={onRefresh} 
+          colors={['#4A78FF']} // Couleur sur Android
+          tintColor={'#4A78FF'} // Couleur sur iOS
+        />
+      }
         renderItem={({ item }) => (
             <View style={{ width: "49%" }}>
           <Card
             title={item.name}
-            banner={item.bannerImageUrl}
-            avatar={item.imageUrl}
-            address={`${item.addressLine1}, ${item.city}`}
+            banner={item.image!}
+            avatar={item.image!}
+            address={`${item.street}, ${item.city}`}
             distance={item.distance?.toFixed(1)}
-            tags={[item.type]}
+            tags={[item.sport || "Sport non précisé", item.type]}
             type="event"
             onPress={() =>
               router.push({
