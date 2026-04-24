@@ -7,7 +7,7 @@ interface CardProps {
   banner?: string;
   avatar?: string;
   address?: string;
-  distance?: string;
+  distance_km?: number;
   tags?: string[];
   type: "club" | "event";
   onPress?: () => void;
@@ -18,7 +18,7 @@ export default function Card({
   banner,
   avatar,
   address,
-  distance,
+  distance_km,
   tags,
   type,
   onPress,
@@ -49,17 +49,20 @@ export default function Card({
 
         {address && (
           <View>
-            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
+            <View style={{ flexDirection: "row", alignItems: "flex-start", marginTop: 4 }}>
               <Icon name="map-marker" size={14} color="#666" style={{ marginTop: 6 }} />
-              <Text style={styles.address} numberOfLines={3}>
-                {address}
-              </Text>
+
+              <View style={{ minHeight: 40, marginLeft: 4, flex: 1 }}>
+                <Text style={styles.address} numberOfLines={2}>
+                  {address}
+                </Text>
+              </View>
             </View>
-            {distance && (
-              <Text style={styles.address}>à {distance} km de vous</Text>
+            {distance_km && (
+              <Text style={styles.address}>à {distance_km} km de vous</Text>
             )}
-            {!distance && (
-              <Text style={styles.address}>Distance unavailable</Text>
+            {!distance_km && (
+              <Text style={styles.address}>Distance indisponible</Text>
             )
             }
           </View>

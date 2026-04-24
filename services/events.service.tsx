@@ -15,3 +15,14 @@ export async function getEvents(params?: EventQueryParams) {
   const res = await api.get("/events", { params });
   return res.data;
 }
+
+export const getEventById = async (id: string) => {
+  const response = await api.get(`/events/${id}`);
+  return response.data;
+}
+
+export const getEventsByClubId = async (clubId: string) => {
+  const response = await api.get(`/clubs/${clubId}/events`);
+  console.log("Events for club", clubId, response.data.data);
+  return response.data;
+}

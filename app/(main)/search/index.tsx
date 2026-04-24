@@ -19,7 +19,7 @@ export default function SearchScreen() {
   const [debouncedQuery, setDebouncedQuery] = useState(q || "");
   const [radius, setRadius] = useState(30);
   const [selectedSort, setSelectedSort] = useState("Plus pertinent");
-  const [useRadius, setUseRadius] = useState(true);
+  const [useRadius, setUseRadius] = useState(false);
   // Debounce pour éviter de spammer l'API à chaque lettre tapée
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
@@ -38,7 +38,7 @@ export default function SearchScreen() {
   const { clubs, events, loading, refresh } = useSearch(debouncedQuery, radius, useRadius, "");
   
   const bottomSheetRef = useRef<BottomSheet>(null);
-
+  
   // Un filtre est considéré comme "actif" si le rayon n'est plus à sa valeur par défaut
   const hasActiveFilters = radius !== 30;
 

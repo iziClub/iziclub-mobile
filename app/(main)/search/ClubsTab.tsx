@@ -41,8 +41,8 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
             banner={item.image!}
             avatar={item.image!}
             address={`${item.street}, ${item.city}`}
-            distance={item.distance?.toFixed(1)}
-            tags={[item.sport]}
+            distance_km={item.distance_km}
+            tags={[item.sport ?? "Sport non précisé"]}
             type="club"
             onPress={() => router.push(`/search/club/${item.id}`)}
           />

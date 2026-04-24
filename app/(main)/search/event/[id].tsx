@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useRouter, useGlobalSearchParams } from "expo-router";
@@ -15,83 +16,30 @@ import * as Calendar from "expo-calendar";
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from "expo-sharing";
 import { Share } from "react-native";
+import { Event } from "@/types/event";
+import { getClubById } from "@/services/clubs.service";
+import { getEventById } from "@/services/events.service";
+import { Club } from "@/types/club";
+import { mapClubToSearchItem } from "@/mappers/club.mapper";
 
-type Event = {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  location: string;
-  price: string;
-  tags: string[];
-  club: {
-    id: string;
-    name: string;
-    image?: string;
-  }
-};
-
-// -------------------
-// Partage
-// -------------------
-// async function shareItem(item: {
+// type Event = {
+//   id: string;
 //   name: string;
-//   type: string; // "Club" ou "Événement"
-//   location?: string;
-//   image?: string; // URL de l'image
-// }) {
-//   try {
-//     const appLink = "https://example.com/download"; // lien vers l'app
-//     const hashtags = "#club #sport #iziclub";
-
-//     let message = `${item.type} : ${item.name}\n`;
-//     if (item.location) message += `📍 ${item.location}\n`;
-//     message += `Rejoignez-nous sur Iziclub ! ${appLink}\n${hashtags}`;
-
-//     // Vérifie si le partage est disponible
-//     if (!(await Sharing.isAvailableAsync())) {
-//       Alert.alert(
-//         "Partage non disponible",
-//         "Le partage n'est pas disponible sur cet appareil"
-//       );
-//       return;
-//     }
-
-//     if (item.image) {
-//       // Télécharge l'image dans le cache
-//       const fileUri =
-//         FileSystem.cacheDirectory +
-//         item.name.replace(/\s/g, "_").toLowerCase() +
-//         ".jpg";
-//       const download = await FileSystem.downloadAsync(item.image, fileUri);
-
-//       // Partage image + message
-//       await Sharing.shareAsync(download.uri, {
-//         mimeType: "image/jpeg",
-//         dialogTitle: `Partager ${item.name}`,
-//         UTI: "public.jpeg",
-//       });
-//     } else {
-//       // Partage texte seul via fichier temporaire
-//       const fileUri = FileSystem.cacheDirectory + "message.txt";
-//       await FileSystem.writeAsStringAsync(fileUri, message, {
-//         encoding: "utf8", // ✅ ok pour la version actuelle
-//       });
-
-//       await Sharing.shareAsync(fileUri, {
-//         mimeType: "text/plain",
-//         dialogTitle: `Partager ${item.name}`,
-//         UTI: "public.plain-text",
-//       });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     Alert.alert("Erreur", "Impossible de partager cet item.");
+//   description: string;
+//   image: string;
+//   date: string;
+//   startTime: string;
+//   endTime: string;
+//   location: string;
+//   price: string;
+//   tags: string[];
+//   club: {
+//     id: string;
+//     name: string;
+//     image?: string;
 //   }
-// }
+// };
+
 async function shareItem(item: {
   name: string;
   type: string;
@@ -167,9 +115,9 @@ async function addToCalendar(event: Event) {
 
     await Calendar.createEventAsync(defaultCalendarId, {
       title: event.name,
-      startDate: new Date(`${event.date}T${event.startTime}`),
-      endDate: new Date(`${event.date}T${event.endTime}`),
-      location: event.location,
+      startDate: new Date(`${event.starts_at}`),
+      endDate: new Date(`${event.ends_at}`),
+      location: `${event.address.city}, ${event.address.street}`,
       notes: event.description,
     });
 
@@ -180,17 +128,66 @@ async function addToCalendar(event: Event) {
   }
 }
 
+const formatDateReadable = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+  });
+};
+
+const formatTimeReadable = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).replace(':', 'h');
+};
+
 function confirmAddToCalendar(event: Event) {
+  // Préparation des strings formatées
+  const dateEvent = formatDateReadable(event.starts_at || "");
+  const heureDebut = formatTimeReadable(event.starts_at || "");
+  const heureFin = formatTimeReadable(event.ends_at || "");
+
   Alert.alert(
     "Ajouter au calendrier",
-    `Nom : ${event.name}\nDate : ${event.date}\nHeure : ${event.startTime} - ${event.endTime}\nLieu : ${event.location}`,
+    `📅 ${event.name}\n\n` +
+    `🗓️ Le ${dateEvent}\n` +
+    `⏰ de ${heureDebut} à ${heureFin}\n` +
+    `📍 ${event.address.city}, ${event.address.street}`,
     [
       { text: "Annuler", style: "cancel" },
-      { text: "Ajouter", onPress: () => addToCalendar(event) },
+      { 
+        text: "Ajouter", 
+        onPress: () => addToCalendar(event),
+        style: "default" 
+      },
     ],
     { cancelable: true }
   );
 }
+const formatEventTime = (dateString: string | null) => {
+  if (!dateString) return "--h--";
+
+  const date = new Date(dateString);
+
+  return new Intl.DateTimeFormat('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date).replace(':', 'h'); // Transforme 13:00 en 13h00
+};
+
+const formatEventDate = (dateString: string | null) => {
+  if (!dateString) return "Date à définir";
+
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+  }).format(date); // Exemple: "16 avril"
+};
 
 // -------------------
 // Composant principal
@@ -198,65 +195,107 @@ function confirmAddToCalendar(event: Event) {
 export default function EventDetailScreen() {
   const params = useGlobalSearchParams();
   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const [event, setEvent] = useState<Event | null>(null);
   const router = useRouter();
-  const event: Event = {
-    id: eventId,
-    name: "Coupe de Moselle CSG vs AS TALANGE",
-    description:
-      "Un choc local à ne pas manquer : le CSG reçoit l'AS Talange pour un duel décisif en Coupe de Moselle. Venez vibrer et soutenir votre équipe dans cette course vers la qualification !",
-    image:
-      "https://www.toutchalons.com/images/evenement/16661/affiche/original/FB_IMG_1747667688049.webp",
-    date: "2026-03-11",
-    startTime: "10:00",
-    endTime: "12:00",
-    location: "123 Rue Principale, Québec, QC, Canada",
-    price: "10€",
-    tags: ["Football", "Tournoi", "U18"],
-    club: {
-      id: "1",
-      name: "Club Sportif de Gravelotte",
-      image: "https://picsum.photos/seed/avatar1/100",
-    }
-  };
+  // const event: Event = {
+  //   id: eventId,
+  //   name: "Coupe de Moselle CSG vs AS TALANGE",
+  //   description:
+  //     "Un choc local à ne pas manquer : le CSG reçoit l'AS Talange pour un duel décisif en Coupe de Moselle. Venez vibrer et soutenir votre équipe dans cette course vers la qualification !",
+  //   image:
+  //     "https://www.toutchalons.com/images/evenement/16661/affiche/original/FB_IMG_1747667688049.webp",
+  //   date: "2026-03-11",
+  //   startTime: "10:00",
+  //   endTime: "12:00",
+  //   location: "123 Rue Principale, Québec, QC, Canada",
+  //   price: "10€",
+  //   tags: ["Football", "Tournoi", "U18"],
+  //   club: {
+  //     id: "1",
+  //     name: "Club Sportif de Gravelotte",
+  //     image: "https://picsum.photos/seed/avatar1/100",
+  //   }
+  // };
 
+  const [club, setClub] = useState<Club | null>(null);
+
+  useEffect(() => {
+    const fetchClub = async () => {
+      // console.log("Event ID pour fetch club:", event);
+      if (event?.club_id) {
+        const clubData = await getClubById(event.club_id);
+        setClub(clubData);
+      }
+    };
+
+    fetchClub();
+  }, [event?.club_id]);
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      if (eventId) {
+        const eventData = await getEventById(eventId);
+        setEvent(eventData);
+      }
+    };
+
+    fetchEvent();
+  }, [eventId]);
+
+  if (!event) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#4A78FF" />
+      </View>
+    );
+  }
+
+  console.log("Données de l'événement récupérées:", event);
   return (
     <ScrollView style={styles.container}>
       {/* IMAGE */}
       <View style={styles.imageContainer}>
-        <Image source={{ uri: event.image }} style={styles.image} resizeMode="cover" />
+        <Image source={{ uri: event.banner_url ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
       </View>
 
       {/* TITRE */}
       <Text style={styles.title}>{event.name}</Text>
 
       {/* TAGS */}
-      <View style={styles.tagContainer}>
-        {event.tags.map((tag) => (
-          <View key={tag} style={styles.tag}>
-            <Text style={styles.tagText}>{tag}</Text>
-          </View>
-        ))}
-      </View>
+      {event.tags && event.tags.length > 0 && (
+        <View style={styles.tagContainer}>
+          {event.tags.map((tag) => (
+            <View key={tag} style={styles.tag}>
+              <Text style={styles.tagText}>{tag}</Text>
+            </View>
+          ))}
+        </View>
+      )}
 
       <TouchableOpacity
         style={styles.clubContainer}
-        onPress={() => router.push(`/search/club/${event.club.id}`)}
+        onPress={() => router.push(`/search/club/${event.club_id}`)}
       >
-        {event.club.image && (
-          <Image source={{ uri: event.club.image }} style={styles.clubImage} />
+        {club?.profile_image_url && (
+          <Image source={{ uri: club.profile_image_url }} style={styles.clubImage} />
         )}
-        <Text style={styles.clubName}>Publié par {event.club.name}</Text>
+        <Text style={styles.clubName}>Publié par {club?.name}</Text>
       </TouchableOpacity>
       {/* DESCRIPTION */}
-      <Text style={styles.description}>{event.description}</Text>
+      {event.description && (
+        <Text style={styles.description}>{event.description}</Text>
+      )}
 
       {/* INFOS */}
       <View style={styles.infoBlock}>
         {/* DATE */}
         <View style={styles.infoRow}>
           <Ionicons name="time-outline" size={22} color="#0E011A" />
+          <Text style={{...styles.infoText, flex: 0}}>
+            Le {formatEventDate(event.starts_at)}
+          </Text>
           <Text style={styles.infoText}>
-            {event.date} • {event.startTime} - {event.endTime}
+            {formatEventTime(event.starts_at)} - {formatEventTime(event.ends_at)}
           </Text>
 
           <TouchableOpacity
@@ -271,15 +310,26 @@ export default function EventDetailScreen() {
         </View>
 
         {/* LOCALISATION */}
-        <View style={styles.infoRow}>
-          <Ionicons name="location-outline" size={22} color="#0E011A" />
-          <Text style={styles.infoText}>{event.location}</Text>
-        </View>
+        {event.address.city && event.address.street ? (
+  <View style={styles.infoRow}>
+    <Ionicons name="location-outline" size={22} color="#0E011A" />
+    <Text style={styles.infoText}>
+      {event.address.street}, {event.address.city}
+    </Text>
+  </View>
+) : (
+  <View style={styles.infoRow}>
+    <Ionicons name="location-outline" size={22} color="#0E011A" />
+    <Text style={{...styles.infoText, fontStyle: "italic", color: "#666" }}>
+      Adresse non communiquée pour le moment
+    </Text>
+  </View>
+)}
 
         {/* PRIX */}
         <View style={styles.infoRow}>
           <FontAwesome name="eur" size={22} color="#0E011A" />
-          <Text style={styles.infoText}>{event.price}</Text>
+          <Text style={styles.infoText}>{event.pricing ?? "Non précisé"}</Text>
         </View>
       </View>
       <TouchableOpacity
@@ -294,11 +344,10 @@ export default function EventDetailScreen() {
           shareItem({
             name: event.name,
             type: "Événement",
-            location: event.location,
-            image: event.image,
-            date: event.date,
-            startTime: event.startTime,
-            endTime: event.endTime,
+            location: `${event.address.street}, ${event.address.city}`,
+            image: event.imageUrl,
+            startTime: event.starts_at ?? undefined,
+            endTime: event.ends_at ?? undefined,
           })
         }
       >

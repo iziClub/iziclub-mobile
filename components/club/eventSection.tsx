@@ -2,33 +2,29 @@ import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import Card from "../card";
 import { useRouter } from "expo-router";
+import { Event } from "@/types/event";
+import EmptyEvents from "./emptyEvent";
+import { EventSearchItem } from "../search/types";
 
-export default function EventSection() {
+export default function EventSection({events}: {events: EventSearchItem[]}) {
     const router = useRouter();
+    console.info("Events reçus dans EventSection:", events);
     return (<View style={styles.sectionContainer}>
         <FlatList
-                data={Array.from({ length: 10 }).map((_, i) => ({
-                    id: `event-${i}`,
-                    name: `Événement ${i + 1}`,
-                    bannerImageUrl: `https://picsum.photos/seed/event${i}/300/150`,
-                    imageUrl: `https://picsum.photos/seed/event${i}/100/100`,
-                    addressLine1: `Adresse ${i + 1}`,
-                    city: `Ville ${i + 1}`,
-                    distance: Math.random() * 10,
-                    type: "le foot"
-                }))}
+                data={events}
                 keyExtractor={(item) => item.id}
                 numColumns={2}
                 columnWrapperStyle={{ justifyContent: "space-between" }}
                 showsVerticalScrollIndicator={false}
+                ListEmptyComponent={<EmptyEvents />}
                 renderItem={({ item }) => (
                     <View style={{ width: "49%" }}>
                   <Card
                     title={item.name}
-                    banner={item.bannerImageUrl}
-                    avatar={item.imageUrl}
-                    address={`${item.addressLine1}, ${item.city}`}
-                    distance={item.distance?.toFixed(1)}
+                    banner={item.banner_url ?? "https://via.placeholder.com/300x150"}
+                    // avatar={item.image ?? "https://via.placeholder.com/300x150"}
+                    address={`${item.street}, ${item.city}`}
+                    distance_km={item.distance_km}
                     tags={[item.type]}
                     type="event"
                     onPress={() =>

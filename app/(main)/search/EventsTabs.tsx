@@ -39,9 +39,9 @@ export default function EventsTab({ data, refreshing, onRefresh }: Props) {
           <Card
             title={item.name}
             banner={item.image!}
-            avatar={item.image!}
+            // avatar={item.image!}
             address={`${item.street}, ${item.city}`}
-            distance={item.distance?.toFixed(1)}
+            distance_km={item.distance_km}
             tags={[item.sport || "Sport non précisé", item.type]}
             type="event"
             onPress={() =>

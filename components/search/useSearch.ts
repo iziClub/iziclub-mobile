@@ -215,30 +215,38 @@ export const useSearch = (
 
       const lat = 48.692;
       const lon = 6.184;
+        
+      const params: any = {
+  search: query || undefined,
+  city: city || undefined,
+  limit: 20,
+  page: 1,
+};
 
-      const params = {
-      search: query || undefined,
-      city: city || undefined,
-      latitude: lat,
-      longitude: lon,
-      radius: useRadius || mapCoords ? radius : undefined,
-    };
-      const res = await getClubs({
-        search: query || undefined,
-        city: city || undefined,
-        // 2. On utilise mapCoords en priorité, sinon la position par défaut si useRadius est vrai
-        latitude: mapCoords ? mapCoords.latitude : (useRadius ? defaultLat : undefined),
-        longitude: mapCoords ? mapCoords.longitude : (useRadius ? defaultLon : undefined),
-        radius: useRadius || mapCoords ? radius : undefined,
-        limit: 20,
-        page: 1,
-      });
+// ✅ seulement si activé
+if (useRadius) {
+  params.latitude = mapCoords?.latitude ?? defaultLat;
+  params.longitude = mapCoords?.longitude ?? defaultLon;
+  params.radius = radius;
+}
+      // const res = await getClubs({
+      //   search: query || undefined,
+      //   city: city || undefined,
+      //   // 2. On utilise mapCoords en priorité, sinon la position par défaut si useRadius est vrai
+      //   latitude: mapCoords ? mapCoords.latitude : (useRadius ? defaultLat : undefined),
+      //   longitude: mapCoords ? mapCoords.longitude : (useRadius ? defaultLon : undefined),
+      //   radius: useRadius || mapCoords ? radius : undefined,
+      //   limit: 20,
+      //   page: 1,
+      // });
       const [clubsRes, eventsRes] = await Promise.all([
         getClubs(params),
         getEvents(params) // Ajoute cette fonction dans ton services/events.service
       ]);
+
       const mappedClubs = clubsRes.data.map(mapClubToSearchItem);
       const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
+      console.log("mapped events :", mappedEvents);
       setClubs(mappedClubs);
       setEvents(mappedEvents);
     } catch (err) {

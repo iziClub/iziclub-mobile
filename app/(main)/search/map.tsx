@@ -26,11 +26,11 @@ export default function MapScreen() {
   const [showSearchButton, setShowSearchButton] = useState(false);
 
   // Appel API lié aux searchParams (déclenché seulement quand on clique sur le bouton)
-  const { clubs, loading } = useSearch("", searchParams.radius, true, "", {
+  const { clubs, events, loading } = useSearch("", searchParams.radius, true, "", {
     latitude: searchParams.latitude,
     longitude: searchParams.longitude,
   });
-
+  console.log("events mappe :", events);
   // Fonction pour calculer le radius et lancer la recherche
   const handleSearchHere = () => {
     /**

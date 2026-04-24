@@ -1,3 +1,5 @@
+import { Event } from "./event";
+
 export interface Address {
   street: string;
   city: string;
@@ -12,12 +14,18 @@ export interface Club {
   id: string;
   name: string;
   description: string;
+  title?: string;
+  type?: string;
+  city: string;
+  addressLine1: string;
   slogan: string;
   profile_image_url: string | null;
-  banner_url: string | null;
+  bannerImageUrl: string | null;
   gallery: string[];
   address: Address;
   sport: string | null;
+  events?: Event[];
+  distance_km?: number;
 }
 
 export interface ClubsResponse {
@@ -27,4 +35,32 @@ export interface ClubsResponse {
     currentPage: number;
     lastPage: number;
   };
+}
+
+export interface ClubDetailDTO {
+    id: string;
+    name: string;
+    title: string;
+    description: string;
+    type: string;
+    city: string;
+    slogan: string;
+    addressLine1: string;
+    imageUrl: string;
+    bannerImageUrl: string;
+    events: Event[]; // Remplace any par ton type Event si tu l'as
+    sport: string | null;
+    address: {
+        street: string;
+        city: string;
+        latitude: string;
+        longitude: string;
+        zip_code: string;
+        department_code: string;
+        region: string;
+    };
+    profile_image_url: string | null;
+    banner_url: string | null;
+    gallery: string[]; // Si tu as une galerie d'images pour le club
+    distance_km?: number; // Si tu as cette info, sinon tu peux l'ignorer
 }

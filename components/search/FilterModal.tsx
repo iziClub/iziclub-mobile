@@ -14,7 +14,15 @@ interface Props {
   setSelectedSort: (val: string) => void;
 }
 
-export default function FilterBottomSheet({ sheetRef, radius, setRadius, selectedSort, setSelectedSort }: Props) {
+export default function FilterBottomSheet({ 
+  sheetRef, 
+  radius, 
+  setRadius, 
+  selectedSort, 
+  setSelectedSort,
+  useRadius,
+  setUseRadius
+}: Props) {
   // Points d'arrêt : la feuille s'ouvrira à 85% de l'écran
   const snapPoints = useMemo(() => ['85%'], []);
 
@@ -25,7 +33,7 @@ export default function FilterBottomSheet({ sheetRef, radius, setRadius, selecte
   );
 
   const sorts = ['Nouveau', 'Plus pertinent', 'Plus proche', 'Booster'];
-  const [useRadius, setUseRadius] = useState(true);
+  // const [useRadius, setUseRadius] = useState(true);
   return (
     <BottomSheet
       ref={sheetRef}
@@ -69,7 +77,6 @@ export default function FilterBottomSheet({ sheetRef, radius, setRadius, selecte
     <Switch 
         value={useRadius} 
         onValueChange={(newValue) => {
-        console.log("Switch basculé :", newValue);
         setUseRadius(newValue); // <-- Doit être la fonction passée en props
     }}
         trackColor={{ false: "#E0E0E0", true: "#4A78FF" }}

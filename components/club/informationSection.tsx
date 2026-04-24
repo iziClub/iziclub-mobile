@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
 import Card from "../card";
 import TeamCard from "../teamCard";
+import { Event } from "@/types/event";
 
 interface Club {
     id: string;
@@ -13,6 +14,7 @@ interface Club {
     addressLine1: string;
     imageUrl: string;
     bannerImageUrl: string;
+    events: Event[];
 }
 
 interface Props {
@@ -21,6 +23,7 @@ interface Props {
 }
 
 export default function InformationSection({ club, onSeeMore }: Props) {
+    console.log("event dans club details :", club.events);
     return (
         <ScrollView
             contentContainerStyle={{
@@ -34,7 +37,8 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 <Text style={styles.title}>{club.title}</Text>
                 <Text style={styles.description}>{club.description}</Text>
             </View>
-
+            {club.events && club.events.length > 0 && (
+                <>
             <View style={styles.sectionHeader}>
                 <Text style={styles.bigTitle}>Nos événements</Text>
                 <TouchableOpacity onPress={() => onSeeMore("Événements")}>
@@ -47,19 +51,23 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.eventsContainer}
             >
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <View key={i} style={{ width: 260, marginRight: 12 }}>
-                        <View style={{ width: "100%" }}>
-                            <Card
-                                title={`Événement ${i + 1}`}
-                                banner={`https://picsum.photos/seed/event${i}/300/150`}
-                                type="event"
-                                onPress={() => console.log(`Clicked event ${i + 1}`)}
-                            />
-                        </View>
-                    </View>
+                <View style={{ flexDirection: "row", gap: 12, width: "12%" }}>
+                {club.events.map((event) => (
+                    <Card
+                        key={event.id}
+                        title={event.name}
+                        banner={event.banner_url ?? "https://via.placeholder.com/300x150"}
+                        address={`${event.address.street}, ${event.address.city}`}
+                        distance_km={event.distance_km}
+                        tags={[event.sport || "Sport non précisé", event.type]}
+                        type="event"
+                        onPress={() => onSeeMore("Événements")}
+                    />
                 ))}
+                </View>
             </ScrollView>
+            </>
+            )}
 
             <Text style={styles.bigTitle}>Nos équipes</Text>
 

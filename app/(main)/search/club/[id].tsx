@@ -14,6 +14,10 @@ import HeaderClubDetails from "@/components/club/headerClubDetails";
 import SelectSection from "@/components/club/selectSection";
 import { getClubById } from "@/services/clubs.service";
 import { mapApiClubToDetail } from "@/mappers/club.mapper";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { getEventsByClubId } from "@/services/events.service";
+import { Club, ClubDetailDTO } from "@/types/club";
+import { ClubSearchItem } from "@/components/search/types";
 
 // const MOCK_CLUBS = Array.from({ length: 80 }).map((_, i) => ({
 //     id: (i + 1).toString(),
@@ -47,15 +51,21 @@ export default function ClubDetail() {
     const [activeSection, setActiveSection] = useState(SECTIONS[0]);
     const [isLoading, setIsLoading] = useState(true);
     // const club = MOCK_CLUBS.find((c) => c.id === id);
-    const [club, setClub] = useState<any>(null);
+    const [club, setClub] = useState<ClubDetailDTO>();
     useEffect(() => {
         const fetchClubData = async () => {
             if (!id) return;
             try {
                 setIsLoading(true);
-                const data = await getClubById(id);
-                const mappedData = mapApiClubToDetail(data);
-                setClub(mappedData);
+                const dataClub = await getClubById(id);
+                
+                const eventsFromClub = await getEventsByClubId(id);
+                dataClub.events = eventsFromClub.data; // Ajoute les événements au club
+                // const rawData = { ...dataClub, events: eventsFromClub };
+                const mappedDataClub = mapApiClubToDetail(dataClub);
+                // console.log("Données du club récupérées et mappées:", mappedDataClub);
+                setClub(mappedDataClub);
+                // console.log("Club après setClub:", club);
             } catch (error) {
                 console.error("Erreur lors de la récupération du club:", error);
             } finally {
@@ -91,7 +101,7 @@ export default function ClubDetail() {
 
             case "Événements":
                 return (
-                    <EventSection />
+                    <EventSection events={club.events} />
                 );
 
             case "Galerie":

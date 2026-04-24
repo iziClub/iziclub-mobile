@@ -7,6 +7,7 @@ export interface BaseSearchItem {
   latitude: string;
   longitude: string;
   image: string | null;
+  distance_km?: number; // Ajout de la distance ici pour les deux types
 }
 
 // Spécifique aux Clubs
@@ -27,6 +28,7 @@ export interface EventSearchItem extends BaseSearchItem {
   // Champs formatés pour la vue
   day: string;
   month: string;
+  clubId: string;
 }
 
 // Le type union pour tes listes de recherche

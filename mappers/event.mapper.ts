@@ -14,6 +14,9 @@ export interface ApiEvent {
   starts_at: string | null;
   banner_url: string | null;
   pricing: string | null;
+  tags?: string[];
+  clubId: string;
+  distance_km?: number; // Ajout de la distance ici pour le mapping
 }
 
 export const mapEventToSearchItem = (event: ApiEvent): EventSearchItem => {
@@ -23,20 +26,20 @@ export const mapEventToSearchItem = (event: ApiEvent): EventSearchItem => {
     id: event.id,
     name: event.name || "Événement sans nom",
     type: "event",
-    city: event.address?.city || "Lieu non précisé",
+    city: event.address.city || "Lieu non précisé",
     street: event.address.street || "Adresse non précisée",
     sport: event.sport,
     starts_at: event.starts_at,
     ends_at: null, // Si tu as une date de fin, mappe-la ici
     pricing: event.pricing,
-    tags: [], // Si tu as des tags, mappe-les ici
     day: startDate ? startDate.getDate().toString() : "N/A",
     month: startDate ? startDate.toLocaleString('fr-FR', { month: 'short' }) : "N/A",
     image: event.banner_url, // Utilise le banner_url comme image de l'événement    
-    // Correction ici : On force la conversion en string
-    // On gère aussi le cas où c'est null avec un fallback à "0"
     latitude: String(event.address?.latitude ?? "0"),
     longitude: String(event.address?.longitude ?? "0"),
+    tags: event.tags || [],
+    clubId: event.clubId,
+    distance_km: event.distance_km, // Ajout de la distance au mapping
   };
 };
 

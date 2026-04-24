@@ -71,7 +71,6 @@ export default function ClubsList({
     }
 
     const clubsData = await getClubs(params);
-    console.log("API RESPONSE:", params);
     if (clubsData.data.length === 0) {
       setHasMore(false);
     } else {
