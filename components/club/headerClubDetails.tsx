@@ -13,6 +13,7 @@ interface Club {
     addressLine1: string;
     imageUrl: string;
     bannerImageUrl: string;
+    profile_image_url: string;
 }
 
 export default function HeaderClubDetails({ club }: { club: Club }) {

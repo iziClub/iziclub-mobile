@@ -18,11 +18,10 @@ export default function EventSection({events}: {events: EventSearchItem[]}) {
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={<EmptyEvents />}
                 renderItem={({ item }) => (
-                    <View style={{ width: "49%" }}>
+                    <View style={{ width: "49%", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}>
                   <Card
                     title={item.name}
                     banner={item.banner_url ?? "https://via.placeholder.com/300x150"}
-                    // avatar={item.image ?? "https://via.placeholder.com/300x150"}
                     address={`${item.street}, ${item.city}`}
                     distance_km={item.distance_km}
                     tags={[item.type]}

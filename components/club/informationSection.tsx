@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "rea
 import Card from "../card";
 import TeamCard from "../teamCard";
 import { Event } from "@/types/event";
+import { Picture } from "@/types/picture";
 
 interface Club {
     id: string;
@@ -14,6 +15,7 @@ interface Club {
     addressLine1: string;
     imageUrl: string;
     bannerImageUrl: string;
+    gallery: Picture[];
     events: Event[];
 }
 
@@ -23,7 +25,6 @@ interface Props {
 }
 
 export default function InformationSection({ club, onSeeMore }: Props) {
-    // console.log("club in InformationSection: ", club);
     return (
         <ScrollView
             contentContainerStyle={{
@@ -39,33 +40,33 @@ export default function InformationSection({ club, onSeeMore }: Props) {
             </View>
             {club.events && club.events.length > 0 && (
                 <>
-            <View style={styles.sectionHeader}>
-                <Text style={styles.bigTitle}>Nos événements</Text>
-                <TouchableOpacity onPress={() => onSeeMore("Événements")}>
-                    <Text style={styles.seeMore}>Voir plus</Text>
-                </TouchableOpacity>
-            </View>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.bigTitle}>Nos événements</Text>
+                        <TouchableOpacity onPress={() => onSeeMore("Événements")}>
+                            <Text style={styles.seeMore}>Voir plus</Text>
+                        </TouchableOpacity>
+                    </View>
 
-            <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={{ gap: 12, paddingRight: 16, marginBottom: 24 }}
->
-    {club.events.map((event) => (
-        <Card
-            key={event.id}
-            title={event.name}
-            banner={event.banner_url ?? "https://via.placeholder.com/300x150"}
-            address={`${event.address.street}, ${event.address.city}`}
-            distance_km={event.distance_km}
-            tags={[event.sport || "Sport non précisé", event.type]}
-            type="event"
-            onPress={() => onSeeMore("Événements")}
-            width={220}
-        />
-    ))}
-</ScrollView>
-            </>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ gap: 12, paddingRight: 16, marginBottom: 24 }}
+                    >
+                        {club.events.map((event) => (
+                            <Card
+                                key={event.id}
+                                title={event.name}
+                                banner={event.banner_url ?? "https://via.placeholder.com/300x150"}
+                                address={`${event.address.street}, ${event.address.city}`}
+                                distance_km={event.distance_km}
+                                tags={[event.sport || "Sport non précisé", event.type]}
+                                type="event"
+                                onPress={() => onSeeMore("Événements")}
+                                width={220}
+                            />
+                        ))}
+                    </ScrollView>
+                </>
             )}
 
             <Text style={styles.bigTitle}>Nos équipes</Text>
@@ -92,11 +93,11 @@ export default function InformationSection({ club, onSeeMore }: Props) {
             </View>
 
             <View style={styles.gallery}>
-                {club.gallery.map((picture) =>(
+                {club.gallery.map((picture) => (
                     <Image
                         key={picture.id}
-                        source={{ uri: picture.url}}
-                        style={styles.photo}/>
+                        source={{ uri: picture.url }}
+                        style={styles.photo} />
                 ))}
 
             </View>

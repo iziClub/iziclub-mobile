@@ -11,6 +11,7 @@ interface CardProps {
   tags?: string[];
   type: "club" | "event";
   onPress?: () => void;
+  width?: number | string;
 }
 
 export default function Card({

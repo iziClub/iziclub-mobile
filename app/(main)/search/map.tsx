@@ -30,7 +30,6 @@ export default function MapScreen() {
     latitude: searchParams.latitude,
     longitude: searchParams.longitude,
   });
-  console.log("events mappe :", events);
   // Fonction pour calculer le radius et lancer la recherche
   const handleSearchHere = () => {
     /**

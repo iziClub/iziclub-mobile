@@ -10,32 +10,33 @@ interface Props {
 export default function SelectSection({ activeSection, setActiveSection, SECTIONS }: Props) {
     return (
         <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        style={styles.sectionsContainer}
-                        contentContainerStyle={styles.sectionsContent}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.sectionsContainer}
+            contentContainerStyle={styles.sectionsContent}
+        >
+            {SECTIONS.map((section) => (
+                <TouchableOpacity
+                    key={section}
+                    style={[
+                        styles.sectionButton,
+                        activeSection === section && styles.sectionButtonActive,
+                    ]}
+                    onPress={() => setActiveSection(section)}
+                >
+                    <Text
+                        style={[
+                            styles.sectionText,
+                            activeSection === section && styles.sectionTextActive,
+                        ]}
                     >
-                        {SECTIONS.map((section) => (
-                            <TouchableOpacity
-                                key={section}
-                                style={[
-                                    styles.sectionButton,
-                                    activeSection === section && styles.sectionButtonActive,
-                                ]}
-                                onPress={() => setActiveSection(section)}
-                            >
-                                <Text
-                                    style={[
-                                        styles.sectionText,
-                                        activeSection === section && styles.sectionTextActive,
-                                    ]}
-                                >
-                                    {section}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-    )};
+                        {section}
+                    </Text>
+                </TouchableOpacity>
+            ))}
+        </ScrollView>
+    )
+};
 
 const styles = StyleSheet.create({
     sectionsContainer: {

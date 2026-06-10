@@ -17,4 +17,5 @@ export interface Event {
         street: string;
         city: string;
     }
+    banner_url: string;
 }

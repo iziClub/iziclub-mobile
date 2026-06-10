@@ -1,30 +1,24 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
-import Card from "@/components/card";
-import TeamCard from "@/components/teamCard";
 import ClubCalendar from "@/components/calendar";
 import EventSection from "@/components/club/eventSection";
 import GalerieSection from "@/components/club/galerieSection";
 import ContactSection from "@/components/club/contactSection";
 import InformationSection from "@/components/club/informationSection";
 import MembershipSection from "@/components/club/Membership/MembershipSection"
-import { Header } from "@react-navigation/elements";
 import HeaderClubDetails from "@/components/club/headerClubDetails";
 import SelectSection from "@/components/club/selectSection";
 import { getClubById } from "@/services/clubs.service";
 import { mapApiClubToDetail } from "@/mappers/club.mapper";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getEventsByClubId } from "@/services/events.service";
-import { Club, ClubDetailDTO } from "@/types/club";
-import { ClubSearchItem } from "@/components/search/types";
+import { ClubDetailDTO } from "@/types/club";
 import { useAuth } from "../../../../context/AuthContext";
+
 const SECTIONS = ["Informations", "Événements", "Adhésion","Galerie", "Calendrier", "Contact"];
 
 export default function ClubDetail() {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const router = useRouter();
     const [activeSection, setActiveSection] = useState(SECTIONS[0]);
     const [isLoading, setIsLoading] = useState(true);
     const [club, setClub] = useState<ClubDetailDTO>();

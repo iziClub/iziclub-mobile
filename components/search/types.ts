@@ -1,4 +1,3 @@
-// La base commune pour n'importe quel élément de recherche
 export interface BaseSearchItem {
   id: string;
   name: string;
@@ -10,14 +9,12 @@ export interface BaseSearchItem {
   distance_km?: number; // Ajout de la distance ici pour les deux types
 }
 
-// Spécifique aux Clubs
 export interface ClubSearchItem extends BaseSearchItem {
   type: 'club';
   sport: string | null;
   // category: string; // ex: "Tennis"
 }
 
-// Spécifique aux Événements
 export interface EventSearchItem extends BaseSearchItem {
   type: 'event';
   sport: string | null;
@@ -29,7 +26,7 @@ export interface EventSearchItem extends BaseSearchItem {
   day: string;
   month: string;
   clubId: string;
+  banner_url: string | null;
 }
 
-// Le type union pour tes listes de recherche
 export type SearchItem = ClubSearchItem | EventSearchItem;
