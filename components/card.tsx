@@ -22,9 +22,10 @@ export default function Card({
   tags,
   type,
   onPress,
+  width = "100%",
 }: CardProps) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { width }]}>
       {/* Bannière */}
       {banner ? (
         <Image source={{ uri: banner }} style={styles.banner} />
@@ -104,7 +105,7 @@ export default function Card({
 
 const styles = StyleSheet.create({
   card: {
-    width: "100%",
+    // width: "100%",
     backgroundColor: "white",
     borderRadius: 14,
     overflow: "hidden",

@@ -1,7 +1,7 @@
 import api from "./api";
 
 export async function loginUser(email: string, password: string) {
-  const response = await api.post("/login", { email, password });
+  const response = await api.post("/auth/login", { email, password });
   if (!response.status) throw new Error("Invalid credentials");
   // const response = await fetch("http://localhost:3333/api/login", {
   //   method: "POST",
@@ -11,15 +11,21 @@ export async function loginUser(email: string, password: string) {
 
   // if (!response.ok) throw new Error("Invalid credentials");
 
-  return response.data();
+  return response.data;
 }
 
 export async function registerUser(
-  name: string,
+  first_name: string,
+  last_name: string,
   email: string,
   password: string
 ) {
-  const response = await api.post("/register", { name, email, password });
+  
+  const response = await api.post("/auth/register", {
+    first_name, 
+    last_name, 
+    email, 
+    password});
   if (!response.status) throw new Error("Registration failed");
-  return response.data();
+  return response.data;
 }

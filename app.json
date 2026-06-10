@@ -15,7 +15,10 @@
       "supportsTablet": true
     },
     "android": {
-      "permissions": ["READ_CALENDAR", "WRITE_CALENDAR"],
+      "permissions": [
+        "READ_CALENDAR",
+        "WRITE_CALENDAR"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -42,7 +45,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

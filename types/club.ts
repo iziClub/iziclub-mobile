@@ -1,4 +1,5 @@
 import { Event } from "./event";
+import { Picture } from "./picture";
 
 export interface Address {
   street: string;
@@ -21,7 +22,7 @@ export interface Club {
   slogan: string;
   profile_image_url: string | null;
   bannerImageUrl: string | null;
-  gallery: string[];
+  gallery: Picture[];
   address: Address;
   sport: string | null;
   events?: Event[];
@@ -61,6 +62,6 @@ export interface ClubDetailDTO {
     };
     profile_image_url: string | null;
     banner_url: string | null;
-    gallery: string[]; // Si tu as une galerie d'images pour le club
+    gallery: Picture[]; // Si tu as une galerie d'images pour le club
     distance_km?: number; // Si tu as cette info, sinon tu peux l'ignorer
 }

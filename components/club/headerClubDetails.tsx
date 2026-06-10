@@ -31,7 +31,7 @@ export default function HeaderClubDetails({ club }: { club: Club }) {
                     <Text style={styles.clubCity}>{club.city}</Text>
                 </View>
 
-                <Image source={{ uri: club.imageUrl }} style={styles.clubImage} />
+                <Image source={{ uri: club.profile_image_url }} style={styles.clubImage} />
 
                 <TouchableOpacity style={styles.saveButton}>
                     <MaterialIcons name="bookmark-border" size={28} color="#000" />

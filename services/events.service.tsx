@@ -23,6 +23,5 @@ export const getEventById = async (id: string) => {
 
 export const getEventsByClubId = async (clubId: string) => {
   const response = await api.get(`/clubs/${clubId}/events`);
-  console.log("Events for club", clubId, response.data.data);
   return response.data;
 }

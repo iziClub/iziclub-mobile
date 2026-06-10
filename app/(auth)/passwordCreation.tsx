@@ -10,31 +10,64 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
+  Alert
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { registerUser } from "../../services/auth";
 
 export default function PasswordCreationScreen() {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  
+  // Récupération des données transmises par le premier écran
+  const { email, first_name, last_name } = useLocalSearchParams<{ 
+    email: string; 
+    first_name: string; 
+    last_name: string 
+  }>();
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const rules = [
-    { label: "Au moins 8 caractères.", test: (pw: string | any[]) => pw.length >= 8 },
+    { label: "Au moins 8 caractères.", test: (pw: string) => pw.length >= 8 },
     { label: "Au moins une lettre en majuscule.", test: (pw: string) => /[A-Z]/.test(pw) },
     { label: "Au moins une lettre en minuscule.", test: (pw: string) => /[a-z]/.test(pw) },
     { label: "Au moins un chiffre.", test: (pw: string) => /\d/.test(pw) },
   ];
+
   const allValid = rules.every((rule) => rule.test(password));
-  const handleLogin = async () => {
+
+  const handleRegister = async () => {
+    if (!allValid || isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
-      await login(email, password);
-    } catch (e) {
-      console.error("Login failed", e);
+      // 1. Appel au service d'inscription
+      await registerUser(
+        first_name as string,
+        last_name as string,
+        email as string,
+        password
+      );
+
+      // 2. Connexion automatique après succès
+      await login(email as string, password);
+      router.replace("/(main)/home")
+      // Note: Le AuthContext redirigera l'utilisateur vers le home/app 
+      // si votre layout est configuré pour écouter l'état 'user'.
+    } catch (e: any) {
+      console.error("Registration failed", e);
+      Alert.alert("Erreur", "Impossible de créer le compte. L'email est peut-être déjà utilisé.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleForgotPassword = () => {
-    alert("Redirection vers mot de passe oublié !");
+  const handleGoBack = () => {
+    router.back();
   };
 
   return (
@@ -67,9 +100,10 @@ export default function PasswordCreationScreen() {
             onPress={() => setShowPassword(!showPassword)}
             style={styles.eyeButton}
           >
-            <Text>{showPassword ? "🙈" : "👁️"}</Text>
+            <Text style={{ fontSize: 18 }}>{showPassword ? "🙈" : "👁️"}</Text>
           </TouchableOpacity>
         </View>
+
         <View style={styles.rulesContainer}>
           {rules.map((rule, idx) => {
             const valid = rule.test(password);
@@ -77,43 +111,53 @@ export default function PasswordCreationScreen() {
               <View key={idx} style={styles.ruleItem}>
                 <Checkbox
                   value={valid}
-                  color={valid ? "green" : undefined}
-                  style={{ marginRight: 8 }}
+                  color={valid ? "#2E7D32" : undefined}
+                  style={{ marginRight: 10, width: 18, height: 18 }}
                   disabled
                 />
-                <Text style={{ color: valid ? "green" : "gray" }}>{rule.label}</Text>
+                <Text style={{ color: valid ? "#2E7D32" : "#999", fontSize: 14 }}>
+                  {rule.label}
+                </Text>
               </View>
             );
           })}
         </View>
+
         <TouchableOpacity
           style={[
             styles.button,
-            { backgroundColor: allValid ? "#0E011A" : "#ccc" },
+            { backgroundColor: allValid && !isSubmitting ? "#0E011A" : "#ccc" },
           ]}
-          disabled={!allValid}
-          onPress={() => console.log("Compte créé")}
+          disabled={!allValid || isSubmitting}
+          onPress={handleRegister}
         >
-          <Text style={styles.buttonText}>Créer un compte</Text>
+          {isSubmitting ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.buttonText}>Créer un compte</Text>
+          )}
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={styles.forgotPassword}>J'ai déjà mon compte</Text>
+
+        <TouchableOpacity onPress={handleGoBack}>
+          <Text style={styles.forgotPassword}>Modifier mes informations</Text>
         </TouchableOpacity>
+
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
           <Text style={styles.separatorText}>Ou</Text>
           <View style={styles.line} />
         </View>
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#F7F6F5", flexDirection: "row", alignItems: "center", justifyContent: "center" }]}>
-          <Image
-            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/800px-Google_Favicon_2025.svg.png" }}
-          />
+
+        <TouchableOpacity 
+          style={[styles.button, styles.googleButton]}
+          disabled={isSubmitting}
+        >
           <Image
             source={require("../../assets/images/google-logo.png")}
             style={{ width: 20, height: 20, marginRight: 10 }}
           />
           <Text style={[styles.buttonText, { color: "black" }]}>
-            Se connecter avec Google
+            S'inscrire avec Google
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -125,11 +169,11 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#fff",
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   image: {
     width: "100%",
-    height: 400,
+    height: 350,
     resizeMode: "contain",
   },
   title: {
@@ -157,12 +201,15 @@ const styles = StyleSheet.create({
   rulesContainer: {
     width: "90%",
     alignSelf: "center",
-    marginBottom: 20,
+    marginBottom: 30,
+    backgroundColor: "#F9F9F9",
+    padding: 15,
+    borderRadius: 8,
   },
   ruleItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 4,
+    marginVertical: 5,
   },
   button: {
     backgroundColor: "#0E011A",
@@ -171,6 +218,8 @@ const styles = StyleSheet.create({
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
+    height: 60,
+    justifyContent: "center"
   },
   buttonText: {
     color: "white",
@@ -186,7 +235,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     paddingRight: 10,
-    marginBottom: 12,
+    marginBottom: 20,
     alignSelf: "center",
   },
   eyeButton: {
@@ -194,10 +243,10 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     color: "#B8B4B1",
-    textAlign: "right",
+    textAlign: "center",
+    marginTop: 10,
     marginBottom: 12,
     textDecorationLine: "underline",
-    paddingRight: 20,
   },
   separatorContainer: {
     flexDirection: "row",
@@ -209,7 +258,7 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: "#ccc",
+    backgroundColor: "#eee",
   },
   separatorText: {
     marginHorizontal: 10,
@@ -217,4 +266,12 @@ const styles = StyleSheet.create({
     color: "#999",
     fontWeight: "500",
   },
+  googleButton: {
+    backgroundColor: "#F7F6F5", 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#eee"
+  }
 });

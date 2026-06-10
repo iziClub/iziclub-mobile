@@ -9,6 +9,7 @@ import {
   Alert,
   Platform,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useRouter, useGlobalSearchParams } from "expo-router";
@@ -21,6 +22,10 @@ import { getClubById } from "@/services/clubs.service";
 import { getEventById } from "@/services/events.service";
 import { Club } from "@/types/club";
 import { mapClubToSearchItem } from "@/mappers/club.mapper";
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import SocialShareModal, { ShareableItem } from "@/components/SocialShareModal";
+import EngagementBar from "@/components/EngagementBar";
+
 
 // type Event = {
 //   id: string;
@@ -189,6 +194,24 @@ const formatEventDate = (dateString: string | null) => {
   }).format(date); // Exemple: "16 avril"
 };
 
+const openNavigation = (street: string, city: string) => {
+  const address = `${street}, ${city}`;
+  const url = Platform.select({
+    ios: `maps:0,0?q=${address}`,
+    android: `geo:0,0?q=${address}`,
+  });
+
+  if (url) {
+    Linking.canOpenURL(url).then((supported) => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        Alert.alert("Erreur", "Impossible d'ouvrir l'application de navigation");
+      }
+    });
+  }
+};
+
 // -------------------
 // Composant principal
 // -------------------
@@ -197,31 +220,17 @@ export default function EventDetailScreen() {
   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
   const [event, setEvent] = useState<Event | null>(null);
   const router = useRouter();
-  // const event: Event = {
-  //   id: eventId,
-  //   name: "Coupe de Moselle CSG vs AS TALANGE",
-  //   description:
-  //     "Un choc local à ne pas manquer : le CSG reçoit l'AS Talange pour un duel décisif en Coupe de Moselle. Venez vibrer et soutenir votre équipe dans cette course vers la qualification !",
-  //   image:
-  //     "https://www.toutchalons.com/images/evenement/16661/affiche/original/FB_IMG_1747667688049.webp",
-  //   date: "2026-03-11",
-  //   startTime: "10:00",
-  //   endTime: "12:00",
-  //   location: "123 Rue Principale, Québec, QC, Canada",
-  //   price: "10€",
-  //   tags: ["Football", "Tournoi", "U18"],
-  //   club: {
-  //     id: "1",
-  //     name: "Club Sportif de Gravelotte",
-  //     image: "https://picsum.photos/seed/avatar1/100",
-  //   }
-  // };
+  const [shareModalVisible, setShareModalVisible] = useState(false);
 
   const [club, setClub] = useState<Club | null>(null);
-
+  const region = {
+    latitude: 49.1191, // Exemple: Metz
+    longitude: 6.1727,
+    latitudeDelta: 0.001,
+    longitudeDelta: 0.05,
+  };
   useEffect(() => {
     const fetchClub = async () => {
-      // console.log("Event ID pour fetch club:", event);
       if (event?.club_id) {
         const clubData = await getClubById(event.club_id);
         setClub(clubData);
@@ -311,20 +320,45 @@ export default function EventDetailScreen() {
 
         {/* LOCALISATION */}
         {event.address.city && event.address.street ? (
-  <View style={styles.infoRow}>
-    <Ionicons name="location-outline" size={22} color="#0E011A" />
-    <Text style={styles.infoText}>
-      {event.address.street}, {event.address.city}
-    </Text>
-  </View>
-) : (
-  <View style={styles.infoRow}>
-    <Ionicons name="location-outline" size={22} color="#0E011A" />
-    <Text style={{...styles.infoText, fontStyle: "italic", color: "#666" }}>
-      Adresse non communiquée pour le moment
-    </Text>
-  </View>
-)}
+          <>
+            <View style={[styles.infoRow, { marginBottom: 10 }]}>
+              <Ionicons name="location-outline" size={22} color="#0E011A" />
+              <Text style={styles.infoText}>
+                {event.address.street}, {event.address.city}
+              </Text>
+            </View>
+
+            {/* LA CARTE */}
+            <View style={styles.mapWrapper}>
+              <MapView
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}
+                initialRegion={region}
+                scrollEnabled={false} // On bloque pour éviter les conflits avec le ScrollView
+                zoomEnabled={false}
+                onPress={() => openNavigation(event.address.street, event.address.city)}
+              >
+                <Marker coordinate={region} pinColor="#1C52D2" />
+              </MapView>
+              
+              {/* BOUTON ITINÉRAIRE SUR LA CARTE */}
+              <TouchableOpacity 
+                style={styles.navOverlayButton}
+                onPress={() => openNavigation(event.address.street, event.address.city)}
+              >
+                <Ionicons name="navigate" size={18} color="white" />
+                <Text style={styles.navOverlayText}>Y aller</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : (
+          <View style={styles.infoRow}>
+            <Ionicons name="location-outline" size={22} color="#0E011A" />
+            <Text style={{...styles.infoText, fontStyle: "italic", color: "#666" }}>
+              Adresse non communiquée
+            </Text>
+          </View>
+        )}
 
         {/* PRIX */}
         <View style={styles.infoRow}>
@@ -332,7 +366,7 @@ export default function EventDetailScreen() {
           <Text style={styles.infoText}>{event.pricing ?? "Non précisé"}</Text>
         </View>
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={[styles.calendarButton, {
           backgroundColor: "#28a745", justifyContent: "center", marginHorizontal: 16,
           marginTop: 20,
@@ -353,7 +387,38 @@ export default function EventDetailScreen() {
       >
         <Ionicons name="share-social-outline" size={20} color="white" />
         <Text style={styles.calendarButtonText}>Partager</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <EngagementBar
+  item={{ id: event.id, kind: "event", name: event.name, imageUrl: event.banner_url }}
+  onCalendarPress={() => confirmAddToCalendar(event)}
+/>
+      <TouchableOpacity        style={[styles.calendarButton, {
+          backgroundColor: "#28a745", justifyContent: "center", marginHorizontal: 16,
+          marginTop: 20,
+          paddingVertical: 16,
+          paddingHorizontal: 12,
+          borderRadius: 12
+        }]}
+  onPress={() => setShareModalVisible(true)}
+>
+  <Ionicons name="share-social-outline" size={20} color="white" />
+  <Text style={styles.calendarButtonText}>Partager</Text>
+</TouchableOpacity>
+<SocialShareModal
+  visible={shareModalVisible}
+  onClose={() => setShareModalVisible(false)}
+  item={{
+    type: "event",
+    name: event.name,
+    description: event.description,
+    location: `${event.address.street}, ${event.address.city}`,
+    imageUrl: event.banner_url,
+    date: event.starts_at,
+    startTime: event.starts_at,
+    endTime: event.ends_at,
+    tags: event.tags,
+  }}
+/>
     </ScrollView>
   );
 }
@@ -362,6 +427,41 @@ export default function EventDetailScreen() {
 // STYLES
 // -------------------
 const styles = StyleSheet.create({
+  mapWrapper: {
+    height: 150,
+    width: "100%",
+    borderRadius: 12,
+    overflow: "hidden",
+    marginTop: 5,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#EEE",
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  navOverlayButton: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    backgroundColor: "#0E011A", // Couleur de ton thème
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  navOverlayText: {
+    color: "white",
+    fontWeight: "bold",
+    marginLeft: 6,
+    fontSize: 12,
+  },
   container: { flex: 1, backgroundColor: "#fff" },
   imageContainer: {
     width: "100%",

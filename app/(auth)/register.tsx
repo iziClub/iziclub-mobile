@@ -10,30 +10,33 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { useAuth } from "../../context/AuthContext";
 import { router } from "expo-router";
 
 export default function RegisterScreen() {
-  const { login } = useAuth();
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-  const handleCreatePassword = async () => {
-    try {
-      router.push("/passwordCreation");
-    } catch (e) {
-      console.error("Login failed", e);
+  const handleNextStep = () => {
+    if (!email || !firstName || !lastName) {
+      alert("Oups ! Il manque des informations pour continuer.");
+      return;
     }
-  };
 
-  const handleForgotPassword = () => {
-    router.push("/forgetPassword");
+    // On passe les données à l'écran de création de mot de passe
+    router.push({
+      pathname: "/passwordCreation",
+      params: { 
+        email: email.toLowerCase().trim(), 
+        first_name: firstName.trim(), 
+        last_name: lastName.trim() 
+      },
+    });
   };
 
   const handleAlreadyAccount = () => {
     router.push("/login");
-  }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -52,45 +55,56 @@ export default function RegisterScreen() {
         />
         <Text style={styles.title}>Inscris-toi</Text>
 
-        <Text style={styles.label}>Nom complet</Text>
+        <Text style={styles.label}>Prénom</Text>
         <TextInput
           style={styles.input}
-          placeholder="Entre ton nom complet"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="none"
+          placeholder="Ton prénom"
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+
+        <Text style={styles.label}>Nom de famille</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ton nom de famille"
+          value={lastName}
+          onChangeText={setLastName}
         />
 
         <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
-          placeholder="Entre ton Email"
+          placeholder="Ton adresse email"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
+          keyboardType="email-address"
         />
 
-        <TouchableOpacity style={[styles.button, { marginTop: 40 }]} onPress={handleCreatePassword}>
+        <TouchableOpacity 
+          style={[styles.button, { marginTop: 30 }]} 
+          onPress={handleNextStep}
+        >
           <Text style={styles.buttonText}>Créer un mot de passe</Text>
         </TouchableOpacity>
+
         <TouchableOpacity onPress={handleAlreadyAccount}>
           <Text style={styles.forgotPassword}>J'ai déjà un compte</Text>
         </TouchableOpacity>
+
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
           <Text style={styles.separatorText}>Ou</Text>
           <View style={styles.line} />
         </View>
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#F7F6F5", flexDirection: "row", alignItems: "center", justifyContent: "center" }]}>
-          <Image
-            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/800px-Google_Favicon_2025.svg.png" }}
-          />
+
+        <TouchableOpacity style={[styles.button, styles.googleButton]}>
           <Image
             source={require("../../assets/images/google-logo.png")}
-            style={{ width: 20, height: 20, marginRight: 10 }}
+            style={styles.googleIcon}
           />
           <Text style={[styles.buttonText, { color: "black" }]}>
-            Se connecter avec Google
+            S'inscrire avec Google
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -102,12 +116,11 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: "#fff",
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   image: {
     width: "100%",
-    height: 400,
-    resizeMode: "contain",
+    height: 350, // Réduit légèrement pour laisser de la place aux nouveaux champs
   },
   title: {
     fontSize: 32,
@@ -145,20 +158,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
   },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "90%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingRight: 10,
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  eyeButton: {
-    paddingHorizontal: 8,
-  },
   forgotPassword: {
     color: "#B8B4B1",
     textAlign: "right",
@@ -183,5 +182,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#999",
     fontWeight: "500",
+  },
+  googleButton: {
+    backgroundColor: "#F7F6F5", 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#eee"
+  },
+  googleIcon: {
+    width: 20, 
+    height: 20, 
+    marginRight: 10 
   }
 });

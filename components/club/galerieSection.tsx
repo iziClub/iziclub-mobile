@@ -1,18 +1,23 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import { Club } from "@/types/club";
+import { Picture } from "@/types/picture";
 
-export default function GalerieSection() {
+interface Props {
+    club: Club;
+}
+
+export default function GalerieSection({club}: Props) {
     return (
         <ScrollView style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Galerie photos</Text>
             <View style={styles.gallery}>
-                            {Array.from({ length: 12 }).map((_, i) => (
-                                <Image
-                                    key={i}
-                                    source={{ uri: `https://picsum.photos/seed/photo${i}/300/300` }}
-                                    style={styles.photo}
-                                />
-                            ))}
+                            {club.gallery.map((picture: Picture) =>(
+                    <Image
+                        key={picture.id}
+                        source={{ uri: picture.url}}
+                        style={styles.photo}/>
+                ))}
                         </View>
         </ScrollView>
         

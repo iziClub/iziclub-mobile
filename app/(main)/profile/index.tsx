@@ -7,6 +7,8 @@ import { useState } from 'react'; // Pour gérer l'ouverture
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { useAuth } from '@/context/AuthContext';
+import GravatarImage from "@/components/profile/GravatarImage"
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -102,17 +104,52 @@ export default function ProfileScreen() {
   { id: '4', title: 'Passés', icon: 'archive', color: '#6D5AD3', path: "/profile/pastEvents" },
 ];
 
+const { user, logout } = useAuth(); // On récupère user et logout
+  
+
+  // --- SI L'UTILISATEUR N'EST PAS CONNECTÉ ---
+  if (!user) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', paddingHorizontal: 30 }]}>
+        <View style={styles.guestContent}>
+          <View style={styles.guestIconCircle}>
+            <Ionicons name="person-outline" size={60} color="#4A78FF" />
+          </View>
+          <Text style={styles.guestTitle}>Rejoins l'aventure !</Text>
+          <Text style={styles.guestSubtitle}>
+            Connecte-toi pour sauvegarder tes clubs favoris, gérer tes documents et accéder à tes pass.
+          </Text>
+          
+          <TouchableOpacity 
+            style={styles.loginButton} 
+            onPress={() => router.push("/(auth)/login")}
+          >
+            <Text style={styles.loginButtonText}>Se connecter</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.registerLink} 
+            onPress={() => router.push("/(auth)/register")}
+          >
+            <Text style={styles.registerLinkText}>Créer un compte</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+  console.log("User in ProfileScreen", user);
   return (
     <View style={[styles.container, { paddingTop: insets.top - 20 }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         
         {/* 1. HEADER PROFIL (Adapté : Plus de matchs/victoires) */}
         <View style={styles.header}>
-          <Image 
-            source={{ uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop' }} 
+          <GravatarImage 
+            email={user.user.email} 
+            size={90} 
             style={styles.avatar} 
           />
-          <Text style={styles.userName}>Thomas Durand</Text>
+          <Text style={styles.userName}>{user.user.first_name} {user.user.last_name}</Text>
           <Text style={styles.userLevel}>Membre depuis Janvier 2024</Text>
           
           <View style={styles.statsContainer}>
@@ -187,31 +224,14 @@ export default function ProfileScreen() {
         <View style={styles.navigationMenu}>
           <Text style={styles.navHeader}>Compte & Sécurité</Text>
           
-          <TouchableOpacity onPress={() => router.push("/login")} style={styles.navButton}>
+          
+          <TouchableOpacity onPress={logout} style={styles.logoutButton}>
             <View style={styles.navButtonContent}>
-              <Ionicons name="log-in-outline" size={20} color="#666" />
-              <Text style={styles.navButtonText}>Connexion</Text>
+              <Ionicons name="log-out-outline" size={20} color="#FF5A5F" />
+              <Text style={[styles.navButtonText, { color: '#FF5A5F' }]}>Déconnexion</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#CCC" />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push("/register")} style={styles.navButton}>
-            <View style={styles.navButtonContent}>
-              <Ionicons name="person-add-outline" size={20} color="#666" />
-              <Text style={styles.navButtonText}>Créer un compte</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#CCC" />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => router.push("/forgetPassword")} style={styles.navButton}>
-            <View style={styles.navButtonContent}>
-              <Ionicons name="lock-closed-outline" size={20} color="#666" />
-              <Text style={styles.navButtonText}>Mot de passe oublié</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#CCC" />
           </TouchableOpacity>
         </View>
-
       </ScrollView>
       <Modal
   animationType="fade"
@@ -508,5 +528,61 @@ modalOverlay: {
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  guestContent: {
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  guestIconCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#F0F4FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  guestTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 10,
+  },
+  guestSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 30,
+  },
+  loginButton: {
+    backgroundColor: '#0E011A',
+    width: '100%',
+    padding: 18,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  loginButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  registerLink: {
+    padding: 10,
+  },
+  registerLinkText: {
+    color: '#4A78FF',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+
+  // Bouton Logout
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    marginTop: 10,
   },
 });

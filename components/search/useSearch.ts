@@ -212,9 +212,6 @@ export const useSearch = (
       // 📍 Position par défaut (Nancy) si mapCoords n'est pas fourni
       const defaultLat = 48.692;
       const defaultLon = 6.184;
-
-      const lat = 48.692;
-      const lon = 6.184;
         
       const params: any = {
   search: query || undefined,
@@ -246,7 +243,7 @@ if (useRadius) {
 
       const mappedClubs = clubsRes.data.map(mapClubToSearchItem);
       const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
-      console.log("mapped events :", mappedEvents);
+      // console.log("mapped events :", mappedEvents);
       setClubs(mappedClubs);
       setEvents(mappedEvents);
     } catch (err) {

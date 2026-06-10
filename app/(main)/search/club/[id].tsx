@@ -9,6 +9,7 @@ import EventSection from "@/components/club/eventSection";
 import GalerieSection from "@/components/club/galerieSection";
 import ContactSection from "@/components/club/contactSection";
 import InformationSection from "@/components/club/informationSection";
+import MembershipSection from "@/components/club/Membership/MembershipSection"
 import { Header } from "@react-navigation/elements";
 import HeaderClubDetails from "@/components/club/headerClubDetails";
 import SelectSection from "@/components/club/selectSection";
@@ -18,40 +19,18 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getEventsByClubId } from "@/services/events.service";
 import { Club, ClubDetailDTO } from "@/types/club";
 import { ClubSearchItem } from "@/components/search/types";
-
-// const MOCK_CLUBS = Array.from({ length: 80 }).map((_, i) => ({
-//     id: (i + 1).toString(),
-//     name: `Club ${i + 1}`,
-//     title: [
-//         "Le cœur du foot mosellan",
-//         "Zen Yoga Paris",
-//         "Fitness & Wellness Lyon",
-//         "Tennis Passion Marseille",
-//         "Crossfit Challenge Bordeaux",
-//     ][i % 5],
-//     description: [
-//         "Venez pratiquer le football dans une ambiance conviviale et dynamique.",
-//         "Retrouvez sérénité et équilibre avec nos cours de yoga.",
-//         "Des installations modernes pour atteindre vos objectifs fitness.",
-//         "Cours de tennis pour tous les niveaux, compétition et loisir.",
-//         "Repoussez vos limites avec nos sessions intenses de Crossfit.",
-//     ][i % 5],
-//     type: ["Fitness", "Football", "Tennis", "Yoga", "Crossfit"][i % 5],
-//     city: ["Paris", "Lyon", "Marseille", "Lille", "Bordeaux"][i % 5],
-//     addressLine1: `${10 + i} rue du Sport`,
-//     imageUrl: `https://picsum.photos/seed/avatar${i}/300/300`,
-//     bannerImageUrl: `https://picsum.photos/seed/banner${i}/600/400`,
-// }));
-
-const SECTIONS = ["Informations", "Événements", "Galerie", "Calendrier", "Contact"];
+import { useAuth } from "../../../../context/AuthContext";
+const SECTIONS = ["Informations", "Événements", "Adhésion","Galerie", "Calendrier", "Contact"];
 
 export default function ClubDetail() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const [activeSection, setActiveSection] = useState(SECTIONS[0]);
     const [isLoading, setIsLoading] = useState(true);
-    // const club = MOCK_CLUBS.find((c) => c.id === id);
     const [club, setClub] = useState<ClubDetailDTO>();
+    const { user } = useAuth()
+
+    const isLoggedIn = !!user;
     useEffect(() => {
         const fetchClubData = async () => {
             if (!id) return;
@@ -61,11 +40,8 @@ export default function ClubDetail() {
                 
                 const eventsFromClub = await getEventsByClubId(id);
                 dataClub.events = eventsFromClub.data; // Ajoute les événements au club
-                // const rawData = { ...dataClub, events: eventsFromClub };
                 const mappedDataClub = mapApiClubToDetail(dataClub);
-                // console.log("Données du club récupérées et mappées:", mappedDataClub);
                 setClub(mappedDataClub);
-                // console.log("Club après setClub:", club);
             } catch (error) {
                 console.error("Erreur lors de la récupération du club:", error);
             } finally {
@@ -103,10 +79,18 @@ export default function ClubDetail() {
                 return (
                     <EventSection events={club.events} />
                 );
+            case "Adhésion":
+                return (
+                    <MembershipSection 
+                        club={club} 
+                        user={user}
+                        isLoggedIn={isLoggedIn} // À remplacer par ton vrai état de connexion (ex: via useAuth)
+                    />
+                );      
 
             case "Galerie":
                 return (
-                    <GalerieSection />
+                    <GalerieSection club={club}/>
                 );
 
             case "Calendrier":
