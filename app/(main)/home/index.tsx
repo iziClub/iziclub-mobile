@@ -52,9 +52,14 @@ const featuredEvents = [
             <Text style={styles.greeting}>Bonjour 👋</Text>
             <Text style={styles.userName}>Prêt à Bouger ?</Text>
           </View>
-          <TouchableOpacity style={styles.profileBadge}>
-            <Ionicons name="notifications-outline" size={24} color="black" />
-          </TouchableOpacity>
+          <TouchableOpacity 
+  style={styles.profileBadge} 
+  onPress={() => router.push("/notifications")}
+>
+  <Ionicons name="notifications-outline" size={24} color="black" />
+  {/* Pastille rouge de notification non lue */}
+  <View style={styles.notificationDot} />
+</TouchableOpacity>
         </View>
 
         {/* 2. RECHERCHE */}
@@ -200,6 +205,17 @@ clubImage: {
     justifyContent: 'center',
     alignItems: 'center',
   },
+  notificationDot: {
+  position: 'absolute',
+  top: 10,
+  right: 12,
+  width: 9,
+  height: 9,
+  borderRadius: 4.5,
+  backgroundColor: '#FF5A5F',
+  borderWidth: 1.5,
+  borderColor: '#F3F3F3',
+},
   searchSection: { paddingHorizontal: 20, marginTop: 20 },
   searchBar: {
     flexDirection: 'row',
