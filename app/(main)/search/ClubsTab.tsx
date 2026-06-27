@@ -38,7 +38,7 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
             <View style={{ width: "49%" }}>
           <Card
             title={item.name}
-            banner={item.image!}
+            banner={item.banner!}
             avatar={item.image!}
             address={`${item.street}, ${item.city}`}
             distance_km={item.distance_km}

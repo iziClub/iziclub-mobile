@@ -2,19 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-
-interface Club {
-    id: string;
-    name: string;
-    title: string;
-    description: string;
-    type: string;
-    city: string;
-    addressLine1: string;
-    imageUrl: string;
-    bannerImageUrl: string;
-    profile_image_url: string;
-}
+import { Club } from "@/types/club";
 
 export default function HeaderClubDetails({ club }: { club: Club }) {
     const router = useRouter();

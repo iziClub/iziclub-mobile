@@ -4,20 +4,21 @@ import Card from "../card";
 import TeamCard from "../teamCard";
 import { Event } from "@/types/event";
 import { Picture } from "@/types/picture";
+import { Club } from "@/types/club";
 
-interface Club {
-    id: string;
-    name: string;
-    title: string;
-    description: string;
-    type: string;
-    city: string;
-    addressLine1: string;
-    imageUrl: string;
-    bannerImageUrl: string;
-    gallery: Picture[];
-    events: Event[];
-}
+// interface Club {
+//     id: string;
+//     name: string;
+//     title: string;
+//     description: string;
+//     type: string;
+//     city: string;
+//     addressLine1: string;
+//     profile_image_url: string;
+//     banner_url: string;
+//     gallery: Picture[];
+//     events: Event[];
+// }
 
 interface Props {
     club: Club;
@@ -32,7 +33,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 paddingBottom: 60,
             }}
         >
-            <Image source={{ uri: club.bannerImageUrl }} style={styles.banner} />
+            <Image source={{ uri: club.banner_url }} style={styles.banner} />
 
             <View style={styles.infoBlock}>
                 <Text style={styles.title}>{club.name}</Text>

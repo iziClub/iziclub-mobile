@@ -20,7 +20,7 @@ import { Club } from "@/types/club";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import SocialShareModal from "@/components/SocialShareModal";
 import EngagementBar from "@/components/EngagementBar";
-import { styles } from "./styles";
+import { styles } from "./_styles";
 
 // -------------------
 // Calendrier

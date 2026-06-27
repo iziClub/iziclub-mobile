@@ -12,6 +12,7 @@ export interface BaseSearchItem {
 export interface ClubSearchItem extends BaseSearchItem {
   type: 'club';
   sport: string | null;
+  banner: string | null;
   // category: string; // ex: "Tennis"
 }
 

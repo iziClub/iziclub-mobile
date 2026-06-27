@@ -14,6 +14,7 @@ import { mapApiClubToDetail } from "@/mappers/club.mapper";
 import { getEventsByClubId } from "@/services/events.service";
 import { ClubDetailDTO } from "@/types/club";
 import { useAuth } from "../../../../context/AuthContext";
+import ImportedClubDetail from "./importClubDetail";
 
 const SECTIONS = ["Informations", "Événements", "Adhésion","Galerie", "Calendrier", "Contact"];
 
@@ -61,6 +62,12 @@ export default function ClubDetail() {
             </View>
         );
     }
+    console.log("Club Detail:", club.banner_url, club.profile_image_url);
+    const isImportedClub = !club.banner_url && !club.profile_image_url;
+
+    if (isImportedClub) {
+        return <ImportedClubDetail club={club} />;
+    }
 
     const renderContent = () => {
         switch (activeSection) {
@@ -100,6 +107,7 @@ export default function ClubDetail() {
     };
 
     return (
+        
         <View style={styles.container}>
             {/* HEADER */}
 

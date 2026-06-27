@@ -41,8 +41,8 @@ export const useSearch = (
         getClubs(params),
         getEvents(params)
       ]);
-
       const mappedClubs = clubsRes.data.map(mapClubToSearchItem);
+      console.log("Mapped Clubs:", mappedClubs);
       const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
       setClubs(mappedClubs);
       setEvents(mappedEvents);
