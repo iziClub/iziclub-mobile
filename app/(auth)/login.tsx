@@ -87,23 +87,6 @@ export default function LoginScreen() {
         <TouchableOpacity onPress={handleCreateAccount}>
           <Text style={styles.forgotPassword}>Pas encore de compte ?</Text>
         </TouchableOpacity>
-        <View style={styles.separatorContainer}>
-          <View style={styles.line} />
-          <Text style={styles.separatorText}>Ou</Text>
-          <View style={styles.line} />
-        </View>
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#F7F6F5", flexDirection: "row", alignItems: "center", justifyContent: "center" }]}>
-          <Image
-            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/800px-Google_Favicon_2025.svg.png" }}
-          />
-          <Image
-            source={require("../../assets/images/google-logo.png")}
-            style={{ width: 20, height: 20, marginRight: 10 }}
-          />
-          <Text style={[styles.buttonText, { color: "black" }]}>
-            Se connecter avec Google
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );
