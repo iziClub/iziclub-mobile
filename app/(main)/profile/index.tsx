@@ -185,6 +185,33 @@ const { user, logout } = useAuth(); // On récupère user et logout
           </View>
         </View>
 
+            {/* NOUVELLE SECTION : MES INSCRIPTIONS */}
+<View style={styles.section}>
+  <View style={styles.sectionHeaderRow}>
+    <Text style={styles.sectionTitle}>Mes inscriptions</Text>
+  </View>
+  
+  <TouchableOpacity 
+    style={styles.inscriptionsCard} 
+    onPress={() => router.push("/profile/inscriptions")}
+  >
+    <View style={styles.inscriptionsLeft}>
+      <View style={[styles.iconCircle, { backgroundColor: '#4A78FF15', marginBottom: 0 }]}>
+        <Ionicons name="document-text-outline" size={22} color="#4A78FF" />
+      </View>
+      <View style={styles.inscriptionsTextContainer}>
+        <Text style={styles.inscriptionsCardTitle}>Suivre mes dossiers</Text>
+        <Text style={styles.inscriptionsCardSubtitle}>Voir l'état de mes demandes d'adhésion</Text>
+      </View>
+    </View>
+    {/* Pastille indiquant des retours ou des dossiers en cours */}
+    <View style={styles.badgeAlert}>
+      <Text style={styles.badgeAlertText}>2</Text>
+      <Ionicons name="chevron-forward" size={16} color="#BBB" style={{ marginLeft: 4 }} />
+    </View>
+  </TouchableOpacity>
+</View>
+
         {/* 3. DOCUMENTS (Certificat, Licence...) */}
         <View style={styles.section}>
   <View style={styles.sectionHeaderRow}>
@@ -223,7 +250,6 @@ const { user, logout } = useAuth(); // On récupère user et logout
         {/* 4. MENU DE NAVIGATION (Paramètres) */}
         <View style={styles.navigationMenu}>
           <Text style={styles.navHeader}>Compte & Sécurité</Text>
-          
           
           <TouchableOpacity onPress={logout} style={styles.logoutButton}>
             <View style={styles.navButtonContent}>
@@ -308,6 +334,22 @@ const { user, logout } = useAuth(); // On récupère user et logout
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFF' },
+  inscriptionsCard: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  backgroundColor: '#F9FAFB',
+  borderRadius: 20,
+  padding: 16,
+  borderWidth: 1,
+  borderColor: '#F0F0F0',
+},
+inscriptionsLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+inscriptionsTextContainer: { marginLeft: 12, flex: 1 },
+inscriptionsCardTitle: { fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
+inscriptionsCardSubtitle: { fontSize: 12, color: '#777', marginTop: 2 },
+badgeAlert: { flexDirection: 'row', alignItems: 'center' },
+badgeAlertText: { backgroundColor: '#FF5A5F', color: 'white', fontSize: 11, fontWeight: 'bold', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10, overflow: 'hidden' },
   header: {
     alignItems: 'center',
     paddingVertical: 4,

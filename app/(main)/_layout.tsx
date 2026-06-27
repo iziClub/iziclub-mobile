@@ -58,6 +58,8 @@ export default function MainLayout() {
 <Tabs.Screen name="profile/savedClubs" options={{ href: null }} />
 <Tabs.Screen name="profile/upcomingEvents" options={{ href: null }} />
 <Tabs.Screen name="profile/pastEvents" options={{ href: null }} />
+<Tabs.Screen name="profile/inscriptions" options={{ href: null }} />
+<Tabs.Screen name="profile/inscription-detail" options={{ href: null }} />
     </Tabs>
   );
 }
