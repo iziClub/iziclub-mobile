@@ -2,30 +2,35 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
 import Card from "../card";
 import TeamCard from "../teamCard";
-import { Event } from "@/types/event";
-import { Picture } from "@/types/picture";
 import { Club } from "@/types/club";
-
-// interface Club {
-//     id: string;
-//     name: string;
-//     title: string;
-//     description: string;
-//     type: string;
-//     city: string;
-//     addressLine1: string;
-//     profile_image_url: string;
-//     banner_url: string;
-//     gallery: Picture[];
-//     events: Event[];
-// }
 
 interface Props {
     club: Club;
     onSeeMore: (section: string) => void;
 }
 
+// Fonction utilitaire pour générer un sous-titre propre selon les données du backend
+const getCategorySubtitle = (gender: string | null, minAge: number | null, maxAge: number | null) => {
+    let genderLabel = "Mixte";
+    if (gender === "male") genderLabel = "Homme";
+    if (gender === "female") genderLabel = "Femme";
+
+    if (minAge && maxAge) {
+        return `${genderLabel} • ${minAge}-${maxAge} ans`;
+    } else if (minAge && !maxAge) {
+        return `${genderLabel} • +${minAge} ans`;
+    } else if (!minAge && maxAge) {
+        return `${genderLabel} • Max ${maxAge} ans`;
+    }
+    return genderLabel;
+};
+
 export default function InformationSection({ club, onSeeMore }: Props) {
+    console.info("Rendering InformationSection with club:", club);
+    
+    // Couleurs par défaut à boucler si le backend renvoie null
+    const defaultColors = ["#D42E2F", "#D85D12", "#F9BC12", "#007AFF", "#28A745", "#6F42C1"];
+
     return (
         <ScrollView
             contentContainerStyle={{
@@ -33,12 +38,15 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 paddingBottom: 60,
             }}
         >
-            <Image source={{ uri: club.banner_url }} style={styles.banner} />
+            <Image source={{ uri: club.profile.bannerPath }} style={styles.banner} />
 
             <View style={styles.infoBlock}>
                 <Text style={styles.title}>{club.name}</Text>
-                <Text style={styles.description}>{club.description}</Text>
+                {club.profile.slogan ? <Text style={styles.subtitle}>{club.profile.slogan}</Text> : null}
+                <Text style={styles.description}>{club.profile.description}</Text>
             </View>
+
+            {/* SECTION ÉVÉNEMENTS */}
             {club.events && club.events.length > 0 && (
                 <>
                     <View style={styles.sectionHeader}>
@@ -70,39 +78,51 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 </>
             )}
 
-            <Text style={styles.bigTitle}>Nos équipes</Text>
+            {/* SECTION ÉQUIPES / CATÉGORIES */}
+            {club.categories && club.categories.length > 0 && (
+                <>
+                    <Text style={styles.bigTitle}>Nos équipes</Text>
+                    <View style={styles.teamContainer}>
+                        {club.categories.map((category, index) => {
+                            // Utilise la couleur du backend ou pioche dans la liste par défaut
+                            const cardColor = category.color || defaultColors[index % defaultColors.length];
+                            const subtitle = getCategorySubtitle(category.gender, category.minAge, category.maxAge);
 
-            <View style={styles.teamContainer}>
-                <View style={styles.teamItem}>
-                    <TeamCard title="Senior M1" color="#D42E2F" subtitle="Régional 3" />
-                </View>
+                            return (
+                                <View key={category.id} style={styles.teamItem}>
+                                    <TeamCard 
+                                        title={category.name} 
+                                        color={cardColor} 
+                                        subtitle={subtitle} 
+                                    />
+                                </View>
+                            );
+                        })}
+                    </View>
+                </>
+            )}
 
-                <View style={styles.teamItem}>
-                    <TeamCard title="Senior M2" color="#D85D12" subtitle="Sénior 2" />
-                </View>
+            {/* SECTION PHOTOS */}
+            {club.gallery && club.gallery.length > 0 && (
+                <>
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.bigTitle}>Nos photos</Text>
+                        <TouchableOpacity onPress={() => onSeeMore("Galerie")}>
+                            <Text style={styles.seeMore}>Voir plus</Text>
+                        </TouchableOpacity>
+                    </View>
 
-                <View style={styles.teamItem}>
-                    <TeamCard title="U15 M1" color="#F9BC12" subtitle="Moselle U15 - D1" />
-                </View>
-            </View>
-
-            <View style={styles.sectionHeader}>
-                <Text style={styles.bigTitle}>Nos photos</Text>
-                <TouchableOpacity onPress={() => onSeeMore("Galerie")}>
-                    <Text style={styles.seeMore}>Voir plus</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.gallery}>
-                {club.gallery.map((picture) => (
-                    <Image
-                        key={picture.id}
-                        source={{ uri: picture.url }}
-                        style={styles.photo} />
-                ))}
-
-            </View>
-
+                    <View style={styles.gallery}>
+                        {club.gallery.slice(0, 6).map((picture) => (
+                <Image
+                    key={picture.id}
+                    source={{ uri: picture.url }}
+                    style={styles.photo} 
+                />
+            ))}
+                    </View>
+                </>
+            )}
         </ScrollView>
     );
 }
@@ -114,13 +134,18 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 16,
     },
-
     infoBlock: {
         marginBottom: 24,
     },
     title: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: "700",
+        marginBottom: 4,
+    },
+    subtitle: {
+        fontSize: 16,
+        color: "#666",
+        fontStyle: "italic",
         marginBottom: 8,
     },
     sectionHeader: {
@@ -131,30 +156,25 @@ const styles = StyleSheet.create({
     },
     seeMore: {
         fontSize: 14,
-        color: "#007AFF", // bleu "clicable"
+        color: "#007AFF",
         fontWeight: "600",
     },
     description: {
         fontSize: 14,
         color: "#555",
+        marginTop: 4,
     },
     bigTitle: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: "600",
         marginBottom: 12,
     },
-    eventsContainer: {
-        paddingRight: 16,
-        marginBottom: 24,
-    },
-
     teamContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
         marginBottom: 24,
     },
-
     teamItem: {
         width: "49%",
         marginBottom: 12,
@@ -165,13 +185,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginBottom: 24,
     },
-
     photo: {
         width: "49%",
         height: 150,
         borderRadius: 12,
         marginBottom: 12,
     },
-
-
 });

@@ -7,12 +7,13 @@ export interface Event {
     latitude: string;
     longitude: string;
     imageUrl: string | undefined;
-    starts_at: string | null;
-    ends_at: string | null;
-    pricing: string | null;
+    startDate: string | null;
+    endDate: string | null;
+    price: string | null;
+    eventDate: string | null;
     distance_km?: number; // en km, optionnel
     tags?: string[]; // ex: ["Tournoi", "Gratuit"]
-    club_id: string;
+    clubId: string;
     address: {
         street: string;
         city: string;

@@ -25,26 +25,26 @@ export const useSearch = (
       const defaultLon = USER_LOCATION.longitude;
 
       const params: any = {
-        search: query || undefined,
+        nameQuery: query || undefined,
         city: city || undefined,
         limit: 20,
         page: 1,
       };
-
-      if (useRadius) {
-        params.latitude = mapCoords?.latitude ?? defaultLat;
-        params.longitude = mapCoords?.longitude ?? defaultLon;
-        params.radius = radius;
-      }
+      params.latitude = mapCoords?.latitude ?? defaultLat;
+      params.longitude = mapCoords?.longitude ?? defaultLon;
+      params.radiusInKm = useRadius ? radius : 500;
+      // if (useRadius) {
+      //   params.radius = radius;
+      // }
 
       const [clubsRes, eventsRes] = await Promise.all([
         getClubs(params),
         getEvents(params)
       ]);
       const mappedClubs = clubsRes.data.map(mapClubToSearchItem);
-      console.log("Mapped Clubs:", mappedClubs);
       const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
       setClubs(mappedClubs);
+      console.log("--Mapped Clubs--:", mappedClubs); // Log the mapped clubs
       setEvents(mappedEvents);
     } catch (err) {
       console.error("Erreur fetch clubs:", err);

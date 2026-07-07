@@ -67,8 +67,8 @@ async function addToCalendar(event: Event) {
 
     await Calendar.createEventAsync(defaultCalendarId, {
       title: event.name,
-      startDate: new Date(`${event.starts_at}`),
-      endDate: new Date(`${event.ends_at}`),
+      startDate: new Date(`${event.startDate}`),
+      endDate: new Date(`${event.endDate}`),
       location: `${event.address.city}, ${event.address.street}`,
       notes: event.description,
     });
@@ -98,9 +98,9 @@ const formatTimeReadable = (dateStr: string) => {
 
 function confirmAddToCalendar(event: Event) {
   // Préparation des strings formatées
-  const dateEvent = formatDateReadable(event.starts_at || "");
-  const heureDebut = formatTimeReadable(event.starts_at || "");
-  const heureFin = formatTimeReadable(event.ends_at || "");
+  const dateEvent = formatDateReadable(event.eventDate || "");
+  const heureDebut = formatTimeReadable(event.startDate || "");
+  const heureFin = formatTimeReadable(event.endDate || "");
 
   Alert.alert(
     "Ajouter au calendrier",
@@ -178,20 +178,21 @@ export default function EventDetailScreen() {
   };
   useEffect(() => {
     const fetchClub = async () => {
-      if (event?.club_id) {
-        const clubData = await getClubById(event.club_id);
-        setClub(clubData);
+      if (event?.clubId) {
+        const clubData = await getClubById(event.clubId);
+        setClub(clubData.data[0]);
       }
     };
 
     fetchClub();
-  }, [event?.club_id]);
+  }, [event?.clubId]);
 
   useEffect(() => {
     const fetchEvent = async () => {
       if (eventId) {
         const eventData = await getEventById(eventId);
         setEvent(eventData);
+        console.log("Event data fetched:", eventData); // Log pour vérifier les données de l'événement
       }
     };
 
@@ -229,10 +230,10 @@ export default function EventDetailScreen() {
 
       <TouchableOpacity
         style={styles.clubContainer}
-        onPress={() => router.push(`/search/club/${event.club_id}`)}
+        onPress={() => router.push(`/search/club/${event.clubId}`)}
       >
-        {club?.profile_image_url && (
-          <Image source={{ uri: club.profile_image_url }} style={styles.clubImage} />
+        {club?.profile.profileImagePath != undefined && (
+          <Image source={{ uri: club.profile.profileImagePath }} style={styles.clubImage} />
         )}
         <Text style={styles.clubName}>Publié par {club?.name}</Text>
       </TouchableOpacity>
@@ -247,10 +248,10 @@ export default function EventDetailScreen() {
         <View style={styles.infoRow}>
           <Ionicons name="time-outline" size={22} color="#0E011A" />
           <Text style={{ ...styles.infoText, flex: 0 }}>
-            Le {formatEventDate(event.starts_at)}
+            Le {formatEventDate(event.eventDate)}
           </Text>
           <Text style={styles.infoText}>
-            {formatEventTime(event.starts_at)} - {formatEventTime(event.ends_at)}
+            {formatEventTime(event.startDate)} - {formatEventTime(event.endDate)}
           </Text>
 
           <TouchableOpacity
@@ -309,7 +310,7 @@ export default function EventDetailScreen() {
         {/* PRIX */}
         <View style={styles.infoRow}>
           <FontAwesome name="eur" size={22} color="#0E011A" />
-          <Text style={styles.infoText}>{event.pricing ?? "Non précisé"}</Text>
+          <Text style={styles.infoText}>{event.price ?? "Non précisé"}</Text>
         </View>
       </View>
 
@@ -338,9 +339,9 @@ export default function EventDetailScreen() {
           description: event.description,
           location: `${event.address.street}, ${event.address.city}`,
           imageUrl: event.banner_url,
-          date: event.starts_at,
-          startTime: event.starts_at,
-          endTime: event.ends_at,
+          date: event.eventDate,
+          startTime: event.startDate,
+          endTime: event.endDate,
           tags: event.tags,
         }}
       />

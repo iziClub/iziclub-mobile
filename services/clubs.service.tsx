@@ -1,57 +1,13 @@
-// import api from "./api";
-// import { MOCK_CLUBS } from "../mocks/club.mocks";
-
-// interface ClubQueryParams {
-//   q?: string;
-//   type?: string;
-//   city?: string;
-//   radius_km?: number;
-//   longitude?: number;
-//   latitude?: number;
-//   per_page?: number;
-//   page?: number;
-// }
-
-// export async function getClubs(params?: ClubQueryParams) {
-//   const res = await api.get("/clubs", { params });
-//   return res.data;
-// }
-
-// // export const getClubById = async (id: number) => {
-// //   await new Promise((r) => setTimeout(r, 500));
-
-// //   return MOCK_CLUBS.find((c) => c.id === id);
-// // };
-
-// const fetchClubs = async () => {
-//   try {
-//     const clubs = await api.get('clubs'); // Pas besoin de .data ici, c'est déjà géré !
-//     console.log(clubs);
-//   } catch (err) {
-//     console.error(err);
-//   }
-// };
-
-// import api from "./api";
-// import { ClubsResponse } from '../types/club';
-
-// export const getClubs = async (): Promise<ClubsResponse> => {
-//   const response = await api.get('/clubs');
-//   return response.data;
-// };
-
-// src/api/clubs.api.ts
-
 import api from "./api";
 import { ClubsResponse } from "../types/club";
 
 interface GetClubsParams {
-  search?: string;
+  nameQuery?: string;
   page?: number;
   limit?: number;
   latitude?: number;
   longitude?: number;
-  radius?: number;
+  radiusInKm?: number;
   city?: string;
 }
 
@@ -61,22 +17,44 @@ export const getClubs = async (
 
   const cleanParams: any = {};
 
-  if (params?.search) cleanParams.search = params.search;
+  if (params?.nameQuery) cleanParams.nameQuery = params.nameQuery;
   if (params?.page) cleanParams.page = params.page.toString();
   if (params?.limit) cleanParams.limit = params.limit.toString();
   if (params?.latitude) cleanParams.latitude = params.latitude.toString();
   if (params?.longitude) cleanParams.longitude = params.longitude.toString();
-  if (params?.radius) cleanParams.radius = params.radius.toString();
+  if (params?.radiusInKm) cleanParams.radiusInKm = params.radiusInKm.toString();
   if (params?.city) cleanParams.city = params.city;
 
   const response = await api.get("/clubs", {
     params: cleanParams,
   });
-
+  console.log("Request params for getClubs:", cleanParams); // Log the request parameters
+  console.log("Response from getClubs:", response.data); // Log the response data
   return response.data;
 };
 
 export const getClubById = async (id: string) => {
-  const response = await api.get(`/clubs/${id}`);
+  const response = await api.get(`/clubs`, {
+    params: { clubId: id },
+  });
+  console.log(`Request params for getClubById (id: ${id}):`, { clubId: id }); // Log the request parameters
+  console.log(`Response from getClubById (id: ${id}):`, response.data); // Log the response data
+  return response.data;
+}
+
+export const getGalleryImagesByClubId = async (clubId: string) => {
+  const response = await api.get(`/clubs/${clubId}/profile/gallery`, {
+    params: { clubId },
+  });
+  return response.data;
+};
+
+export const getCategoryByClubId = async (clubId: string) => {
+  const response = await api.get(`/clubs/${clubId}/categories`);
+  return response.data;
+}
+
+export const getSessionsByClubId = async (clubId: string) => {
+  const response = await api.get(`/clubs/${clubId}/sessions`);
   return response.data;
 }

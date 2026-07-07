@@ -92,13 +92,13 @@ export default function RegisterScreen() {
           <Text style={styles.forgotPassword}>J'ai déjà un compte</Text>
         </TouchableOpacity>
 
-        <View style={styles.separatorContainer}>
+        {/* <View style={styles.separatorContainer}>
           <View style={styles.line} />
           <Text style={styles.separatorText}>Ou</Text>
           <View style={styles.line} />
-        </View>
+        </View> */}
 
-        <TouchableOpacity style={[styles.button, styles.googleButton]}>
+        {/* <TouchableOpacity style={[styles.button, styles.googleButton]}>
           <Image
             source={require("../../assets/images/google-logo.png")}
             style={styles.googleIcon}
@@ -106,7 +106,7 @@ export default function RegisterScreen() {
           <Text style={[styles.buttonText, { color: "black" }]}>
             S'inscrire avec Google
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );

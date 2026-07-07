@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 
 export default function MapScreen() {
   const router = useRouter();
-  
+
   // 1. Position "visuelle" (ce que l'utilisateur regarde actuellement)
   const [region, setRegion] = useState({
     latitude: 48.692,
@@ -40,7 +40,7 @@ export default function MapScreen() {
      * On multiplie par 1.2 (marge de 20%) pour couvrir les coins du rectangle de l'écran.
      */
     const calculatedRadius = Math.round((region.latitudeDelta * 111) / 2 * 1.2);
-    
+
     // Sécurité : minimum 1km, maximum 100km pour ne pas surcharger l'API
     const finalRadius = Math.min(Math.max(calculatedRadius, 1), 1000);
 
@@ -49,7 +49,7 @@ export default function MapScreen() {
       longitude: region.longitude,
       radius: finalRadius,
     });
-    
+
     setShowSearchButton(false);
   };
 
@@ -69,25 +69,25 @@ export default function MapScreen() {
         {clubs.map((club: any) => (
           <Marker
             key={club.id}
-            coordinate={{ 
-              latitude: parseFloat(club.latitude), 
-              longitude: parseFloat(club.longitude) 
+            coordinate={{
+              latitude: parseFloat(club.profile.latitude),
+              longitude: parseFloat(club.profile.longitude)
             }}
           >
             {/* La pastille (Marker) */}
             <View style={styles.markerShadowContainer}>
-      {/* Le Marker visuel à l'intérieur */}
-      <View style={styles.customMarkerVisual}>
-        <Ionicons name="trophy" size={16} color="white" />
-      </View>
-    </View>
+              {/* Le Marker visuel à l'intérieur */}
+              <View style={styles.customMarkerVisual}>
+                <Ionicons name="trophy" size={16} color="white" />
+              </View>
+            </View>
 
             {/* LE CALLOUT (Infos au clic) - Ne pas enlever */}
             <Callout tooltip onPress={() => router.push(`/search/club/${club.id}`)}>
               <View style={styles.calloutWrapper}>
                 <View style={styles.calloutCard}>
                   <Text style={styles.clubTitle} numberOfLines={1}>{club.name}</Text>
-                  
+
                   <View style={styles.divider} />
 
                   <View style={styles.addressRow}>
@@ -96,7 +96,7 @@ export default function MapScreen() {
                       {club.city} {club.street ? `- ${club.street}` : ''}
                     </Text>
                   </View>
-                  
+
                   <Text style={styles.moreInfo}>Voir les détails →</Text>
                 </View>
                 <View style={styles.arrow} />
@@ -108,16 +108,16 @@ export default function MapScreen() {
 
       {/* Bouton "Rechercher ici" avec indicateur de chargement */}
       {showSearchButton && (
-        <TouchableOpacity 
-          style={styles.searchHereBtn} 
+        <TouchableOpacity
+          style={styles.searchHereBtn}
           onPress={handleSearchHere}
           activeOpacity={0.9}
           disabled={loading}
         >
-          <Ionicons 
-            name={loading ? "hourglass-outline" : "refresh"} 
-            size={18} 
-            color="#4A78FF" 
+          <Ionicons
+            name={loading ? "hourglass-outline" : "refresh"}
+            size={18}
+            color="#4A78FF"
           />
           <Text style={styles.searchHereText}>
             {loading ? "Chargement..." : "Rechercher dans cette zone"}
@@ -126,8 +126,8 @@ export default function MapScreen() {
       )}
 
       {/* Bouton Retour Liste */}
-      <TouchableOpacity 
-        style={styles.fabList} 
+      <TouchableOpacity
+        style={styles.fabList}
         onPress={() => router.back()}
         activeOpacity={0.8}
       >
@@ -144,21 +144,21 @@ const styles = StyleSheet.create({
   markerShadowContainer: {
     // Dimensions exactes du marker final (padding + icon size + borders)
     // Ici, basé sur padding 8 + icon 16 + borders 2 ≈ 36-40px
-    width: 36, 
+    width: 36,
     height: 36,
     borderRadius: 18, // Indispensable pour l'ombre arrondie sur Android
     backgroundColor: 'transparent', // Pour ne pas masquer le marker
-    
+
     // Ombre pour iOS (Shadow Props)
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.22,
     shadowRadius: 3.5,
-    
+
     // Ombre pour Android (Elevation)
     // On l'applique sur le container, pas sur le marker lui-même
-    elevation: 6, 
-    
+    elevation: 6,
+
     // Centrage du contenu
     alignItems: 'center',
     justifyContent: 'center',

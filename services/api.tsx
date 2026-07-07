@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://api.iziclub.fr/api/v1/",
+  baseURL: "https://api.dev.iziclub.fr/api/v1/",
   headers: {
     "Content-Type": "application/json",
     Authorization: "Bearer oat_Mg.akRTY2ZUNWJwRE1kcFZuRkxjSjZpUFZBZHBZS3VTQUtYM2t3Q3pMWDE2ODQxNTEyODI",

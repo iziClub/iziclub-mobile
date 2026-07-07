@@ -25,6 +25,9 @@ export default function Card({
   onPress,
   width = "100%",
 }: CardProps) {
+  // console.info("Rendering Card with props:", {
+  //   distance_km, title
+  // });
   return (
     <View style={[styles.card, { width }]}>
       {/* Bannière */}
@@ -60,10 +63,10 @@ export default function Card({
                 </Text>
               </View>
             </View>
-            {distance_km && (
+            {distance_km != undefined && (
               <Text style={styles.address}>à {distance_km} km de vous</Text>
             )}
-            {!distance_km && (
+            {distance_km == undefined && (
               <Text style={styles.address}>Distance indisponible</Text>
             )
             }

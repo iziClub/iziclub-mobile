@@ -1,31 +1,25 @@
 import api from "./api";
 
 export async function loginUser(email: string, password: string) {
-  const response = await api.post("/auth/login", { email, password });
+  const response = await api.post("/login", { email, password });
   if (!response.status) throw new Error("Invalid credentials");
-  // const response = await fetch("http://localhost:3333/api/login", {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ email, password }),
-  // });
 
-  // if (!response.ok) throw new Error("Invalid credentials");
-
-  return response.data;
+  return response.data.data;
 }
 
 export async function registerUser(
-  first_name: string,
-  last_name: string,
+  firstName: string,
+  lastName: string,
   email: string,
   password: string
 ) {
-  
-  const response = await api.post("/auth/register", {
-    first_name, 
-    last_name, 
+  // console.log("Registering user with:", firstName, lastName, email, password);
+  const response = await api.post("/member/register", {
+    firstName, 
+    lastName, 
     email, 
-    password});
+    password,
+    passwordConfirmation: password,})
   if (!response.status) throw new Error("Registration failed");
-  return response.data;
+  return response.data.data;
 }

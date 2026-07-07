@@ -142,13 +142,13 @@ export default function PasswordCreationScreen() {
           <Text style={styles.forgotPassword}>Modifier mes informations</Text>
         </TouchableOpacity>
 
-        <View style={styles.separatorContainer}>
+        {/* <View style={styles.separatorContainer}>
           <View style={styles.line} />
           <Text style={styles.separatorText}>Ou</Text>
           <View style={styles.line} />
-        </View>
+        </View> */}
 
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
           style={[styles.button, styles.googleButton]}
           disabled={isSubmitting}
         >
@@ -159,7 +159,7 @@ export default function PasswordCreationScreen() {
           <Text style={[styles.buttonText, { color: "black" }]}>
             S'inscrire avec Google
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );

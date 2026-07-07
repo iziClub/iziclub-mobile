@@ -50,8 +50,8 @@ export default function ImportedClubDetail({ club }: ImportedClubDetailProps) {
             {/* Section Adresse */}
             <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Adresse</Text>
-                <Text style={styles.addressText}>{club.address.street}</Text>
-                <Text style={styles.subAddressText}>57570 {club.address.city}</Text>
+                <Text style={styles.addressText}>{club.profile.address.street}</Text>
+                <Text style={styles.subAddressText}>57570 {club.profile.address.city}</Text>
             </View>
 
             {/* Section Carte / Navigation */}

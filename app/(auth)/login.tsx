@@ -22,6 +22,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       await login(email, password);
+      router.replace("/(main)/home");
     } catch (e) {
       console.error("Login failed", e);
     }

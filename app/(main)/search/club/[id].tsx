@@ -9,7 +9,7 @@ import InformationSection from "@/components/club/informationSection";
 import MembershipSection from "@/components/club/Membership/MembershipSection"
 import HeaderClubDetails from "@/components/club/headerClubDetails";
 import SelectSection from "@/components/club/selectSection";
-import { getClubById } from "@/services/clubs.service";
+import { getClubById, getGalleryImagesByClubId, getCategoryByClubId, getSessionsByClubId } from "@/services/clubs.service";
 import { mapApiClubToDetail } from "@/mappers/club.mapper";
 import { getEventsByClubId } from "@/services/events.service";
 import { ClubDetailDTO } from "@/types/club";
@@ -32,10 +32,15 @@ export default function ClubDetail() {
             try {
                 setIsLoading(true);
                 const dataClub = await getClubById(id);
-                
                 const eventsFromClub = await getEventsByClubId(id);
-                dataClub.events = eventsFromClub.data; // Ajoute les événements au club
-                const mappedDataClub = mapApiClubToDetail(dataClub);
+                dataClub.data[0].events = eventsFromClub.data; // Ajoute les événements au club
+                const galleryImages = await getGalleryImagesByClubId(id);
+                dataClub.data[0].gallery = galleryImages.data;
+                const categories = await getCategoryByClubId(id);
+                dataClub.data[0].categories = categories.data;
+                const sessions = await getSessionsByClubId(id);
+                dataClub.data[0].sessions = sessions.data;
+                const mappedDataClub = mapApiClubToDetail(dataClub.data[0]);
                 setClub(mappedDataClub);
             } catch (error) {
                 console.error("Erreur lors de la récupération du club:", error);
@@ -62,12 +67,11 @@ export default function ClubDetail() {
             </View>
         );
     }
-    console.log("Club Detail:", club.banner_url, club.profile_image_url);
-    const isImportedClub = !club.banner_url && !club.profile_image_url;
+    const isImportedClub = !club.profile.bannerPath && !club.profile.profileImagePath;
 
-    if (isImportedClub) {
-        return <ImportedClubDetail club={club} />;
-    }
+    // if (isImportedClub) {
+    //     return <ImportedClubDetail club={club} />;
+    // }
 
     const renderContent = () => {
         switch (activeSection) {
@@ -96,7 +100,7 @@ export default function ClubDetail() {
 
             case "Calendrier":
                 return (
-                    <ClubCalendar />
+                    <ClubCalendar sessions={club.sessions} />
                 );
 
             case "Contact":

@@ -114,7 +114,7 @@ export default function ProfileScreen() {
     { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: '#4A78FF', path: "/profile/savedClubs" },
     { id: '3', title: 'À venir', icon: 'calendar', color: '#6D5AD3', path: "/profile/upcomingEvents" },
   ];
-
+  console.log("user", user);
   // --- GUEST VIEW ---
   if (!user) {
     return (

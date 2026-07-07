@@ -17,11 +17,17 @@ export async function getEvents(params?: EventQueryParams) {
 }
 
 export const getEventById = async (id: string) => {
-  const response = await api.get(`/events/${id}`);
-  return response.data;
+  const response = await api.get(`/events`,
+    {
+      params: { eventId: id }
+    }
+  );
+  return response.data.data;
 }
 
 export const getEventsByClubId = async (clubId: string) => {
-  const response = await api.get(`/clubs/${clubId}/events`);
+  const response = await api.get(`/events`, {
+    params: { clubId, longitude: 2.363616001901619, latitude: 48.85712301088664, radius_km: 50 }
+  });
   return response.data;
 }

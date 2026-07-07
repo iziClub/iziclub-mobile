@@ -17,6 +17,7 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
     useEffect(() => {
         setLocalData(data);
     }, [data]);
+    console.info("Données reçues dans ClubsTab:", data);
   return (
     <View style={{flex:1,paddingHorizontal:12,paddingTop:10}}>
       <FlatList
