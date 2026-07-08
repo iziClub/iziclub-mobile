@@ -11,7 +11,8 @@
  */
 
 import { useState, useCallback } from "react";
-
+import { likeEvent, unlikeEvent, saveEvent } from "@/services/events.service";
+import { likeClub, unlikeClub, saveClub } from "@/services/clubs.service";
 // ─────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────
@@ -51,25 +52,38 @@ export function useEngagement(
     likeCount: initial?.likeCount ?? 0,
   });
 
-  const toggleLike = useCallback(() => {
-    setState((prev) => {
-      const next = !prev.liked;
-      // TODO: appel API like/unlike
-      return {
-        ...prev,
-        liked: next,
-        likeCount: prev.likeCount + (next ? 1 : -1),
-      };
+  const toggleLike = useCallback(async () => {
+    const prev = state;
+    const next = !prev.liked;
+    // TODO: appel API like/unlike
+    if (next) {
+      await (item.kind === "event" ? likeEvent(item.id) : likeClub(item.id));
+      console.log(`Liked ${item.kind} with ID: ${item.id}`);
+    } else {
+      await (item.kind === "event" ? unlikeEvent(item.id) : unlikeClub(item.id));
+    }
+    setState({
+      ...prev,
+      liked: next,
+      likeCount: prev.likeCount + (next ? 1 : -1),
     });
-  }, [item.id]);
+  }, [item.id, state]);
 
-  const toggleSave = useCallback(() => {
-    setState((prev) => {
-      const next = !prev.saved;
-      // TODO: appel API save/unsave
-      return { ...prev, saved: next };
+  const toggleSave = useCallback(async () => {
+    const prev = state;
+    const next = !prev.saved;
+    // TODO: appel API save/unsave
+    if (next) {
+      await (item.kind === "event" ? saveEvent(item.id) : saveClub(item.id));
+      console.log(`Saved ${item.kind} with ID: ${item.id}`);
+    } else {
+      // TODO: appel API unsave
+    }
+    setState({
+      ...prev,
+      saved: next
     });
-  }, [item.id]);
+  }, [item.id, state]);
 
   const toggleParticipation = useCallback(() => {
     if (item.kind !== "event") return;

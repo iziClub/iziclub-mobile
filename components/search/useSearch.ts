@@ -7,10 +7,10 @@ import { mapEventToSearchItem } from "@/mappers/event.mapper";
 import { USER_LOCATION } from "./data";
 
 export const useSearch = (
-  query: string,
-  radius: number,
-  useRadius: boolean,
-  city: string,
+  query?: string,
+  radius?: number,
+  useRadius?: boolean,
+  city?: string,
   mapCoords?: { latitude: number; longitude: number }
 ) => {
   const [clubs, setClubs] = useState<ClubSearchItem[]>([]);
@@ -41,10 +41,10 @@ export const useSearch = (
         getClubs(params),
         getEvents(params)
       ]);
+      // console.log("Clubs response:", clubsRes, params);
       const mappedClubs = clubsRes.data.map(mapClubToSearchItem);
       const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
       setClubs(mappedClubs);
-      console.log("--Mapped Clubs--:", mappedClubs); // Log the mapped clubs
       setEvents(mappedEvents);
     } catch (err) {
       console.error("Erreur fetch clubs:", err);

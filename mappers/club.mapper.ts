@@ -2,7 +2,7 @@ import { Club, ClubDetailDTO } from "../types/club";
 import { ClubSearchItem } from "@/components/search/types";
 
 export const mapClubToSearchItem = (club: Club): ClubSearchItem => {
-  console.log("Mapping club to search item:", club); // Log the club object being mapped
+  // console.log("Mapping club to search item:", club); // Log the club object being mapped
   return {
     id: club.id,
     name: club.name,
@@ -19,7 +19,7 @@ export const mapClubToSearchItem = (club: Club): ClubSearchItem => {
 };
 
 export const mapApiClubToDetail = (apiClub: ClubDetailDTO) : Club => {
-  console.info("Mapping API club to detail:", apiClub); // Log the API club object being mapped
+  // console.info("Mapping API club to detail:", apiClub); // Log the API club object being mapped
   return {
     id: apiClub.id,
     name: apiClub.name || "Club sans nom",

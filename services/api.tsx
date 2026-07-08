@@ -1,22 +1,32 @@
 import axios from "axios";
+import { tokenStorage } from "./tokenStorage";
 
 const api = axios.create({
   baseURL: "https://api.dev.iziclub.fr/api/v1/",
   headers: {
     "Content-Type": "application/json",
-    Authorization: "Bearer oat_Mg.akRTY2ZUNWJwRE1kcFZuRkxjSjZpUFZBZHBZS3VTQUtYM2t3Q3pMWDE2ODQxNTEyODI",
   },
 });
 
-api.interceptors.request.use((config) => {
-  console.log("➡️ REQUEST:");
-  console.log("URL:", config.url);
-  console.log("METHOD:", config.method);
-  console.log("PARAMS:", config.params);
-  // console.log("HEADERS:", config.headers);
-  // // console.log("DATA:", config.data);
+api.interceptors.request.use(
+  async (config) => {
+    // 1. Récupère le token dynamiquement depuis le stockage persistant
+    const token = await tokenStorage.getToken();
 
-  return config;
-});
+    // 2. Si le token existe, on l'ajoute au header Authorization
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    console.log("➡️ REQUEST:", config.method?.toUpperCase(), config.url);
+    console.log("URL:", config.url);
+    console.log("METHOD:", config.method);
+    console.log("PARAMS:", config.params);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default api;

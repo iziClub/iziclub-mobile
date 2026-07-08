@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,16 +8,15 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAuth } from '@/context/AuthContext';
 import GravatarImage from "@/components/profile/GravatarImage";
+import {getCurrentUser} from "@/services/auth";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
-
+  const [userInfo, setUserInfo] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<{title: string, type: 'qr' | 'doc'} | null>(null);
-  
-  // Compteur fictif de messages non lus (ex: 3 messages non lus)
-  const [unreadMessagesCount] = useState(3);
+    const [unreadMessagesCount] = useState(3);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['40%'], []);
@@ -26,6 +25,21 @@ export default function ProfileScreen() {
     (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
     []
   );
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const data = await getCurrentUser();
+        console.log("Fetched user info:", data);
+        setUserInfo(data);
+        console.log("userInfo state updated:", userInfo);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des informations utilisateur:", error);
+      }
+    };
+    fetchUserInfo();
+    console.log("userInfo après fetch:", userInfo);
+  }, []);
 
   const openDoc = (title: string, type: 'qr' | 'doc') => {
     setSelectedDoc({ title, type });
@@ -106,12 +120,12 @@ export default function ProfileScreen() {
     },
     { 
       id: '1', 
-      title: 'Événements likés', 
+      title: 'Elements likés', 
       icon: 'heart', 
       color: '#FF5A5F', 
-      path: "/profile/likedEvents"
+      path: "/profile/likedItems"
     },
-    { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: '#4A78FF', path: "/profile/savedClubs" },
+    { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: '#4A78FF', path: "/profile/savedItems" },
     { id: '3', title: 'À venir', icon: 'calendar', color: '#6D5AD3', path: "/profile/upcomingEvents" },
   ];
   console.log("user", user);
@@ -147,7 +161,7 @@ export default function ProfileScreen() {
         {/* 1. HEADER PROFIL */}
         <View style={styles.header}>
           <GravatarImage email={user.user.email} size={90} style={styles.avatar} />
-          <Text style={styles.userName}>{user.user.first_name} {user.user.last_name}</Text>
+          <Text style={styles.userName}>{userInfo?.firstName} {userInfo?.lastName}</Text>
           <Text style={styles.userLevel}>Membre depuis Janvier 2024</Text>
           
           <View style={styles.statsContainer}>

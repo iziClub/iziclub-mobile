@@ -31,3 +31,34 @@ export const getEventsByClubId = async (clubId: string) => {
   });
   return response.data;
 }
+
+export const likeEvent = async (eventId: string) => {
+  const response = await api.post(`/events/${eventId}/like`);
+  return response.data;
+}
+
+export const unlikeEvent = async (eventId: string) => {
+  const response = await api.delete(`/events/${eventId}/like`);
+  return response.data;
+}
+
+export const saveEvent = async (eventId: string) => {
+  const response = await api.post(`/events/${eventId}/save`);
+  return response.data;
+}
+
+export const unsaveEvent = async (eventId: string) => {
+  const response = await api.delete(`/events/${eventId}/save`);
+  return response.data;
+}
+
+export const getLikedEvents = async () => {
+  const response = await api.get(`/events/likes/user`);
+  console.log("Response from getLikedEvents:", response.data); // Log the response data
+  return response.data;
+}
+
+export const getSavedEvents = async () => {
+  const response = await api.get(`/events/saves/user`);
+  return response.data;
+}

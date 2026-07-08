@@ -58,3 +58,34 @@ export const getSessionsByClubId = async (clubId: string) => {
   const response = await api.get(`/clubs/${clubId}/sessions`);
   return response.data;
 }
+
+export const likeClub = async (clubId: string) => {
+  const response = await api.post(`/clubs/${clubId}/like`);
+  return response.data;
+}
+
+export const unlikeClub = async (clubId: string) => {
+  const response = await api.delete(`/clubs/${clubId}/like`);
+  return response.data;
+}
+
+export const saveClub = async (clubId: string) => {
+  const response = await api.post(`/clubs/${clubId}/save`);
+  return response.data;
+}
+
+export const unsaveClub = async (clubId: string) => {
+  const response = await api.delete(`/clubs/${clubId}/save`);
+  return response.data;
+}
+
+export const getSavedClubs = async () => {
+  const response = await api.get(`/clubs/saves/user`);
+  return response.data;
+}
+
+export const getLikedClubs = async () => {
+  const response = await api.get(`/clubs/likes/user`);
+  console.log("Response from getLikedClubs:", response.data); // Log the response data
+  return response.data;
+}
