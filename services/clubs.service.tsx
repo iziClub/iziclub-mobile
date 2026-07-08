@@ -49,6 +49,13 @@ export const getGalleryImagesByClubId = async (clubId: string) => {
   return response.data;
 };
 
+
+export const getLikedClubs = async () => {
+  const response = await api.get(`/clubs/likes/user`);
+  console.log("Response from getLikedClubs:", response.data); // Log the response data
+  return response.data;
+}
+
 export const getCategoryByClubId = async (clubId: string) => {
   const response = await api.get(`/clubs/${clubId}/categories`);
   return response.data;
@@ -81,11 +88,5 @@ export const unsaveClub = async (clubId: string) => {
 
 export const getSavedClubs = async () => {
   const response = await api.get(`/clubs/saves/user`);
-  return response.data;
-}
-
-export const getLikedClubs = async () => {
-  const response = await api.get(`/clubs/likes/user`);
-  console.log("Response from getLikedClubs:", response.data); // Log the response data
   return response.data;
 }

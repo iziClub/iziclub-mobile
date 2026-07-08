@@ -58,4 +58,5 @@ export const useSearch = (
   }, [query, radius, useRadius, city, mapCoords?.latitude, mapCoords?.longitude]);
 
   return { clubs, events, loading, refresh: fetchData };
+  return { clubs, events, loading, refresh: fetchData };
 };
