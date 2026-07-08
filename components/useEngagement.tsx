@@ -58,7 +58,6 @@ export function useEngagement(
     // TODO: appel API like/unlike
     if (next) {
       await (item.kind === "event" ? likeEvent(item.id) : likeClub(item.id));
-      console.log(`Liked ${item.kind} with ID: ${item.id}`);
     } else {
       await (item.kind === "event" ? unlikeEvent(item.id) : unlikeClub(item.id));
     }
@@ -75,7 +74,6 @@ export function useEngagement(
     // TODO: appel API save/unsave
     if (next) {
       await (item.kind === "event" ? saveEvent(item.id) : saveClub(item.id));
-      console.log(`Saved ${item.kind} with ID: ${item.id}`);
     } else {
       // TODO: appel API unsave
     }

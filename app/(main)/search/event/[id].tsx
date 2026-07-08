@@ -192,7 +192,6 @@ export default function EventDetailScreen() {
       if (eventId) {
         const eventData = await getEventById(eventId);
         setEvent(eventData);
-        console.log("Event data fetched:", eventData); // Log pour vérifier les données de l'événement
       }
     };
 

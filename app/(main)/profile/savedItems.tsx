@@ -55,7 +55,6 @@ export default function SavedItemsScreen() {
       } else {
         const response = await getSavedClubs();
         const rawSaves = response?.data || response || [];
-        console.log("Raw saved clubs:", rawSaves);
         if (rawSaves.length === 0) {
           setClubs([]);
           return;
@@ -85,7 +84,6 @@ const detailPromises = rawSaves.map(async (save: any) => {
 });
 
         const resolvedClubs = await Promise.all(detailPromises);
-        console.log("Resolved saved clubs:", resolvedClubs);
         setClubs(resolvedClubs.filter(item => item !== null));
       }
     } catch (error) {
@@ -116,14 +114,11 @@ const detailPromises = rawSaves.map(async (save: any) => {
 
   // Rendu des cartes horizontales (Style épuré de ton application)
   const renderItem = ({ item }: { item: any }) => {
-    console.log("--------EVENTS", events);
-    console.log("--------CLUBS", clubs);
     const isEvent = activeTab === 'events';
     const title = item.name || item.title;
     const imageSource = item.image || item.imageUrl || (isEvent 
       ? 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=300&auto=format&fit=crop'
       : 'https://images.unsplash.com/photo-1595435066359-6286386735b2?q=80&w=300&auto=format&fit=crop');
-    console.log("Rendering item:", item, "\nisEvent:", isEvent, "\ntitle:", title, "\nimageSource:", imageSource);
     return (
       <TouchableOpacity 
         style={styles.clubCard} 

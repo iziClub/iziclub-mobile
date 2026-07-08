@@ -30,15 +30,12 @@ export default function ProfileScreen() {
     const fetchUserInfo = async () => {
       try {
         const data = await getCurrentUser();
-        console.log("Fetched user info:", data);
         setUserInfo(data);
-        console.log("userInfo state updated:", userInfo);
       } catch (error) {
         console.error("Erreur lors de la récupération des informations utilisateur:", error);
       }
     };
     fetchUserInfo();
-    console.log("userInfo après fetch:", userInfo);
   }, []);
 
   const openDoc = (title: string, type: 'qr' | 'doc') => {
@@ -128,7 +125,6 @@ export default function ProfileScreen() {
     { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: '#4A78FF', path: "/profile/savedItems" },
     { id: '3', title: 'À venir', icon: 'calendar', color: '#6D5AD3', path: "/profile/upcomingEvents" },
   ];
-  console.log("user", user);
   // --- GUEST VIEW ---
   if (!user) {
     return (

@@ -144,7 +144,6 @@ export default function LikedItemsScreen() {
   const renderItem = ({ item }: { item: any }) => {
     const isEvent = activeTab === 'events';
     const title = item.name || item.title;
-    console.log("Rendering item:", item); // Log pour vérifier les données de l'item
     // Fallback d'image si ton API ne renvoie pas d'image valide pour le moment
     const imageSource = item.image || item.imageUrl || (isEvent 
       ? 'https://images.unsplash.com/photo-1595435066359-6286386735b2?q=80&w=800&auto=format&fit=crop'
