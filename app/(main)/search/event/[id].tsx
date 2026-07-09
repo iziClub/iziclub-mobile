@@ -15,7 +15,7 @@ import { useRouter, useGlobalSearchParams } from "expo-router";
 import * as Calendar from "expo-calendar";
 import { Event } from "@/types/event";
 import { getClubById } from "@/services/clubs.service";
-import { getEventById } from "@/services/events.service";
+import { getEventById, getEventsLikeCount, getEventStatus } from "@/services/events.service";
 import { Club } from "@/types/club";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import SocialShareModal from "@/components/SocialShareModal";
@@ -191,6 +191,10 @@ export default function EventDetailScreen() {
     const fetchEvent = async () => {
       if (eventId) {
         const eventData = await getEventById(eventId);
+        const eventStatus = await getEventStatus(eventId); // Récupère le statut de l'événement
+        eventData.status = eventStatus;
+        const eventLikeCount = await getEventsLikeCount(eventId); // Récupère le nombre de likes
+        eventData.status.countLikes = eventLikeCount;
         setEvent(eventData);
       }
     };
@@ -315,7 +319,10 @@ export default function EventDetailScreen() {
 
       <EngagementBar
         item={{ id: event.id, kind: "event", name: event.name, imageUrl: event.banner_url }}
-        onCalendarPress={() => confirmAddToCalendar(event)}
+        initialLiked={event.status?.isLiked ?? false}
+        initialSaved={event.status?.isSaved ?? false}
+        initialParticipating={event.status?.isParticipating ?? false}
+        initialLikeCount={event.status?.countLikes ?? 0}
       />
       <TouchableOpacity style={[styles.calendarButton, {
         backgroundColor: "#28a745", justifyContent: "center", marginHorizontal: 16,

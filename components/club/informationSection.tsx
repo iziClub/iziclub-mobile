@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "rea
 import Card from "../card";
 import TeamCard from "../teamCard";
 import { Club } from "@/types/club";
+import { useRouter } from "expo-router";
 
 interface Props {
     club: Club;
@@ -26,11 +27,11 @@ const getCategorySubtitle = (gender: string | null, minAge: number | null, maxAg
 };
 
 export default function InformationSection({ club, onSeeMore }: Props) {
-    console.info("Rendering InformationSection with club:", club);
+    // console.info("Rendering InformationSection with club:", club);
     
     // Couleurs par défaut à boucler si le backend renvoie null
     const defaultColors = ["#D42E2F", "#D85D12", "#F9BC12", "#007AFF", "#28A745", "#6F42C1"];
-
+    const router = useRouter();
     return (
         <ScrollView
             contentContainerStyle={{
@@ -70,7 +71,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                                 distance_km={event.distance_km}
                                 tags={[event.sport || "Sport non précisé", event.type]}
                                 type="event"
-                                onPress={() => onSeeMore("Événements")}
+                                onPress={() => router.push(`/search/event/${event.id}`) }
                                 width={220}
                             />
                         ))}

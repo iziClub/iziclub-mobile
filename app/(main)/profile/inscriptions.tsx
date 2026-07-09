@@ -1,23 +1,48 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getAllSubmissions } from '@/services/forms.service';
 
-// Type pour structurer l'état des inscriptions
 export type InscriptionStatus = 'approved' | 'rejected' | 'pending_info' | 'submitted';
 
 export default function InscriptionsListScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const [inscriptions, setInscriptions] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // Loader UX
 
-  // Mock de données
-  const mockInscriptions = [
-    { id: '1', clubName: 'Tennis Club Nancy', date: '14 Juin 2026', status: 'pending_info' as InscriptionStatus, statusLabel: "Attente d'infos", clubComment: "Le certificat médical fourni n'est pas daté de moins de 3 mois." },
-    { id: '2', clubName: 'Metz Handball Association', date: '10 Juin 2026', status: 'submitted' as InscriptionStatus, statusLabel: 'En cours d\'examen', clubComment: '' },
-    { id: '3', clubName: 'AS Nancy Lorraine Football', date: '01 Mai 2026', status: 'approved' as InscriptionStatus, statusLabel: 'Validé', clubComment: 'Bienvenue au club ! Ta carte de membre virtuelle est disponible.' },
-    { id: '4', clubName: 'Yoga Zen Studio', date: '15 Avril 2026', status: 'rejected' as InscriptionStatus, statusLabel: 'Refusé', clubComment: 'Section complète pour cette saison. Remboursement en cours.' },
-  ];
+  // 💡 Remplacement de useEffect par useFocusEffect pour re-déclencher à chaque focus de la page
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSubmissions = async () => {
+        try {
+          setLoading(true);
+          const submissions = await getAllSubmissions();
+          setInscriptions(submissions.data.submissions || []);
+        } catch (error) {
+          console.error("Erreur lors de la récupération des inscriptions :", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchSubmissions();
+    }, [])
+  );
+
+  const formatDate = (dateString: string | number) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const formatTime = (dateString: string | number) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  };
 
   const getStatusStyle = (status: InscriptionStatus) => {
     switch (status) {
@@ -29,7 +54,7 @@ export default function InscriptionsListScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container]}>
       {/* HEADER BAR */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.replace("/profile")}>
@@ -39,40 +64,61 @@ export default function InscriptionsListScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {mockInscriptions.map((item) => {
-          const ui = getStatusStyle(item.status);
-          return (
-            <TouchableOpacity 
-              key={item.id} 
-              style={styles.card}
-              onPress={() => router.push({
-                pathname: "/profile/inscription-detail",
-                params: { id: item.id, clubName: item.clubName, status: item.status, date: item.date, comment: item.clubComment }
-              })}
-            >
-              <View style={styles.cardHeader}>
-                <Text style={styles.clubName}>{item.clubName}</Text>
-                <Ionicons name="chevron-forward" size={18} color="#CCC" />
-              </View>
-              
-              <Text style={styles.dateText}>Demande envoyée le {item.date}</Text>
-
-              <View style={styles.footerRow}>
-                <View style={[styles.statusBadge, { backgroundColor: ui.bg }]}>
-                  <Ionicons name={ui.icon as any} size={14} color={ui.text} style={{ marginRight: 6 }} />
-                  <Text style={[styles.statusText, { color: ui.text }]}>{item.statusLabel}</Text>
+      {loading ? (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#4A78FF" />
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          {inscriptions.map((item) => {
+            const ui = getStatusStyle(item.status);
+            return (
+              <TouchableOpacity 
+                key={item.id} 
+                style={styles.card}
+                onPress={() => router.push({
+                  pathname: "/profile/inscription-detail",
+                  params: { 
+                    id: item.id, 
+                    clubName: item.clubName, 
+                    status: item.status, 
+                    date: item.submittedAt, // Formaté directement pour la bannière du détail
+                    comment: item.requestedInfo, 
+                    formId: item.formId,
+                    // 💡 Ajout crucial pour ton écran détail : on sérialise le tableau en string
+                    answers: JSON.stringify(item.answers || []) 
+                  }
+                })}
+              >
+                <View style={styles.cardHeader}>
+                  <Text style={styles.clubName}>{item.clubName}</Text>
+                  <Ionicons name="chevron-forward" size={18} color="#CCC" />
                 </View>
                 
-                {/* Alerte textuelle rapide si action requise */}
-                {item.status === 'pending_info' && (
-                  <Text style={styles.actionRequiredText}>Action requise</Text>
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+                <Text style={styles.dateText}>Demande envoyée le {formatDate(item.submittedAt)} à {formatTime(item.submittedAt)}</Text>
+
+                <View style={styles.footerRow}>
+                  <View style={[styles.statusBadge, { backgroundColor: ui.bg }]}>
+                    <Ionicons name={ui.icon as any} size={14} color={ui.text} style={{ marginRight: 6 }} />
+                    <Text style={[styles.statusText, { color: ui.text }]}>{item.status}</Text>
+                  </View>
+                  
+                  {item.status === 'pending_info' && (
+                    <Text style={styles.actionRequiredText}>Action requise</Text>
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+
+          {inscriptions.length === 0 && (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="document-text-outline" size={48} color="#CCC" />
+              <Text style={styles.emptyText}>Aucune inscription enregistrée.</Text>
+            </View>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -90,5 +136,8 @@ const styles = StyleSheet.create({
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   statusBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 },
   statusText: { fontSize: 12, fontWeight: '600' },
-  actionRequiredText: { fontSize: 12, fontWeight: '700', color: '#EF6C00' }
+  actionRequiredText: { fontSize: 12, fontWeight: '700', color: '#EF6C00' },
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyContainer: { alignItems: 'center', marginTop: 100 },
+  emptyText: { color: '#999', marginTop: 10, fontSize: 14 }
 });

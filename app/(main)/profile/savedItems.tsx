@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Image, ActivityIndicator, Dimensions } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -93,11 +93,12 @@ const detailPromises = rawSaves.map(async (save: any) => {
     }
   };
 
-  useEffect(() => {
+useFocusEffect(
+  useCallback(() => {
     fetchSavedItems();
-  }, [activeTab]);
+  }, [activeTab])
+);
 
-  // Action de suppression de la sauvegarde (Unsave)
   const handleUnsave = async (id: string, type: TabType) => {
     try {
       if (type === 'events') {
@@ -139,12 +140,12 @@ const detailPromises = rawSaves.map(async (save: any) => {
           </View>
           
           <View style={styles.footerRow}>
-            <View style={styles.ratingBox}>
+            {/* <View style={styles.ratingBox}>
               <Ionicons name={isEvent ? "flash" : "star"} size={12} color={isEvent ? "#FF6B6B" : "#FFB900"} />
               <Text style={[styles.ratingText, { color: isEvent ? "#FF6B6B" : "#FFB900" }]}>
                 {isEvent ? (item.type || 'Événement') : (item.rating || '4.5')}
               </Text>
-            </View>
+            </View> */}
             
             {/* Icône de marque-page cliqué */}
             <TouchableOpacity 

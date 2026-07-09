@@ -12,6 +12,7 @@ type Props = {
 };
 
 export default function ProfileCard({ user }: Props) {
+  // console.info("Rendering ProfileCard with user:", user);
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -26,22 +27,16 @@ export default function ProfileCard({ user }: Props) {
       </View>
 
       <Text style={styles.infoText}>
-        Prénom : {user?.user?.first_name || "N/A"}
+        Prénom : {user?.firstName || "N/A"}
       </Text>
 
       <Text style={styles.infoText}>
-        Nom : {user?.user?.last_name || "N/A"}
+        Nom : {user?.lastName || "N/A"}
       </Text>
 
       <Text style={styles.infoText}>
-        Email : {user?.user?.email || "N/A"}
+        Email : {user?.email || "N/A"}
       </Text>
-
-      <TouchableOpacity style={styles.editProfile}>
-        <Text style={styles.editProfileText}>
-          Modifier dans mon profil
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 }

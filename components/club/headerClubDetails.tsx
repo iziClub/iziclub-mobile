@@ -20,8 +20,8 @@ export default function HeaderClubDetails({
   const router = useRouter();
 
   // États locaux pour gérer le Like et le Save
-  const [isLiked, setIsLiked] = useState<boolean>(initialIsLiked);
-  const [isSaved, setIsSaved] = useState<boolean>(initialIsSaved);
+  const [isLiked, setIsLiked] = useState<boolean>(club.status?.isLiked ?? initialIsLiked);
+  const [isSaved, setIsSaved] = useState<boolean>(club.status?.isSaved ?? initialIsSaved);
 
   // Loaders individuels pour éviter les double-clics pendant la requête
   const [loadingLike, setLoadingLike] = useState<boolean>(false);

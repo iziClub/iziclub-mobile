@@ -19,4 +19,10 @@ export interface Event {
         city: string;
     }
     banner_url: string;
+    status?: {
+        isLiked: boolean;
+        isSaved: boolean;
+        isParticipating: boolean;
+        countLikes: number; // Ajout du nombre de likes
+    }
 }

@@ -62,3 +62,28 @@ export const getSavedEvents = async () => {
   const response = await api.get(`/events/saves/user`);
   return response.data;
 }
+
+export const getEventStatus = async (eventId: string) => {
+  const response = await api.get(`/events/${eventId}/status`);
+  return response.data;
+}
+
+export const getEventsLikeCount = async (eventId: string) => {
+  const response = await api.get(`/events/${eventId}/likes/count`);
+  return response.data;
+}
+
+export const participateInEvent = async (eventId: string) => {
+  const response = await api.post(`/events/${eventId}/participate`);
+  return response.data;
+}
+
+export const unparticipateInEvent = async (eventId: string) => {
+  const response = await api.delete(`/events/${eventId}/participate`);
+  return response.data;
+}
+
+export const getParticipatingEvents = async () => {
+  const response = await api.get(`/events/my-participations`);
+  return response.data;
+}

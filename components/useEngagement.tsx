@@ -11,8 +11,8 @@
  */
 
 import { useState, useCallback } from "react";
-import { likeEvent, unlikeEvent, saveEvent } from "@/services/events.service";
-import { likeClub, unlikeClub, saveClub } from "@/services/clubs.service";
+import { likeEvent, unlikeEvent, saveEvent, unsaveEvent, unparticipateInEvent, participateInEvent } from "@/services/events.service";
+import { likeClub, unlikeClub, saveClub, unsaveClub } from "@/services/clubs.service";
 // ─────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────
@@ -75,7 +75,7 @@ export function useEngagement(
     if (next) {
       await (item.kind === "event" ? saveEvent(item.id) : saveClub(item.id));
     } else {
-      // TODO: appel API unsave
+      await (item.kind === "event" ? unsaveEvent(item.id) : unsaveClub(item.id));
     }
     setState({
       ...prev,
@@ -83,14 +83,30 @@ export function useEngagement(
     });
   }, [item.id, state]);
 
-  const toggleParticipation = useCallback(() => {
+  const toggleParticipation = useCallback(async () => {
     if (item.kind !== "event") return;
-    setState((prev) => {
-      const next = !prev.participating;
-      // TODO: appel API participate/unparticipate
-      return { ...prev, participating: next };
-    });
-  }, [item.id, item.kind]);
+    
+    const prev = state;
+    const next = !prev.participating;
+    
+    try {
+      // 💡 L'appel API se fait ici, de manière parfaitement synchrone et asynchrone au bon endroit
+      if (next) {
+        await participateInEvent(item.id);
+      } else {
+        await unparticipateInEvent(item.id);
+      }
+      
+      // On met à jour l'état uniquement si l'appel API a fonctionné
+      setState({
+        ...prev,
+        participating: next
+      });
+    } catch (error) {
+      console.error("Erreur lors de la modification de la participation :", error);
+    }
+
+  }, [item.id, item.kind, state]);
 
   return { state, toggleLike, toggleSave, toggleParticipation };
 }

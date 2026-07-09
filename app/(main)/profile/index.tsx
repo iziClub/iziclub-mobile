@@ -8,15 +8,21 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAuth } from '@/context/AuthContext';
 import GravatarImage from "@/components/profile/GravatarImage";
-import {getCurrentUser} from "@/services/auth";
+import { getCurrentUser } from "@/services/auth";
+
+import { useFocusEffect } from 'expo-router';
+
+import { getLikedEvents, getParticipatingEvents } from '@/services/events.service'; 
+import { getLikedClubs } from '@/services/clubs.service';
+import { getSavedClubs } from '@/services/clubs.service';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout } = useAuth();
   const [userInfo, setUserInfo] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedDoc, setSelectedDoc] = useState<{title: string, type: 'qr' | 'doc'} | null>(null);
-    const [unreadMessagesCount] = useState(3);
+  const [selectedDoc, setSelectedDoc] = useState<{ title: string, type: 'qr' | 'doc' } | null>(null);
+  const [unreadMessagesCount] = useState(3);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['40%'], []);
@@ -26,17 +32,52 @@ export default function ProfileScreen() {
     []
   );
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const data = await getCurrentUser();
-        setUserInfo(data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des informations utilisateur:", error);
-      }
-    };
-    fetchUserInfo();
-  }, []);
+  // const [userInfo, setUserInfo] = useState<any>(null);
+  
+  // 💡 Nouveaux states pour les compteurs dynamiques
+  const [stats, setStats] = useState({
+    likedCount: 0,
+    clubsCount: 0,
+    participationsCount: 2, // Tu peux le lier à ton API d'inscriptions ou d'événements à venir
+  });
+
+  // 💡 useFocusEffect s'exécute à CHAQUE FOIS que l'écran devient actif
+  useFocusEffect(
+    useCallback(() => {
+      const fetchProfileData = async () => {
+        try {
+          // On lance tout en parallèle en arrière-plan (pas de setLoading(true) global)
+          const [userResponse, likedEventsRes, likedClubsRes, savedClubsRes, participationsRes] = await Promise.all([
+            getCurrentUser(),
+            getLikedEvents().catch(() => ({ data: [] })),
+            getLikedClubs().catch(() => ({ data: [] })),
+            getSavedClubs().catch(() => ({ data: [] })),
+            getParticipatingEvents().catch(() => ({ data: [] })) // Si tu as une API pour les participations
+          ]);
+
+          // 1. Mise à jour des infos utilisateur
+          setUserInfo(userResponse);
+
+          // 2. Calcul des compteurs (adaptation selon la structure de tes réponses d'API)
+          const totalLikes = (likedEventsRes?.data?.length || 0) + (likedClubsRes?.data?.length || 0);
+          const totalSavedClubs = savedClubsRes?.data?.length || 0;
+          const totalParticipations = participationsRes?.data?.length || 0;
+
+          setStats(prev => ({
+            ...prev,
+            likedCount: totalLikes,
+            clubsCount: totalSavedClubs,
+            participationsCount: totalParticipations,
+          }));
+
+        } catch (error) {
+          console.error("Erreur lors du rafraîchissement du profil :", error);
+        }
+      };
+
+      fetchProfileData();
+    }, [])
+  );
 
   const openDoc = (title: string, type: 'qr' | 'doc') => {
     setSelectedDoc({ title, type });
@@ -54,12 +95,12 @@ export default function ProfileScreen() {
       "Êtes-vous sûr de vouloir supprimer ce document ?",
       [
         { text: "Annuler", style: "cancel" },
-        { 
-          text: "Supprimer", 
-          style: "destructive", 
+        {
+          text: "Supprimer",
+          style: "destructive",
           onPress: () => {
             setMyDocuments(prevDocs => prevDocs.filter(doc => doc.id !== id));
-          } 
+          }
         }
       ]
     );
@@ -107,23 +148,23 @@ export default function ProfileScreen() {
 
   // Grille incluant désormais la boîte de réception à la place idéale
   const savedCategories = [
-    { 
-      id: 'messages', 
-      title: 'Boîte de réception', 
-      icon: 'mail-unread', 
-      color: '#FFB900', 
+    {
+      id: 'messages',
+      title: 'Boîte de réception',
+      icon: 'mail-unread',
+      color: '#FFB900',
       path: "/notifications",
-      badge: unreadMessagesCount 
+      badge: unreadMessagesCount
     },
-    { 
-      id: '1', 
-      title: 'Elements likés', 
-      icon: 'heart', 
-      color: '#FF5A5F', 
+    {
+      id: '1',
+      title: 'Elements likés',
+      icon: 'heart',
+      color: '#FF5A5F',
       path: "/profile/likedItems"
     },
     { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: '#4A78FF', path: "/profile/savedItems" },
-    { id: '3', title: 'À venir', icon: 'calendar', color: '#6D5AD3', path: "/profile/upcomingEvents" },
+    { id: '3', title: 'Mes participations', icon: 'calendar', color: '#6D5AD3', path: "/profile/upcomingEvents" },
   ];
   // --- GUEST VIEW ---
   if (!user) {
@@ -137,7 +178,7 @@ export default function ProfileScreen() {
           <Text style={styles.guestSubtitle}>
             Connecte-toi pour sauvegarder tes clubs favoris, gérer tes documents et accéder à tes pass.
           </Text>
-          
+
           <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(auth)/login")}>
             <Text style={styles.loginButtonText}>Se connecter</Text>
           </TouchableOpacity>
@@ -153,26 +194,26 @@ export default function ProfileScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top - 20 }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        
+
         {/* 1. HEADER PROFIL */}
         <View style={styles.header}>
           <GravatarImage email={user.user.email} size={90} style={styles.avatar} />
           <Text style={styles.userName}>{userInfo?.firstName} {userInfo?.lastName}</Text>
           <Text style={styles.userLevel}>Membre depuis Janvier 2024</Text>
-          
+
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>24</Text>
+              <Text style={styles.statNumber}>{stats.likedCount}</Text>
               <Text style={styles.statLabel}>Favoris</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>8</Text>
+              <Text style={styles.statNumber}>{stats.clubsCount}</Text>
               <Text style={styles.statLabel}>Clubs suivis</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>15</Text>
+              <Text style={styles.statNumber}>{stats.participationsCount}</Text>
               <Text style={styles.statLabel}>Sorties</Text>
             </View>
           </View>
@@ -188,7 +229,7 @@ export default function ProfileScreen() {
                   <Ionicons name={cat.icon as any} size={22} color={cat.color} />
                 </View>
                 <Text style={styles.gridCardTitle}>{cat.title}</Text>
-                
+
                 {/* Badge rouge dynamique si présent */}
                 {cat.badge && cat.badge > 0 ? (
                   <View style={styles.gridBadge}>
@@ -203,8 +244,8 @@ export default function ProfileScreen() {
         {/* 3. SECTION : MES INSCRIPTIONS (Ligne élégante isolée) */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Mes inscriptions</Text>
-          <TouchableOpacity 
-            style={styles.inscriptionsCard} 
+          <TouchableOpacity
+            style={styles.inscriptionsCard}
             onPress={() => router.push("/profile/inscriptions")}
           >
             <View style={styles.inscriptionsLeft}>
@@ -224,7 +265,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* 4. DOCUMENTS */}
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Mes documents</Text>
             <TouchableOpacity style={styles.addButton} onPress={() => bottomSheetRef.current?.expand()}>
@@ -249,7 +290,7 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           ))}
-        </View>
+        </View> */}
 
         {/* 5. DÉCONNEXION */}
         <View style={styles.navigationMenu}>
@@ -370,11 +411,11 @@ const styles = StyleSheet.create({
   statNumber: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A' },
   statLabel: { fontSize: 11, color: '#999', textTransform: 'uppercase' },
   statDivider: { width: 1, height: 20, backgroundColor: '#DDD' },
-  
+
   section: { paddingHorizontal: 20, marginTop: 25 },
-  sectionTitle: { 
-    fontSize: 16, 
-    fontWeight: '700', 
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
     color: '#1A1A1A',
     marginBottom: 14,
   },
@@ -492,13 +533,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   uploadTitle: { fontSize: 20, fontWeight: 'bold', color: '#1A1A1A' },
-  uploadSubtitle: { 
-    fontSize: 14, 
-    color: '#666', 
-    textAlign: 'center', 
-    marginTop: 8, 
+  uploadSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 8,
     marginBottom: 30,
-    paddingHorizontal: 20 
+    paddingHorizontal: 20
   },
   uploadOptionsRow: {
     flexDirection: 'row',
@@ -529,12 +570,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-  docText: { 
-    marginLeft: 12, 
-    fontSize: 14, 
-    color: '#444', 
+  docText: {
+    marginLeft: 12,
+    fontSize: 14,
+    color: '#444',
     fontWeight: '500',
-    flex: 1 
+    flex: 1
   },
   deleteIconButton: {
     padding: 10,

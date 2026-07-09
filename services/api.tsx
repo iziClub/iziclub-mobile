@@ -21,6 +21,7 @@ api.interceptors.request.use(
     console.log("➡️ REQUEST:", config.method?.toUpperCase(), config.url);
     console.log("URL:", config.url);
     console.log("METHOD:", config.method);
+    console.log("DATA:", config.data);
     console.log("PARAMS:", config.params);
     return config;
   },

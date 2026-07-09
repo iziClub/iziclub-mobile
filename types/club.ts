@@ -20,6 +20,12 @@ export interface Category {
   gender: "male" | "female" | "mixed" | null
 }
 
+export interface Status {
+  isLiked: boolean;
+  isSaved: boolean;
+  isParticipating: boolean;
+}
+
 export interface Session {
   id: string;
   name: string;
@@ -53,6 +59,7 @@ export interface Club {
   distanceInKm?: number;
   categories?: Category[];
   sessions?: Session[];
+  status?: Status;
 }
 
 export interface ClubsResponse {
@@ -86,4 +93,5 @@ export interface ClubDetailDTO {
     distanceInKm?: number; // Si tu as cette info, sinon tu peux l'ignorer
     categories?: Category[]; // Si tu as des catégories pour le club
     sessions?: Session[]; // Si tu as des sessions pour le club
+    status?: Status; // Si tu as un statut pour le club
 }

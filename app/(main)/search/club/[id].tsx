@@ -9,12 +9,13 @@ import InformationSection from "@/components/club/informationSection";
 import MembershipSection from "@/components/club/Membership/MembershipSection"
 import HeaderClubDetails from "@/components/club/headerClubDetails";
 import SelectSection from "@/components/club/selectSection";
-import { getClubById, getGalleryImagesByClubId, getCategoryByClubId, getSessionsByClubId } from "@/services/clubs.service";
+import { getClubById, getGalleryImagesByClubId, getCategoryByClubId, getSessionsByClubId, getClubStatus } from "@/services/clubs.service";
 import { mapApiClubToDetail } from "@/mappers/club.mapper";
 import { getEventsByClubId } from "@/services/events.service";
 import { ClubDetailDTO } from "@/types/club";
 import { useAuth } from "../../../../context/AuthContext";
 import ImportedClubDetail from "./importClubDetail";
+import { getCurrentUser } from "@/services/auth";
 
 const SECTIONS = ["Informations", "Événements", "Adhésion","Galerie", "Calendrier", "Contact"];
 
@@ -24,6 +25,7 @@ export default function ClubDetail() {
     const [isLoading, setIsLoading] = useState(true);
     const [club, setClub] = useState<ClubDetailDTO>();
     const { user } = useAuth()
+    const [userData, setUserData] = useState<any>(null);
 
     const isLoggedIn = !!user;
     useEffect(() => {
@@ -40,8 +42,12 @@ export default function ClubDetail() {
                 dataClub.data[0].categories = categories.data;
                 const sessions = await getSessionsByClubId(id);
                 dataClub.data[0].sessions = sessions.data;
+                const status = await getClubStatus(id);
+                dataClub.data[0].status = status;
                 const mappedDataClub = mapApiClubToDetail(dataClub.data[0]);
                 setClub(mappedDataClub);
+                const userResponse = await getCurrentUser(); // Remplace par la fonction réelle pour obtenir les données de l'utilisateur
+                setUserData(userResponse);
             } catch (error) {
                 console.error("Erreur lors de la récupération du club:", error);
             } finally {
@@ -88,7 +94,7 @@ export default function ClubDetail() {
                 return (
                     <MembershipSection 
                         club={club} 
-                        user={user}
+                        user={userData} // Passe les données de l'utilisateur ici
                         isLoggedIn={isLoggedIn} // À remplacer par ton vrai état de connexion (ex: via useAuth)
                     />
                 );      

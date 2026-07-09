@@ -48,5 +48,6 @@ export const mapApiClubToDetail = (apiClub: ClubDetailDTO) : Club => {
     distanceInKm: apiClub.distanceInKm, // Si tu as cette info, mappe-la ici
     categories: apiClub.categories || [], // Ajout des catégories si disponibles, sinon un tableau vide
     sessions: apiClub.sessions || [], // Ajout des sessions si disponibles, sinon un tableau vide
+    status: apiClub.status || { isLiked: false, isSaved: false, isParticipating: false }, // Ajout du statut si disponible, sinon un objet par défaut
   };
 };

@@ -90,3 +90,18 @@ export const getSavedClubs = async () => {
   const response = await api.get(`/clubs/saves/user`);
   return response.data;
 }
+
+export const getClubStatus = async (clubId: string) => {
+  const response = await api.get(`/clubs/${clubId}/status`);
+  return response.data;
+}
+
+export const getClubsLikeCount = async (clubId: string) => {
+  const response = await api.get(`/clubs/${clubId}/likes/count`);
+  return response.data;
+}
+
+export const getClubForm = async (clubId: string) => {
+  const response = await api.get(`/clubs/${clubId}/forms/active`);
+  return response.data;
+}
