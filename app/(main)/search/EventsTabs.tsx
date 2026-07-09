@@ -41,7 +41,7 @@ export default function EventsTab({ data, refreshing, onRefresh }: Props) {
             banner={item.image!}
             // avatar={item.image!}
             address={`${item.street}, ${item.city}`}
-            distance_km={item.distance_km}
+            distanceInKm={item.distanceInKm}
             tags={[item.sport || "Sport non précisé", item.type]}
             type="event"
             onPress={() =>

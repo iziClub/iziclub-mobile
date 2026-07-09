@@ -68,7 +68,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                                 title={event.name}
                                 banner={event.banner_url ?? "https://via.placeholder.com/300x150"}
                                 address={`${event.address.street}, ${event.address.city}`}
-                                distance_km={event.distance_km}
+                                distanceInKm={event.distanceInKm}
                                 tags={[event.sport || "Sport non précisé", event.type]}
                                 type="event"
                                 onPress={() => router.push(`/search/event/${event.id}`) }

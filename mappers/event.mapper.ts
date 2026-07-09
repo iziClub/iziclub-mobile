@@ -16,7 +16,7 @@ export interface ApiEvent {
   pricing: string | null;
   tags?: string[];
   clubId: string;
-  distance_km?: number; // Ajout de la distance ici pour le mapping
+  distanceInKm?: number; // Ajout de la distance ici pour le mapping
 }
 
 export const mapEventToSearchItem = (event: ApiEvent): EventSearchItem => {
@@ -39,7 +39,7 @@ export const mapEventToSearchItem = (event: ApiEvent): EventSearchItem => {
     longitude: String(event.address?.longitude ?? "0"),
     tags: event.tags || [],
     clubId: event.clubId,
-    distance_km: event.distance_km, // Ajout de la distance au mapping
+    distanceInKm: event.distanceInKm, // Ajout de la distance au mapping
   };
 };
 

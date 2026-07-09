@@ -23,7 +23,7 @@ export default function EventSection({events}: {events: EventSearchItem[]}) {
                     title={item.name}
                     banner={item.banner_url ?? "https://via.placeholder.com/300x150"}
                     address={`${item.street}, ${item.city}`}
-                    distance_km={item.distance_km}
+                    distanceInKm={item.distanceInKm}
                     tags={[item.type]}
                     type="event"
                     onPress={() =>

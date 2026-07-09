@@ -14,7 +14,7 @@ export const mapClubToSearchItem = (club: Club): ClubSearchItem => {
     banner : club.profile.bannerPath,
     street: club.profile.address.street,
     sport: club.sport || "Sport non précisé", // Ajout du sport si disponible, sinon une valeur par défaut
-    distance_km: club.distanceInKm, // Si tu as cette info, mappe-la ici
+    distanceInKm: club.distanceInKm, // Si tu as cette info, mappe-la ici
   };
 };
 

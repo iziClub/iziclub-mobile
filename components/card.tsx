@@ -7,7 +7,7 @@ interface CardProps {
   banner?: string;
   avatar?: string;
   address?: string;
-  distance_km?: number;
+  distanceInKm?: number;
   tags?: string[];
   type: "club" | "event";
   onPress?: () => void;
@@ -19,14 +19,14 @@ export default function Card({
   banner,
   avatar,
   address,
-  distance_km,
+  distanceInKm,
   tags,
   type,
   onPress,
   width = "100%",
 }: CardProps) {
   // console.info("Rendering Card with props:", {
-  //   distance_km, title
+  //   distanceInKm, title
   // });
   return (
     <View style={[styles.card, { width }]}>
@@ -63,10 +63,10 @@ export default function Card({
                 </Text>
               </View>
             </View>
-            {distance_km != undefined && (
-              <Text style={styles.address}>à {distance_km} km de vous</Text>
+            {distanceInKm != undefined && (
+              <Text style={styles.address}>à {distanceInKm} km de vous</Text>
             )}
-            {distance_km == undefined && (
+            {distanceInKm == undefined && (
               <Text style={styles.address}>Distance indisponible</Text>
             )
             }

@@ -29,7 +29,7 @@ export const getClubs = async (
     params: cleanParams,
   });
   console.log("Request params for getClubs:", cleanParams); // Log the request parameters
-  console.log("Response from getClubs:", response.data); // Log the response data
+  // console.log("Response from getClubs:", response.data); // Log the response data
   return response.data;
 };
 

@@ -11,7 +11,7 @@ export interface Event {
     endDate: string | null;
     price: string | null;
     eventDate: string | null;
-    distance_km?: number; // en km, optionnel
+    distanceInKm?: number; // en km, optionnel
     tags?: string[]; // ex: ["Tournoi", "Gratuit"]
     clubId: string;
     address: {

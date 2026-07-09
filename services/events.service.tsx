@@ -13,6 +13,8 @@ interface EventQueryParams {
 
 export async function getEvents(params?: EventQueryParams) {
   const res = await api.get("/events", { params });
+  console.log("Request params for getEvents:", params); // Log the request parameters
+  console.log("Response from getEvents:", res.data); // Log the response data
   return res.data;
 }
 

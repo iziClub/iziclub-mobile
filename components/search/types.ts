@@ -6,7 +6,7 @@ export interface BaseSearchItem {
   latitude: string;
   longitude: string;
   image: string | null;
-  distance_km?: number; // Ajout de la distance ici pour les deux types
+  distanceInKm?: number; // Ajout de la distance ici pour les deux types
 }
 
 export interface ClubSearchItem extends BaseSearchItem {
