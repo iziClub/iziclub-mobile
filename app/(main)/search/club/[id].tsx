@@ -42,12 +42,21 @@ export default function ClubDetail() {
                 dataClub.data[0].categories = categories.data;
                 const sessions = await getSessionsByClubId(id);
                 dataClub.data[0].sessions = sessions.data;
-                const status = await getClubStatus(id);
-                dataClub.data[0].status = status;
+
+                if (isLoggedIn) {
+                    const status = await getClubStatus(id);
+                    dataClub.data[0].status = status;
+                }
+
                 const mappedDataClub = mapApiClubToDetail(dataClub.data[0]);
                 setClub(mappedDataClub);
-                const userResponse = await getCurrentUser(); // Remplace par la fonction réelle pour obtenir les données de l'utilisateur
-                setUserData(userResponse);
+
+                if (isLoggedIn) {
+                    const userResponse = await getCurrentUser();
+                    setUserData(userResponse);
+                } else {
+                    setUserData(null);
+                }
             } catch (error) {
                 console.error("Erreur lors de la récupération du club:", error);
             } finally {
@@ -56,7 +65,7 @@ export default function ClubDetail() {
         };
 
         fetchClubData();
-    }, [id]);
+    }, [id, isLoggedIn]);
 
     if (isLoading) {
         return (
@@ -121,7 +130,7 @@ export default function ClubDetail() {
         <View style={styles.container}>
             {/* HEADER */}
 
-            <HeaderClubDetails club={club} />
+            <HeaderClubDetails club={club} isLoggedIn={isLoggedIn} />
 
             {/* SECTIONS */}
 

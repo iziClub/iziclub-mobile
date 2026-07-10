@@ -1,3 +1,4 @@
+import * as SecureStore from 'expo-secure-store';
 import api from "./api";
 import { tokenStorage } from "./tokenStorage";
 
@@ -38,6 +39,7 @@ export async function registerUser(
 // 💡 Bonus : Fonction de déconnexion pour nettoyer le token
 export async function logoutUser() {
   await tokenStorage.clearToken();
+  await SecureStore.deleteItemAsync('user_data');
 }
 
 export async function getCurrentUser() {

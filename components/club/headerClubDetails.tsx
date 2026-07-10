@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Club } from "@/types/club";
@@ -10,12 +10,14 @@ interface HeaderClubDetailsProps {
   club: Club;
   initialIsLiked?: boolean;
   initialIsSaved?: boolean;
+  isLoggedIn?: boolean;
 }
 
 export default function HeaderClubDetails({ 
   club, 
   initialIsLiked = false, 
-  initialIsSaved = false 
+  initialIsSaved = false,
+  isLoggedIn = false,
 }: HeaderClubDetailsProps) {
   const router = useRouter();
 
@@ -27,8 +29,25 @@ export default function HeaderClubDetails({
   const [loadingLike, setLoadingLike] = useState<boolean>(false);
   const [loadingSave, setLoadingSave] = useState<boolean>(false);
 
+  const promptLogin = () => {
+    Alert.alert(
+      "Connexion requise",
+      "Connectez-vous ou créez un compte pour liker ou enregistrer ce club.",
+      [
+        { text: "Annuler", style: "cancel" },
+        { text: "Se connecter", onPress: () => router.push("/(auth)/login") },
+        { text: "Créer un compte", onPress: () => router.push("/(auth)/register") },
+      ]
+    );
+  };
+
   // Handler pour le Like / Unlike
   const handleToggleLike = async () => {
+    if (!isLoggedIn) {
+      promptLogin();
+      return;
+    }
+
     if (loadingLike) return;
     setLoadingLike(true);
 
@@ -52,6 +71,11 @@ export default function HeaderClubDetails({
 
   // Handler pour le Save / Unsave
   const handleToggleSave = async () => {
+    if (!isLoggedIn) {
+      promptLogin();
+      return;
+    }
+
     if (loadingSave) return;
     setLoadingSave(true);
 
@@ -100,7 +124,7 @@ export default function HeaderClubDetails({
         {/* BOUTON LIKE */}
         <TouchableOpacity 
           onPress={handleToggleLike} 
-          style={styles.actionButton}
+          style={[styles.actionButton, !isLoggedIn && styles.actionButtonDisabled]}
           disabled={loadingLike}
           hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
         >
@@ -118,7 +142,7 @@ export default function HeaderClubDetails({
         {/* BOUTON SAVE */}
         <TouchableOpacity 
           onPress={handleToggleSave} 
-          style={styles.actionButton}
+          style={[styles.actionButton, !isLoggedIn && styles.actionButtonDisabled]}
           disabled={loadingSave}
           hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
         >
@@ -183,5 +207,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     minWidth: 36,
+  },
+  actionButtonDisabled: {
+    opacity: 0.6,
   },
 });

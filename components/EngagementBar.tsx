@@ -9,6 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { EngagementItem, useEngagement } from "./useEngagement";
 
 // ─────────────────────────────────────────────────────────
@@ -97,6 +98,7 @@ type Props = {
   initialSaved?: boolean;
   initialParticipating?: boolean;
   initialLikeCount?: number;
+  isLoggedIn?: boolean;
 };
 
 export default function EngagementBar({
@@ -105,7 +107,9 @@ export default function EngagementBar({
   initialSaved = false,
   initialParticipating = false,
   initialLikeCount = 0,
+  isLoggedIn = false,
 }: Props) {
+  const router = useRouter();
   const { state, toggleLike, toggleSave, toggleParticipation } = useEngagement(
     item,
     {
@@ -118,7 +122,39 @@ export default function EngagementBar({
 
   const isEvent = item.kind === "event";
 
+  const promptLogin = () => {
+    Alert.alert(
+      "Connexion requise",
+      "Connectez-vous ou créez un compte pour liker, enregistrer ou participer à cet événement.",
+      [
+        { text: "Annuler", style: "cancel" },
+        { text: "Se connecter", onPress: () => router.push("/(auth)/login") },
+        { text: "Créer un compte", onPress: () => router.push("/(auth)/register") },
+      ]
+    );
+  };
+
+  const handleLikePress = () => {
+    if (!isLoggedIn) {
+      promptLogin();
+      return;
+    }
+    toggleLike();
+  };
+
+  const handleSavePress = () => {
+    if (!isLoggedIn) {
+      promptLogin();
+      return;
+    }
+    toggleSave();
+  };
+
   const handleParticipationPress = () => {
+    if (!isLoggedIn) {
+      promptLogin();
+      return;
+    }
     if (state.participating) {
       // Option de désinscription si déjà actif
       Alert.alert(
@@ -151,7 +187,7 @@ export default function EngagementBar({
         {/* LIKE */}
         <ActionButton
           active={state.liked}
-          onPress={toggleLike}
+          onPress={handleLikePress}
           activeIcon="heart"
           inactiveIcon="heart-outline"
           activeColor="#E63946"
@@ -161,7 +197,7 @@ export default function EngagementBar({
         {/* SAVE */}
         <ActionButton
           active={state.saved}
-          onPress={toggleSave}
+          onPress={handleSavePress}
           activeIcon="bookmark"
           inactiveIcon="bookmark-outline"
           activeColor="#4A78FF"

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
-import { loginUser } from "../services/auth";
+import { loginUser, logoutUser } from "../services/auth";
+import { tokenStorage } from "../services/tokenStorage";
 
 type AuthContextType = {
   user: any;
@@ -24,8 +25,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (savedUser) {
           const parsedUser = JSON.parse(savedUser);
           setUser(parsedUser);
-          // Configurer Axios avec le token stocké
-          axios.defaults.headers.common['Authorization'] = `Bearer ${parsedUser.token}`;
+
+          const token = parsedUser?.token ?? (await tokenStorage.getToken());
+          if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          }
+        } else {
+          const storedToken = await tokenStorage.getToken();
+          if (storedToken) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+          }
         }
       } catch (e) {
         console.error("Échec du chargement du token", e);
@@ -50,6 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
+    await logoutUser();
     await SecureStore.deleteItemAsync('user_data');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
