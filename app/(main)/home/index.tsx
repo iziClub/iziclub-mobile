@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -6,15 +6,28 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Image, 
-  ImageBackground 
+  ImageBackground,
+  ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '@/context/AuthContext';
+import { getEvents } from '@/services/events.service';
+import { getClubs } from '@/services/clubs.service';
 
 export default function Home() {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+
+  const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
+  const [recommendedClubs, setRecommendedClubs] = useState<any[]>([]);
+  const [loadingHome, setLoadingHome] = useState<boolean>(true);
+  const isLoggedIn = !!user;
+  const [carouselIndex, setCarouselIndex] = useState<number>(0);
+  const CARD_WIDTH = 260; 
 
   const categories = [
     { id: '1', name: 'Tennis', icon: 'tennisball' },
@@ -23,24 +36,29 @@ export default function Home() {
     { id: '4', name: 'Foot', icon: 'football' },
   ];
 
-const featuredEvents = [
-  { 
-    id: '1', 
-    title: 'Tournoi Open Nancy', 
-    date: '12 Juin', 
-    type: 'Tennis', 
-    // Image de tennis stable via Unsplash
-    imageUrl: 'https://i.ytimg.com/vi/CxG48CbRsbA/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAL5qLZ0GLxdFCxFKXNKJAUX-VMxA'
-  },
-  { 
-    id: '2', 
-    title: 'Stage Padel Été', 
-    date: '05 Juillet', 
-    type: 'Padel',
-    // Image de padel stable via Unsplash
-    imageUrl: 'https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/10/29/e2/51.jpg'
-  },
-];
+  useEffect(() => {
+    const loadHome = async () => {
+      setLoadingHome(true);
+      try {
+        const eventsRes = await getEvents({ per_page: 6 });
+        // getEvents returns the axios response data; try common shapes
+        const events = eventsRes?.data ?? eventsRes?.data?.data ?? eventsRes ?? [];
+        const eventsAny = events as any;
+        setFeaturedEvents(Array.isArray(eventsAny) ? eventsAny : eventsAny?.data ?? []);
+
+        const clubsRes = await getClubs({ limit: 6 });
+        const clubs = clubsRes?.data ?? clubsRes ?? [];
+        const clubsAny = clubs as any;
+        setRecommendedClubs(Array.isArray(clubsAny) ? clubsAny : clubsAny?.data ?? []);
+      } catch (err) {
+        console.error('Erreur chargement homepage :', err);
+      } finally {
+        setLoadingHome(false);
+      }
+    };
+
+    loadHome();
+  }, []);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -75,6 +93,20 @@ const featuredEvents = [
           </View>
         </TouchableOpacity>
 
+        {!isLoggedIn && (
+          <View style={styles.loginBanner}>
+            <Text style={styles.loginBannerTitle}>Connecte-toi pour profiter de toutes les fonctionnalités</Text>
+            <View style={styles.loginBannerActions}>
+              <TouchableOpacity style={styles.loginBtn} onPress={() => router.push('/(auth)/login')}>
+                <Text style={styles.loginBtnText}>Se connecter</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.registerBtn} onPress={() => router.push('/(auth)/register')}>
+                <Text style={styles.registerBtnText}>Créer un compte</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         {/* 3. SECTION ÉVÉNEMENTS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Événements à la une</Text>
@@ -85,32 +117,55 @@ const featuredEvents = [
         
         <ScrollView 
           horizontal 
+          pagingEnabled
+          decelerationRate="fast"
           showsHorizontalScrollIndicator={false} 
           contentContainerStyle={{ paddingLeft: 20, paddingRight: 10, marginTop: 15 }}
+          onScroll={({ nativeEvent }) => {
+            const x = nativeEvent.contentOffset.x;
+            const idx = Math.round(x / (CARD_WIDTH + 15));
+            setCarouselIndex(idx);
+          }}
+          scrollEventThrottle={16}
         >
-          {featuredEvents.map((event) => (
-            <TouchableOpacity key={event.id} activeOpacity={0.9} onPress={() => console.log('Event', event.id)}>
-              <ImageBackground 
-                source={{ uri: event.imageUrl }} 
-                style={styles.eventCardImage}
-                imageStyle={{ borderRadius: 18 }}
-              >
-                <LinearGradient
-                  colors={['transparent', 'rgba(0,0,0,0.85)']}
-                  style={styles.eventGradient}
+          {loadingHome ? (
+            <View style={{ width: '100%', padding: 20, alignItems: 'center' }}>
+              <ActivityIndicator size="large" color="#4A78FF" />
+            </View>
+          ) : (
+            featuredEvents.map((event: any) => (
+              <TouchableOpacity key={event.id} activeOpacity={0.9} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 15 }}>
+                <ImageBackground 
+                  source={{ uri: event.banner_url || event.imageUrl || event.image || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
+                  style={styles.eventCardImage}
+                  imageStyle={{ borderRadius: 18 }}
                 >
-                  <View style={styles.eventBadge}>
-                    <Text style={styles.eventBadgeText}>{event.type}</Text>
-                  </View>
-                  <View style={styles.eventContent}>
-                    <Text style={styles.eventDate}>{event.date}</Text>
-                    <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-                  </View>
-                </LinearGradient>
-              </ImageBackground>
-            </TouchableOpacity>
-          ))}
+                  <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.85)']}
+                    style={styles.eventGradient}
+                  >
+                    <View style={styles.eventBadge}>
+                      <Text style={styles.eventBadgeText}>{event.type ?? event.category ?? ''}</Text>
+                    </View>
+                    <View style={styles.eventContent}>
+                      <Text style={styles.eventDate}>{event.eventDate ? new Date(event.eventDate).toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : ''}</Text>
+                      <Text style={styles.eventTitle} numberOfLines={1}>{event.name ?? event.title}</Text>
+                    </View>
+                  </LinearGradient>
+                </ImageBackground>
+              </TouchableOpacity>
+            ))
+          )}
         </ScrollView>
+
+        {/* Carousel dots */}
+        {!loadingHome && featuredEvents.length > 0 && (
+          <View style={styles.carouselDots}>
+            {featuredEvents.map((_, i) => (
+              <View key={i} style={[styles.dot, i === carouselIndex && styles.activeDot]} />
+            ))}
+          </View>
+        )}
 
         {/* 4. BANNIÈRE MAP */}
         <TouchableOpacity 
@@ -153,23 +208,29 @@ const featuredEvents = [
         </View>
 
         <View style={styles.recomendedContainer}>
-  <TouchableOpacity style={styles.clubCard} onPress={() => router.push("/search")}>
-    {/* Remplacement du placeholder par la vraie image */}
-    <Image 
-      source={{ uri: 'https://lh4.googleusercontent.com/proxy/9Ml9D7qivm1gXlfVAJ0_TkRZErUYCwb-jIPfZi_ii2MVYPr1uQSn3WXjGz9JA9nxzjT-svTVHGREDnsH5gFA' }} 
-      style={styles.clubImage} 
-      resizeMode="cover"
-    />
-    
-    <View style={styles.clubInfo}>
-      <Text style={styles.clubName}>Nancy Tennis Club</Text>
-      <View style={styles.locationRow}>
-        <Ionicons name="location-sharp" size={14} color="#4A78FF" />
-        <Text style={styles.clubLocation}>Nancy • 1.2 km</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-</View>
+          {loadingHome ? (
+            <ActivityIndicator size="small" color="#4A78FF" />
+          ) : (
+            <View style={styles.clubGrid}>
+              {recommendedClubs.map((club: any) => (
+                <TouchableOpacity key={club.id} style={styles.clubGridItem} onPress={() => router.push(`/search/club/${club.id}`)}>
+                  <Image 
+                    source={{ uri: club.profile?.profileImagePath || club.profile?.bannerPath || club.image || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
+                    style={styles.clubImage} 
+                    resizeMode="cover"
+                  />
+                  <View style={styles.clubInfo}>
+                    <Text style={styles.clubName}>{club.name}</Text>
+                    <View style={styles.locationRow}>
+                      <Ionicons name="location-sharp" size={14} color="#4A78FF" />
+                      <Text style={styles.clubLocation}>{club.city ?? club.location ?? ''}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
 
       </ScrollView>
     </View>
@@ -325,4 +386,23 @@ clubImage: {
   clubName: { fontSize: 15, fontWeight: 'bold' },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   clubLocation: { fontSize: 12, color: '#888', marginLeft: 4 },
+  // --- NEW STYLES ---
+  loginBanner: {
+    marginHorizontal: 20,
+    backgroundColor: '#F5F8FF',
+    padding: 14,
+    borderRadius: 14,
+    marginTop: 14,
+  },
+  loginBannerTitle: { color: '#1A1A1A', fontWeight: '600', marginBottom: 10 },
+  loginBannerActions: { flexDirection: 'row', gap: 8 },
+  loginBtn: { backgroundColor: '#4A78FF', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10 },
+  loginBtnText: { color: 'white', fontWeight: '700' },
+  registerBtn: { borderColor: '#4A78FF', borderWidth: 1, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10 },
+  registerBtnText: { color: '#4A78FF', fontWeight: '700' },
+  carouselDots: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 10 },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#DDD', marginHorizontal: 4 },
+  activeDot: { backgroundColor: '#4A78FF' },
+  clubGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
+  clubGridItem: { width: '48%' },
 });
