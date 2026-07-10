@@ -10,7 +10,6 @@ interface Props {
     onSeeMore: (section: string) => void;
 }
 
-// Fonction utilitaire pour générer un sous-titre propre selon les données du backend
 const getCategorySubtitle = (gender: string | null, minAge: number | null, maxAge: number | null) => {
     let genderLabel = "Mixte";
     if (gender === "male") genderLabel = "Homme";
@@ -27,23 +26,34 @@ const getCategorySubtitle = (gender: string | null, minAge: number | null, maxAg
 };
 
 export default function InformationSection({ club, onSeeMore }: Props) {
-    // console.info("Rendering InformationSection with club:", club);
-    
-    // Couleurs par défaut à boucler si le backend renvoie null
     const defaultColors = ["#D42E2F", "#D85D12", "#F9BC12", "#007AFF", "#28A745", "#6F42C1"];
     const router = useRouter();
+    
+    // On vérifie si la bannière existe
+    const hasBanner = !!club.profile.bannerPath;
+
     return (
         <ScrollView
             contentContainerStyle={{
                 paddingHorizontal: 16,
                 paddingBottom: 60,
+                // On ajoute un petit padding top si pas de bannière pour ne pas coller au haut de l'écran
+                paddingTop: hasBanner ? 0 : 16, 
             }}
         >
-            <Image source={{ uri: club.profile.bannerPath }} style={styles.banner} />
+            {/* On n'affiche l'image QUE si elle existe. Pas de fallback gris artificiel. */}
+            {hasBanner && (
+                <Image source={{ uri: club.profile.bannerPath }} style={styles.banner} />
+            )}
 
-            <View style={styles.infoBlock}>
-                <Text style={styles.title}>{club.name}</Text>
-                {club.profile.slogan ? <Text style={styles.subtitle}>{club.profile.slogan}</Text> : null}
+            {/* Si pas de bannière, on applique un style "header" plus aéré et flatteur */}
+            <View style={[styles.infoBlock, !hasBanner && styles.infoBlockNoBanner]}>
+                <Text style={[styles.title, !hasBanner && styles.titleNoBanner]}>
+                    {club.name}
+                </Text>
+                {club.profile.slogan ? (
+                    <Text style={styles.subtitle}>{club.profile.slogan}</Text>
+                ) : null}
                 <Text style={styles.description}>{club.profile.description}</Text>
             </View>
 
@@ -85,7 +95,6 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                     <Text style={styles.bigTitle}>Nos équipes</Text>
                     <View style={styles.teamContainer}>
                         {club.categories.map((category, index) => {
-                            // Utilise la couleur du backend ou pioche dans la liste par défaut
                             const cardColor = category.color || defaultColors[index % defaultColors.length];
                             const subtitle = getCategorySubtitle(category.gender, category.minAge, category.maxAge);
 
@@ -95,7 +104,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                                         title={category.name} 
                                         color={cardColor} 
                                         subtitle={subtitle} 
-                                    />
+                                        />
                                 </View>
                             );
                         })}
@@ -115,12 +124,12 @@ export default function InformationSection({ club, onSeeMore }: Props) {
 
                     <View style={styles.gallery}>
                         {club.gallery.slice(0, 6).map((picture) => (
-                <Image
-                    key={picture.id}
-                    source={{ uri: picture.url }}
-                    style={styles.photo} 
-                />
-            ))}
+                            <Image
+                                key={picture.id}
+                                source={{ uri: picture.url }}
+                                style={styles.photo} 
+                            />
+                        ))}
                     </View>
                 </>
             )}
@@ -138,10 +147,24 @@ const styles = StyleSheet.create({
     infoBlock: {
         marginBottom: 24,
     },
+    // Nouveau style si pas de bannière : ajoute une légère bordure basse discrète pour structurer
+    infoBlockNoBanner: {
+        borderBottomWidth: 1,
+        borderBottomColor: "#F0F0F0",
+        paddingBottom: 20,
+        marginBottom: 28,
+    },
     title: {
         fontSize: 24,
         fontWeight: "700",
         marginBottom: 4,
+        color: "#1A1A1A",
+    },
+    // Si pas de bannière, on grossit un poil le titre pour marquer l'identité visuelle du club
+    titleNoBanner: {
+        fontSize: 28,
+        fontWeight: "800",
+        letterSpacing: -0.5,
     },
     subtitle: {
         fontSize: 16,
@@ -161,14 +184,16 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
     description: {
-        fontSize: 14,
-        color: "#555",
+        fontSize: 15,
+        color: "#4A4A4A",
+        lineHeight: 22, // Améliore la lisibilité du texte
         marginTop: 4,
     },
     bigTitle: {
-        fontSize: 22,
-        fontWeight: "600",
-        marginBottom: 12,
+        fontSize: 20,
+        fontWeight: "700",
+        color: "#1A1A1A",
+        marginBottom: 14,
     },
     teamContainer: {
         flexDirection: "row",

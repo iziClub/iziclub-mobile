@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getClubs } from "@/services/clubs.service";
 import { mapClubToSearchItem } from "@/mappers/club.mapper";
-import { ClubSearchItem, EventSearchItem, SearchItem } from "./types";
+import { ClubSearchItem, EventSearchItem } from "./types";
 import { getEvents } from "@/services/events.service";
 import { mapEventToSearchItem } from "@/mappers/event.mapper";
 import { USER_LOCATION } from "./data";
@@ -16,47 +16,97 @@ export const useSearch = (
   const [clubs, setClubs] = useState<ClubSearchItem[]>([]);
   const [events, setEvents] = useState<EventSearchItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
+  // Suivi de la pagination
+  const [eventsPage, setEventsPage] = useState(1);
+  const [hasMoreEvents, setHasMoreEvents] = useState(true);
+  
+  const [clubsPage, setClubsPage] = useState(1);
+  const [hasMoreClubs, setHasMoreClubs] = useState(true);
+
+  // Fonction principale (Reset et charge la page 1)
   const fetchData = async () => {
     try {
       setLoading(true);
+      setEventsPage(1);
+      setClubsPage(1);
 
-      const defaultLat = USER_LOCATION.latitude;
-      const defaultLon = USER_LOCATION.longitude;
-
-      const params: any = {
-        nameQuery: query || undefined,
-        city: city || undefined,
-        limit: 20,
-        page: 1,
-      };
-      params.latitude = mapCoords?.latitude ?? defaultLat;
-      params.longitude = mapCoords?.longitude ?? defaultLon;
-      params.radiusInKm = useRadius ? radius : 500;
-      // if (useRadius) {
-      //   params.radius = radius;
-      // }
+      const params = buildParams(1);
 
       const [clubsRes, eventsRes] = await Promise.all([
         getClubs(params),
         getEvents(params)
       ]);
-      // console.log("Clubs response:", clubsRes, params);
+
       const mappedClubs = clubsRes.data.map(mapClubToSearchItem);
       const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
+
       setClubs(mappedClubs);
       setEvents(mappedEvents);
+
+      // Vérification des pages totales
+      setHasMoreEvents(clubsRes.pagination?.totalPages > 1);
+      setHasMoreClubs(eventsRes.pagination?.totalPages > 1);
     } catch (err) {
-      console.error("Erreur fetch clubs:", err);
+      console.error("Erreur fetch initial:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Helper pour construire les paramètres d'API
+  const buildParams = (pageNumber: number) => {
+    const defaultLat = USER_LOCATION.latitude;
+    const defaultLon = USER_LOCATION.longitude;
+    return {
+      nameQuery: query || undefined,
+      city: city || undefined,
+      limit: 10, // Réduit à 10 pour matcher la config de ton API
+      page: pageNumber,
+      latitude: mapCoords?.latitude ?? defaultLat,
+      longitude: mapCoords?.longitude ?? defaultLon,
+      radiusInKm: useRadius ? radius : 500,
+    };
+  };
+
+  // Fonction pour charger la page SUIVANTE des Événements
+  const fetchMoreEvents = async () => {
+    if (loading || loadingMore || !hasMoreEvents) return;
+
+    try {
+      setLoadingMore(true);
+      const nextPage = eventsPage + 1;
+      const params = buildParams(nextPage);
+
+      const eventsRes = await getEvents(params);
+      const mappedEvents = eventsRes.data.map(mapEventToSearchItem);
+
+      if (mappedEvents.length > 0) {
+        setEvents(prev => [...prev, ...mappedEvents]); // On ajoute à la suite
+        setEventsPage(nextPage);
+      }
+      
+      setHasMoreEvents(nextPage < eventsRes.pagination?.totalPages);
+    } catch (err) {
+      console.error("Erreur chargement pages suivantes événements:", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // Déclencheur automatique lors des changements de filtres / query
   useEffect(() => {
     fetchData();
   }, [query, radius, useRadius, city, mapCoords?.latitude, mapCoords?.longitude]);
 
-  return { clubs, events, loading, refresh: fetchData };
-  return { clubs, events, loading, refresh: fetchData };
+  return { 
+    clubs, 
+    events, 
+    loading, 
+    loadingMore,
+    refresh: fetchData, 
+    fetchMoreEvents,
+    hasMoreEvents
+  };
 };

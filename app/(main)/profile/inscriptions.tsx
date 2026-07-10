@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAllSubmissions } from '@/services/forms.service';
 
-export type InscriptionStatus = 'approved' | 'rejected' | 'pending_info' | 'submitted';
+export type InscriptionStatus = 'approved' | 'rejected' | 'pending_info' | 'submitted' | 'draft';
 
 export default function InscriptionsListScreen() {
   const router = useRouter();
@@ -85,6 +85,7 @@ export default function InscriptionsListScreen() {
                     date: item.submittedAt, // Formaté directement pour la bannière du détail
                     comment: item.requestedInfo, 
                     formId: item.formId,
+                    formName: item.formName,
                     // 💡 Ajout crucial pour ton écran détail : on sérialise le tableau en string
                     answers: JSON.stringify(item.answers || []) 
                   }
@@ -92,6 +93,7 @@ export default function InscriptionsListScreen() {
               >
                 <View style={styles.cardHeader}>
                   <Text style={styles.clubName}>{item.clubName}</Text>
+                  <Text style={{ color: '#888', fontSize: 12 }}>{item.formName}</Text>
                   <Ionicons name="chevron-forward" size={18} color="#CCC" />
                 </View>
                 

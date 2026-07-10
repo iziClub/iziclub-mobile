@@ -64,6 +64,18 @@ export interface Club {
 
 export interface ClubsResponse {
   data: Club[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    links: {
+      first: string;
+      "last": string;
+      "next": string;
+      "prev": string | null
+    }
+  };
   meta: {
     total: number;
     currentPage: number;

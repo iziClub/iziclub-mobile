@@ -145,9 +145,9 @@ export default function LikedItemsScreen() {
     const isEvent = activeTab === 'events';
     const title = item.name || item.title;
     // Fallback d'image si ton API ne renvoie pas d'image valide pour le moment
-    const imageSource = item.image || item.imageUrl || (isEvent 
-      ? 'https://images.unsplash.com/photo-1595435066359-6286386735b2?q=80&w=800&auto=format&fit=crop'
-      : 'https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800&auto=format&fit=crop');
+    const imageSource = item.profile?.profileImagePath || item.imageUrl || (isEvent 
+      ? 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg'
+      : 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg');
 
     return (
       <TouchableOpacity 

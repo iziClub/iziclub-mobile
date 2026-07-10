@@ -35,7 +35,7 @@ export default function SearchScreen() {
 
   const router = useRouter();
   // Récupération des données
-  const { clubs, events, loading, refresh } = useSearch(debouncedQuery, radius, useRadius, "");
+  const { clubs, events, loading, loadingMore, refresh, fetchMoreEvents } = useSearch(debouncedQuery, radius, useRadius, "");
   
   const bottomSheetRef = useRef<BottomSheet>(null);
   
@@ -84,7 +84,7 @@ export default function SearchScreen() {
           name="Événements" 
           options={{ tabBarLabel: `Événements (${events?.length || 0})` }}
         >
-          {() => <EventsTab data={events} refreshing={loading} onRefresh={refresh} />}
+          {() => <EventsTab data={events} refreshing={loading} onRefresh={refresh} onEndReached={fetchMoreEvents} loadingMore={loadingMore} />}
         </Tab.Screen>
       </Tab.Navigator>
 

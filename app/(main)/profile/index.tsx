@@ -15,6 +15,7 @@ import { useFocusEffect } from 'expo-router';
 import { getLikedEvents, getParticipatingEvents } from '@/services/events.service'; 
 import { getLikedClubs } from '@/services/clubs.service';
 import { getSavedClubs } from '@/services/clubs.service';
+import { getAllSubmissions } from '@/services/forms.service';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -26,7 +27,6 @@ export default function ProfileScreen() {
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['40%'], []);
-
   const renderBackdrop = useCallback(
     (props: any) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />,
     []
@@ -38,7 +38,8 @@ export default function ProfileScreen() {
   const [stats, setStats] = useState({
     likedCount: 0,
     clubsCount: 0,
-    participationsCount: 2, // Tu peux le lier à ton API d'inscriptions ou d'événements à venir
+    participationsCount: 0, // Tu peux le lier à ton API d'inscriptions ou d'événements à venir
+    dossiersCount: 0
   });
 
   // 💡 useFocusEffect s'exécute à CHAQUE FOIS que l'écran devient actif
@@ -47,12 +48,13 @@ export default function ProfileScreen() {
       const fetchProfileData = async () => {
         try {
           // On lance tout en parallèle en arrière-plan (pas de setLoading(true) global)
-          const [userResponse, likedEventsRes, likedClubsRes, savedClubsRes, participationsRes] = await Promise.all([
+          const [userResponse, likedEventsRes, likedClubsRes, savedClubsRes, participationsRes, dossierRes] = await Promise.all([
             getCurrentUser(),
             getLikedEvents().catch(() => ({ data: [] })),
             getLikedClubs().catch(() => ({ data: [] })),
             getSavedClubs().catch(() => ({ data: [] })),
-            getParticipatingEvents().catch(() => ({ data: [] })) // Si tu as une API pour les participations
+            getParticipatingEvents().catch(() => ({ data: [] })), // Si tu as une API pour les participations
+            getAllSubmissions().catch(() => ({ data: { submissions: [] } })) // Pour compter les dossiers
           ]);
 
           // 1. Mise à jour des infos utilisateur
@@ -62,12 +64,14 @@ export default function ProfileScreen() {
           const totalLikes = (likedEventsRes?.data?.length || 0) + (likedClubsRes?.data?.length || 0);
           const totalSavedClubs = savedClubsRes?.data?.length || 0;
           const totalParticipations = participationsRes?.data?.length || 0;
+          const totalDossiers = dossierRes?.data?.submissions?.length || 0;
 
           setStats(prev => ({
             ...prev,
             likedCount: totalLikes,
             clubsCount: totalSavedClubs,
             participationsCount: totalParticipations,
+            dossiersCount: totalDossiers
           }));
 
         } catch (error) {
@@ -254,11 +258,11 @@ export default function ProfileScreen() {
               </View>
               <View style={styles.inscriptionsTextContainer}>
                 <Text style={styles.inscriptionsCardTitle}>Suivre mes dossiers</Text>
-                <Text style={styles.inscriptionsCardSubtitle}>Voir l\'état de mes demandes d\'adhésion</Text>
+                <Text style={styles.inscriptionsCardSubtitle}>Voir l'état de mes demandes d'adhésion</Text>
               </View>
             </View>
             <View style={styles.badgeAlert}>
-              <Text style={styles.badgeAlertText}>2</Text>
+              <Text style={styles.badgeAlertText}>{stats.dossiersCount}</Text>
               <Ionicons name="chevron-forward" size={16} color="#BBB" style={{ marginLeft: 4 }} />
             </View>
           </TouchableOpacity>
