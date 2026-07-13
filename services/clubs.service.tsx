@@ -1,5 +1,5 @@
 import api from "./api";
-import { ClubsResponse } from "../types/club";
+import { ClubsResponse, Club } from "../types/club";
 
 interface GetClubsParams {
   nameQuery?: string;
@@ -9,6 +9,10 @@ interface GetClubsParams {
   longitude?: number;
   radiusInKm?: number;
   city?: string;
+}
+
+export interface MemberClubsResponse {
+  data: Club[];
 }
 
 export const getClubs = async (
@@ -88,6 +92,12 @@ export const unsaveClub = async (clubId: string) => {
 
 export const getSavedClubs = async () => {
   const response = await api.get(`/clubs/saves/user`);
+  return response.data;
+}
+
+export const getMemberClubs = async (): Promise<MemberClubsResponse> => {
+  const response = await api.get(`/member/me/clubs`);
+  console.log("Response from getMemberClubs:", response.data);
   return response.data;
 }
 

@@ -13,8 +13,7 @@ import { getCurrentUser } from "@/services/auth";
 import { useFocusEffect } from 'expo-router';
 
 import { getLikedEvents, getParticipatingEvents } from '@/services/events.service'; 
-import { getLikedClubs } from '@/services/clubs.service';
-import { getSavedClubs } from '@/services/clubs.service';
+import { getLikedClubs, getSavedClubs, getMemberClubs } from '@/services/clubs.service';
 import { getAllSubmissions } from '@/services/forms.service';
 import { getNotifications } from '@/services/notifications.service';
 
@@ -39,6 +38,7 @@ export default function ProfileScreen() {
   const [stats, setStats] = useState({
     likedCount: 0,
     clubsCount: 0,
+    affiliatedClubsCount: 0,
     participationsCount: 0, // Tu peux le lier à ton API d'inscriptions ou d'événements à venir
     dossiersCount: 0,
     notificationsCount: 0
@@ -49,11 +49,12 @@ export default function ProfileScreen() {
     useCallback(() => {
       const fetchProfileData = async () => {
         try {
-          const [userResponse, likedEventsRes, likedClubsRes, savedClubsRes, participationsRes, dossierRes, notificationRes] = await Promise.all([
+          const [userResponse, likedEventsRes, likedClubsRes, savedClubsRes, memberClubsRes, participationsRes, dossierRes, notificationRes] = await Promise.all([
             getCurrentUser(),
             getLikedEvents().catch(() => ({ data: [] })),
             getLikedClubs().catch(() => ({ data: [] })),
             getSavedClubs().catch(() => ({ data: [] })),
+            getMemberClubs().catch(() => ({ data: [] })),
             getParticipatingEvents().catch(() => ({ data: [] })), // Si tu as une API pour les participations
             getAllSubmissions().catch(() => ({ data: { submissions: [] } })), // Pour compter les dossiers
             getNotifications().catch(() => ({ data: [] })) // Pour compter les notifications non lues
@@ -63,6 +64,7 @@ export default function ProfileScreen() {
 
           const totalLikes = (likedEventsRes?.data?.length || 0) + (likedClubsRes?.data?.length || 0);
           const totalSavedClubs = savedClubsRes?.data?.length || 0;
+          const totalAffiliatedClubs = memberClubsRes?.data?.length || 0;
           const totalParticipations = participationsRes?.data?.length || 0;
           const totalDossiers = dossierRes?.data?.submissions?.length || 0;
           const totalUnreadNotifications = notificationRes?.data?.filter((n: any) => n.isUnread).length || 0;
@@ -70,6 +72,7 @@ export default function ProfileScreen() {
             ...prev,
             likedCount: totalLikes,
             clubsCount: totalSavedClubs,
+            affiliatedClubsCount: totalAffiliatedClubs,
             participationsCount: totalParticipations,
             dossiersCount: totalDossiers,
             notificationsCount: totalUnreadNotifications
@@ -169,6 +172,7 @@ export default function ProfileScreen() {
       path: "/profile/likedItems"
     },
     { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: '#4A78FF', path: "/profile/savedItems" },
+    { id: '4', title: 'Mes clubs', icon: 'people', color: '#0CA789', path: "/profile/myClubs", badge: stats.affiliatedClubsCount > 0 ? stats.affiliatedClubsCount : undefined },
     { id: '3', title: 'Mes participations', icon: 'calendar', color: '#6D5AD3', path: "/profile/upcomingEvents" },
   ];
   // --- GUEST VIEW ---

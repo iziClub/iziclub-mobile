@@ -83,6 +83,10 @@ export interface ClubsResponse {
   };
 }
 
+export interface MemberClubsResponse {
+  data: Club[];
+}
+
 export interface ClubDetailDTO {
     id: string;
     name: string;
