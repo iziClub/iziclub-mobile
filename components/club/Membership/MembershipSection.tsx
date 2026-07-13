@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   View,
 } from "react-native";
-import * as DocumentPicker from 'expo-document-picker'; // 💡 Nécessaire pour sélectionner le fichier
+import * as DocumentPicker from 'expo-document-picker'; 
 
 import MembershipHeader from "./MembershipHeader";
 import ProfileCard from "./ProfileCard";
@@ -22,7 +22,7 @@ import {
   createDraftSubmission,
   addAnswersToSubmission,
   submitFormSubmission,
-  getUploadUrl // 💡 Ton nouveau service
+  getUploadUrl 
 } from "@/services/forms.service";
 
 type Props = {
@@ -36,12 +36,11 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   const [formResponses, setFormResponses] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Stockage du submissionId pour éviter de recréer un brouillon à chaque upload/sauvegarde
+  const [hasAgreedToTerms, setHasAgreedToTerms] = useState<boolean>(false);
   const [activeSubmissionId, setActiveSubmissionId] = useState<string | null>(null);
-
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false);
-  const [uploadingQuestionId, setUploadingQuestionId] = useState<string | null>(null); // Loader individuel pour l'upload
+  const [uploadingQuestionId, setUploadingQuestionId] = useState<string | null>(null); 
 
   useEffect(() => {
     const fetchForm = async () => {
@@ -72,7 +71,6 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   // ─────────────────────────────────────────────────────────
   const handleDocumentUpload = async (questionId: string) => {
     try {
-      // 1. Sélection du fichier sur l'appareil
       const result = await DocumentPicker.getDocumentAsync({
         type: ["application/pdf", "image/*"],
         copyToCacheDirectory: true
@@ -85,7 +83,6 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
 
       setUploadingQuestionId(questionId);
 
-      // 2. Récupérer ou créer un ID de soumission (Draft)
       let submissionId = activeSubmissionId;
       if (!submissionId && currentForm) {
         const draftResponse = await createDraftSubmission(currentForm.id);
@@ -97,7 +94,6 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
         throw new Error("Impossible d'initialiser la soumission pour l'upload.");
       }
 
-      // 3. Demander l'URL pré-signée à l'API
       const urlResponse = await getUploadUrl(submissionId, contentType);
       const { uploadUrl, filePath } = urlResponse?.data.data;
       const fileToUpload = {
@@ -106,10 +102,9 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
         name: file.name || `document_${questionId}.pdf`,
       };
 
-      // 5. Upload binaire direct sur S3
       const s3Response = await fetch(uploadUrl, {
         method: "PUT",
-        body: fileToUpload as any, // Cast en 'any' car le typage standard attend un Blob
+        body: fileToUpload as any, 
         headers: {
           "Content-Type": contentType,
         },
@@ -121,7 +116,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
         throw new Error("Le dépôt du fichier sur le serveur S3 a échoué.");
       }
 
-      // 6. Succès : On stocke le filePath
+      // 💡 On garde la logique de stockage intacte pour ne rien casser en BDD/API
       setFormResponses((prev) => ({ ...prev, [questionId]: filePath, fileName: file.name }));
       Alert.alert("Succès", `Le fichier "${file.name}" a été téléversé.`);
 
@@ -133,9 +128,6 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
     }
   };
 
-  // ─────────────────────────────────────────────────────────
-  // Handlers standards
-  // ─────────────────────────────────────────────────────────
   const handleTextChange = (questionId: string, value: string) => {
     setFormResponses((prev) => ({ ...prev, [questionId]: value }));
   };
@@ -170,7 +162,6 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   const executeDraftWorkflow = async () => {
     let submissionId = activeSubmissionId;
 
-    // Si aucun upload n'a créé de brouillon avant, on le crée ici
     if (!submissionId && currentForm) {
       const draftResponse = await createDraftSubmission(currentForm.id);
       submissionId = draftResponse?.data?.id || draftResponse?.id;
@@ -206,17 +197,24 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
     if (!currentForm) return;
 
     for (const question of currentForm.questions) {
-  if (question.required) {
-    const response = formResponses[question.id];
-    // 💡 Si c'est un objet document, on vérifie s'il a un filePath
-    const hasValue = response && typeof response === "object" ? !!response.filePath : !!response;
-    
-    if (!hasValue || (Array.isArray(response) && response.length === 0)) {
-      Alert.alert("Champ obligatoire", `Le champ "${question.name}" doit être renseigné.`);
+      if (question.required) {
+        const response = formResponses[question.id];
+        const hasValue = response && typeof response === "object" ? !!response.filePath : !!response;
+        
+        if (!hasValue || (Array.isArray(response) && response.length === 0)) {
+          Alert.alert("Champ obligatoire", `Le champ "${question.name}" doit être renseigné.`);
+          return;
+        }
+      }
+    }
+
+    if (!hasAgreedToTerms) {
+      Alert.alert(
+        "Engagement obligatoire", 
+        "Vous devez certifier l'exactitude des informations et accepter le caractère officiel de cette demande pour envoyer votre dossier."
+      );
       return;
     }
-  }
-}
 
     setIsSubmitting(true);
     try {
@@ -256,26 +254,77 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
       <ProfileCard user={user} />
 
       {currentForm.questions.map((question) => {
-  // 💡 Si c'est un document, on extrait le nom lisible pour l'affichage, sinon la valeur brute
-  const responseValue = formResponses[question.id];
-  const displayValue = responseValue && typeof responseValue === "object" && "fileName" in responseValue
-    ? responseValue.fileName 
-    : responseValue;
+        const responseValue = formResponses[question.id];
+        
+        // 💡 MODIFICATION ICI : On détecte si c'est un fichier ou un chemin S3 
+        // pour renvoyer une phrase claire au lieu du nom technique du fichier.
+        let displayValue = responseValue;
+        
+        if (responseValue) {
+          // Si c'est l'objet issu de ton upload direct OU si c'est une chaîne qui contient un chemin d'upload
+          if (
+            (typeof responseValue === "object" && "filePath" in responseValue) || 
+            (typeof responseValue === "string" && responseValue.includes("form-submissions/"))
+          ) {
+            displayValue = "Document ajouté"; 
+          }
+        }
 
-  return (
-    <QuestionCard
-      key={question.id}
-      question={question}
-      value={displayValue} // 💡 Reçoit désormais "mon_cv.pdf" au lieu de "form-submissions/..."
-      onTextChange={(value) => handleTextChange(question.id, value)}
-      onRadioChange={(label) => handleRadioSelect(question.id, label)}
-      onCheckboxChange={(label) => handleCheckboxSelect(question.id, label)}
-      onDocumentUpload={() => handleDocumentUpload(question.id)}
-    />
-  );
-})}
+        return (
+          <QuestionCard
+            key={question.id}
+            question={question}
+            value={displayValue} // 💡 Reçoit maintenant "✅ Document ajouté" si un fichier existe
+            onTextChange={(value) => handleTextChange(question.id, value)}
+            onRadioChange={(label) => handleRadioSelect(question.id, label)}
+            onCheckboxChange={(label) => handleCheckboxSelect(question.id, label)}
+            onDocumentUpload={() => handleDocumentUpload(question.id)}
+          />
+        );
+      })}
 
-      {/* Reste des boutons (Draft & Envoi) */}
+      {/* Encadré engagement légal */}
+      <View style={{
+        backgroundColor: '#FFF9F3', 
+        borderWidth: 1,
+        borderColor: '#FFE2C5',
+        borderRadius: 12,
+        padding: 16,
+        marginTop: 24,
+      }}>
+        <TouchableOpacity 
+          style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}
+          onPress={() => setHasAgreedToTerms(!hasAgreedToTerms)}
+          activeOpacity={0.8}
+        >
+          <View style={{
+            width: 22,
+            height: 22,
+            borderRadius: 6,
+            borderWidth: 2,
+            borderColor: hasAgreedToTerms ? '#4A78FF' : '#A0AEC0',
+            backgroundColor: hasAgreedToTerms ? '#4A78FF' : 'transparent',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 2 
+          }}>
+            {hasAgreedToTerms && (
+              <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>✓</Text>
+            )}
+          </View>
+
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#2D3748', marginBottom: 4 }}>
+              Certification & Engagement Officiel
+            </Text>
+            <Text style={{ fontSize: 13, color: '#4A5568', lineHeight: 18 }}>
+              Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontWeight: '700' }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* Reste des boutons */}
       <View style={{ marginTop: 20, gap: 12 }}>
         <TouchableOpacity
           style={[styles.submitButton, { backgroundColor: '#F0F4FF', borderColor: '#4A78FF', borderWidth: 1 }]}
@@ -290,7 +339,10 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.submitButton, (isSubmitting || isSavingDraft || !!uploadingQuestionId) && { opacity: 0.7 }]}
+          style={[
+            styles.submitButton, 
+            (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { opacity: 0.6 }
+          ]}
           onPress={handleSubmit}
           disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
         >

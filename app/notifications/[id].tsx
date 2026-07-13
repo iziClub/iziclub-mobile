@@ -1,60 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+import { Message } from '@/types/notification';
 // On réutilise le même type (Idéalement à exporter depuis un fichier types.ts)
-type Message = {
-  id: string;
-  clubName: string;
-  audience: string;
-  subject: string;
-  body: string;
-  date: string;
-  isUnread: boolean;
-  isUrgent?: boolean;
-};
 
 // Mock data (Copie conforme de ton index pour la démo)
-const MOCK_MESSAGES: Message[] = [
-  {
-    id: '1',
-    clubName: 'Nancy Tennis Club',
-    audience: 'Section Tennis Adulte - Jeudi',
-    subject: 'Report du cours de ce soir (Intempéries)',
-    body: "Bonjour à tous,\n\nEn raison des fortes pluies et des risques d'inondation sur les terrains extérieurs, le cours de ce soir est malheureusement annulé et reporté à vendredi prochain aux mêmes horaires.\n\nMerci de votre compréhension.\nLe secrétariat.",
-    date: "Aujourd'hui, 14:22",
-    isUnread: false,
-    isUrgent: true,
-  },
-  {
-    id: '2',
-    clubName: 'Nancy Tennis Club',
-    audience: 'Tout le club',
-    subject: "Inscriptions ouvertes pour les stages d'été ☀️",
-    body: "Chers adhérents,\n\nLes inscriptions pour nos traditionnels stages d'été (Juillet et Août) sont désormais officiellement ouvertes en ligne ! Places limitées à 15 participants par session.\n\nTarif préférentiel pour les membres actuels du club.",
-    date: 'Hier, 10:15',
-    isUnread: false,
-  },
-  {
-    id: '3',
-    clubName: 'Metz Handball Association',
-    audience: 'Équipe U18 Masculine',
-    subject: 'Changement de lieu pour le match de samedi',
-    body: "Salut l'équipe,\n\nLe match contre Thionville de ce samedi ne se jouera pas au gymnase habituel mais au Complexe Sportif Saint-Symphorien. Rendez-vous sur place à 13h30 pétantes pour l'échauffement.",
-    date: '24 Juin 2026',
-    isUnread: false,
-  }
-];
+// const MOCK_MESSAGES: Message[] = [
+//   {
+//     id: '1',
+//     clubName: 'Nancy Tennis Club',
+//     sentTo: 'Section Tennis Adulte - Jeudi',
+//     subject: 'Report du cours de ce soir (Intempéries)',
+//     body: "Bonjour à tous,\n\nEn raison des fortes pluies et des risques d'inondation sur les terrains extérieurs, le cours de ce soir est malheureusement annulé et reporté à vendredi prochain aux mêmes horaires.\n\nMerci de votre compréhension.\nLe secrétariat.",
+//     date: "Aujourd'hui, 14:22",
+//     isUnread: false,
+//     isUrgent: true,
+//   },
+//   {
+//     id: '2',
+//     clubName: 'Nancy Tennis Club',
+//     audience: 'Tout le club',
+//     subject: "Inscriptions ouvertes pour les stages d'été ☀️",
+//     body: "Chers adhérents,\n\nLes inscriptions pour nos traditionnels stages d'été (Juillet et Août) sont désormais officiellement ouvertes en ligne ! Places limitées à 15 participants par session.\n\nTarif préférentiel pour les membres actuels du club.",
+//     date: 'Hier, 10:15',
+//     isUnread: false,
+//   },
+//   {
+//     id: '3',
+//     clubName: 'Metz Handball Association',
+//     audience: 'Équipe U18 Masculine',
+//     subject: 'Changement de lieu pour le match de samedi',
+//     body: "Salut l'équipe,\n\nLe match contre Thionville de ce samedi ne se jouera pas au gymnase habituel mais au Complexe Sportif Saint-Symphorien. Rendez-vous sur place à 13h30 pétantes pour l'échauffement.",
+//     date: '24 Juin 2026',
+//     isUnread: false,
+//   }
+// ];
 
 export default function MessageDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-
+  const { clubId } = useLocalSearchParams<{ clubId: string }>();
+  const [message, setMessage] = useState<Message | undefined>(undefined);
   // Trouver le message correspondant à l'ID reçu dans l'URL
-  const message = MOCK_MESSAGES.find(m => m.id === id);
+  // const message = MOCK_MESSAGES.find(m => m.id === id);
 
   if (!message) {
     return (
@@ -66,6 +57,17 @@ export default function MessageDetailScreen() {
       </View>
     );
   }
+  useEffect(() => {
+    const fetchMessage = async () => {
+      try {
+        const response = await getNotificationsById(id, clubId); // Appel à ton service pour récupérer le message par ID
+        setMessage(response.data);
+      } catch (error) {
+        console.error("Error fetching notification:", error);
+      }
+    };
+    fetchMessage();
+  }, [id]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -89,14 +91,14 @@ export default function MessageDetailScreen() {
             style={{ marginRight: 4 }} 
           />
           <Text style={[styles.audienceText, message.isUrgent && styles.urgentText]}>
-            Destiné à : {message.audience}
+            Destiné à : {message.sentTo}
           </Text>
         </View>
 
         <View style={styles.divider} />
 
-        <Text style={styles.subject}>{message.subject}</Text>
-        <Text style={styles.bodyText}>{message.body}</Text>
+        <Text style={styles.subject}>{message.title}</Text>
+        <Text style={styles.bodyText}>{message.content}</Text>
       </ScrollView>
     </View>
   );
@@ -117,3 +119,7 @@ const styles = StyleSheet.create({
   urgentBadge: { backgroundColor: '#FFF0F0' },
   urgentText: { color: '#E63946', fontWeight: '700' },
 });
+
+function getNotificationsById(id: string) {
+  throw new Error('Function not implemented.');
+}

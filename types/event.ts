@@ -17,6 +17,8 @@ export interface Event {
     address: {
         street: string;
         city: string;
+        longitude: string;
+        latitude: string;
     }
     banner_url: string;
     status?: {

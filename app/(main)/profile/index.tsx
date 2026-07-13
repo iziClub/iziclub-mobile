@@ -16,6 +16,7 @@ import { getLikedEvents, getParticipatingEvents } from '@/services/events.servic
 import { getLikedClubs } from '@/services/clubs.service';
 import { getSavedClubs } from '@/services/clubs.service';
 import { getAllSubmissions } from '@/services/forms.service';
+import { getNotifications } from '@/services/notifications.service';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -39,7 +40,8 @@ export default function ProfileScreen() {
     likedCount: 0,
     clubsCount: 0,
     participationsCount: 0, // Tu peux le lier à ton API d'inscriptions ou d'événements à venir
-    dossiersCount: 0
+    dossiersCount: 0,
+    notificationsCount: 0
   });
 
   // 💡 useFocusEffect s'exécute à CHAQUE FOIS que l'écran devient actif
@@ -47,31 +49,30 @@ export default function ProfileScreen() {
     useCallback(() => {
       const fetchProfileData = async () => {
         try {
-          // On lance tout en parallèle en arrière-plan (pas de setLoading(true) global)
-          const [userResponse, likedEventsRes, likedClubsRes, savedClubsRes, participationsRes, dossierRes] = await Promise.all([
+          const [userResponse, likedEventsRes, likedClubsRes, savedClubsRes, participationsRes, dossierRes, notificationRes] = await Promise.all([
             getCurrentUser(),
             getLikedEvents().catch(() => ({ data: [] })),
             getLikedClubs().catch(() => ({ data: [] })),
             getSavedClubs().catch(() => ({ data: [] })),
             getParticipatingEvents().catch(() => ({ data: [] })), // Si tu as une API pour les participations
-            getAllSubmissions().catch(() => ({ data: { submissions: [] } })) // Pour compter les dossiers
+            getAllSubmissions().catch(() => ({ data: { submissions: [] } })), // Pour compter les dossiers
+            getNotifications().catch(() => ({ data: [] })) // Pour compter les notifications non lues
           ]);
 
-          // 1. Mise à jour des infos utilisateur
           setUserInfo(userResponse);
 
-          // 2. Calcul des compteurs (adaptation selon la structure de tes réponses d'API)
           const totalLikes = (likedEventsRes?.data?.length || 0) + (likedClubsRes?.data?.length || 0);
           const totalSavedClubs = savedClubsRes?.data?.length || 0;
           const totalParticipations = participationsRes?.data?.length || 0;
           const totalDossiers = dossierRes?.data?.submissions?.length || 0;
-
+          const totalUnreadNotifications = notificationRes?.data?.filter((n: any) => n.isUnread).length || 0;
           setStats(prev => ({
             ...prev,
             likedCount: totalLikes,
             clubsCount: totalSavedClubs,
             participationsCount: totalParticipations,
-            dossiersCount: totalDossiers
+            dossiersCount: totalDossiers,
+            notificationsCount: totalUnreadNotifications
           }));
 
         } catch (error) {
@@ -158,7 +159,7 @@ export default function ProfileScreen() {
       icon: 'mail-unread',
       color: '#FFB900',
       path: "/notifications",
-      badge: unreadMessagesCount
+      badge: stats.clubsCount // 💡 Badge dynamique basé sur le nombre de notifications non lues
     },
     {
       id: '1',

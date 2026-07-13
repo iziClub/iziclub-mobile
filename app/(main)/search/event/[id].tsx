@@ -173,12 +173,14 @@ export default function EventDetailScreen() {
   const isLoggedIn = !!user;
 
   const [club, setClub] = useState<Club | null>(null);
-  const region = {
+  const regionFake = {
     latitude: 49.1191, // Exemple: Metz
     longitude: 6.1727,
     latitudeDelta: 0.001,
     longitudeDelta: 0.05,
   };
+  const [region, setRegion] = useState(regionFake);
+
   useEffect(() => {
     const fetchClub = async () => {
       if (event?.clubId) {
@@ -205,6 +207,11 @@ export default function EventDetailScreen() {
         }
 
         setEvent(eventData);
+        const newRegion = { ...regionFake };
+        newRegion.latitude = parseFloat(eventData?.address.latitude || "49.1191");
+        newRegion.longitude = parseFloat(eventData?.address.longitude || "6.1727");
+
+        setRegion(newRegion);
       }
     };
 
@@ -222,8 +229,17 @@ export default function EventDetailScreen() {
   return (
     <ScrollView style={styles.container}>
       {/* IMAGE */}
+      
       <View style={styles.imageContainer}>
         <Image source={{ uri: event.banner_url ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+        
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={20} color="#0E011A" />
+        </TouchableOpacity>
       </View>
 
       {/* TITRE */}

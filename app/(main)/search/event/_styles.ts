@@ -1,6 +1,23 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  backButton: { 
+  position: 'absolute',
+  top: Platform.OS === 'ios' ? 50 : 20, // Évite l'encoche de l'iPhone ou la barre de statut Android
+  left: 16,
+  width: 36, 
+  height: 36, 
+  justifyContent: 'center', 
+  alignItems: 'center', 
+  borderRadius: 18, 
+  backgroundColor: '#F5F5F5',
+  // Ajout d'une petite ombre pour qu'il ressorte bien si l'image est claire
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 3,
+  elevation: 4,
+},
   mapWrapper: {
     height: 150,
     width: "100%",
@@ -38,6 +55,7 @@ export const styles = StyleSheet.create({
   },
   container: { flex: 1, backgroundColor: "#fff" },
   imageContainer: {
+    position: 'relative',
     width: "100%",
     height: 220,
     overflow: "hidden",

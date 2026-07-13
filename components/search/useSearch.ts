@@ -4,7 +4,7 @@ import { mapClubToSearchItem } from "@/mappers/club.mapper";
 import { ClubSearchItem, EventSearchItem } from "./types";
 import { getEvents } from "@/services/events.service";
 import { mapEventToSearchItem } from "@/mappers/event.mapper";
-import { USER_LOCATION } from "./data";
+import { useLocation } from "@/context/LocationContext";
 
 export const useSearch = (
   query?: string,
@@ -13,6 +13,8 @@ export const useSearch = (
   city?: string,
   mapCoords?: { latitude: number; longitude: number }
 ) => {
+  const { location } = useLocation();
+
   const [clubs, setClubs] = useState<ClubSearchItem[]>([]);
   const [events, setEvents] = useState<EventSearchItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,16 +59,15 @@ export const useSearch = (
 
   // Helper pour construire les paramètres d'API
   const buildParams = (pageNumber: number) => {
-    const defaultLat = USER_LOCATION.latitude;
-    const defaultLon = USER_LOCATION.longitude;
+    const fallbackLocation = location ?? { latitude: 48.8566, longitude: 2.3522 };
     return {
       nameQuery: query || undefined,
       city: city || undefined,
-      limit: 10, // Réduit à 10 pour matcher la config de ton API
+      limit: 30,
       page: pageNumber,
-      latitude: mapCoords?.latitude ?? defaultLat,
-      longitude: mapCoords?.longitude ?? defaultLon,
-      radiusInKm: useRadius ? radius : 500,
+      latitude: mapCoords?.latitude ?? fallbackLocation.latitude,
+      longitude: mapCoords?.longitude ?? fallbackLocation.longitude,
+      radiusInKm: useRadius ? radius : 1500,
     };
   };
 
@@ -98,7 +99,7 @@ export const useSearch = (
   // Déclencheur automatique lors des changements de filtres / query
   useEffect(() => {
     fetchData();
-  }, [query, radius, useRadius, city, mapCoords?.latitude, mapCoords?.longitude]);
+  }, [query, radius, useRadius, city, mapCoords?.latitude, mapCoords?.longitude, location?.latitude, location?.longitude]);
 
   return { 
     clubs, 

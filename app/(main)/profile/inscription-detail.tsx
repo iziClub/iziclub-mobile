@@ -5,7 +5,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 
 import { InscriptionStatus } from './inscriptions';
-import QuestionCard from "@/components/club/Membership/QuestionCard"; // Import de ta carte de question éditable
+import QuestionCard from "@/components/club/Membership/QuestionCard"; 
 
 import {
   deleteSubmission,
@@ -19,7 +19,7 @@ export default function InscriptionDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const submissionId = params.id as string; // Identifiant de la soumission courante
+  const submissionId = params.id as string; 
   const clubName = (params.clubName as string) || "Club Partenaire";
   const status = params.status as InscriptionStatus;
   const date = params.date as string;
@@ -28,7 +28,6 @@ export default function InscriptionDetailScreen() {
   const formId = params.formId as string;
   const submittedAt = date ? new Date(date) : null;
 
-  // 💡 Détermination du mode Édition (uniquement si le statut est draft)
   const isDraftMode = status === 'draft';
 
   // États de données
@@ -36,13 +35,15 @@ export default function InscriptionDetailScreen() {
   const [formResponses, setFormResponses] = useState<Record<string, any>>({});
   const [loadingForm, setLoadingForm] = useState<boolean>(true);
 
+  // 💡 NOUVEAU : État pour certifier l'engagement légal
+  const [hasAgreedToTerms, setHasAgreedToTerms] = useState<boolean>(false);
+
   // États UX d'action réseau
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false);
   const [uploadingQuestionId, setUploadingQuestionId] = useState<string | null>(null);
 
-  // Initialisation et chargement des données de structure du formulaire
   useEffect(() => {
     const fetchFormStructure = async () => {
       if (!formId) {
@@ -55,12 +56,10 @@ export default function InscriptionDetailScreen() {
         const formData = response?.data || response;
         setFormStructure(formData);
 
-        // 💡 Si on est en mode brouillon, on pré-remplit l'état modifiable avec les réponses déjà stockées
         if (params.answers) {
           const rawAnswers = JSON.parse(params.answers as string);
           const localResponses: Record<string, any> = {};
           rawAnswers.forEach((ans: any) => {
-            // Détection basique pour restituer les documents ou les checkbox (tableaux de chaînes)
             if (ans.value && String(ans.value).startsWith('form-submissions/')) {
               localResponses[ans.questionId] = {
                 filePath: ans.value,
@@ -84,9 +83,6 @@ export default function InscriptionDetailScreen() {
     fetchFormStructure();
   }, [formId, params.answers]);
 
-  // ─────────────────────────────────────────────────────────
-  // Handlers pour la modification des données (Mode Draft)
-  // ─────────────────────────────────────────────────────────
   const handleTextChange = (questionId: string, value: string) => {
     setFormResponses((prev) => ({ ...prev, [questionId]: value }));
   };
@@ -193,6 +189,15 @@ export default function InscriptionDetailScreen() {
       }
     }
 
+    // 💡 NOUVEAU : Blocage si la case d'engagement officiel n'est pas cochée
+    if (!hasAgreedToTerms) {
+      Alert.alert(
+        "Engagement obligatoire", 
+        "Vous devez certifier l'exactitude des informations et accepter le caractère officiel de cette demande pour envoyer votre dossier."
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const formattedAnswers = formatAnswersForApi();
@@ -211,7 +216,6 @@ export default function InscriptionDetailScreen() {
     }
   };
 
-  // Suppression définitive
   const handleDeleteInscription = () => {
     Alert.alert(
       "Supprimer la demande",
@@ -238,7 +242,6 @@ export default function InscriptionDetailScreen() {
     );
   };
 
-  // Utilitaires de formatage de l'UI d'origine
   const formatDate = (d: Date | null) => {
     if (!d || Number.isNaN(d.getTime())) return 'Date inconnue';
     return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
@@ -299,6 +302,7 @@ export default function InscriptionDetailScreen() {
             </Text>
           </View>
         </View>
+
         {/* BANNIÈRE DE STATUT */}
         <View style={[styles.statusBanner, { backgroundColor: config.bg, borderColor: config.color + '20' }]}>
           <View style={[styles.iconWrapper, { backgroundColor: '#FFF' }]}>
@@ -333,7 +337,7 @@ export default function InscriptionDetailScreen() {
           </View>
         )}
 
-        {/* CONTENU PRINCIPAL : ÉDITABLE (DRAFT) OU STATIQUE (EN COUROS / VALIDÉ) */}
+        {/* CONTENU PRINCIPAL */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{isDraftMode ? "Renseigner vos informations" : "Formulaire transmis"}</Text>
 
@@ -342,13 +346,20 @@ export default function InscriptionDetailScreen() {
               <ActivityIndicator size="small" color="#3B82F6" />
             </View>
           ) : isDraftMode && formStructure?.questions ? (
-            // 💡 MODE ÉDITABLE : On fait un map sur les composants interactifs QuestionCard
             <View style={{ gap: 16 }}>
               {formStructure.questions.map((question: any) => {
                 const responseValue = formResponses[question.id];
-                const displayValue = responseValue && typeof responseValue === "object" && "fileName" in responseValue
-                  ? responseValue.fileName
-                  : responseValue;
+                
+                // 💡 Simplification du nom de fichier si c'est un document (on garde la logique précédente)
+                let displayValue = responseValue;
+                if (responseValue) {
+                  if (
+                    (typeof responseValue === "object" && "filePath" in responseValue) || 
+                    (typeof responseValue === "string" && responseValue.includes("form-submissions/"))
+                  ) {
+                    displayValue = "Document ajouté"; 
+                  }
+                }
 
                 return (
                   <QuestionCard
@@ -364,7 +375,6 @@ export default function InscriptionDetailScreen() {
               })}
             </View>
           ) : (
-            // MODE STATIQUE STANDARD D'ORIGINE
             <View style={styles.responsesCard}>
               {JSON.parse(params.answers as string || '[]').map((ans: any, index: number, arr: any[]) => {
                 const mapped = getReadableAnswer(ans.questionId, ans.value);
@@ -382,7 +392,43 @@ export default function InscriptionDetailScreen() {
           )}
         </View>
 
-        {/* 💡 ACTIONS DU BAS UNIQUEMENT EN MODE BROUILLON */}
+        {/* ───────────────────────────────────────────────────────── */}
+        {/* 💡 NOUVEAU : ENCADRÉ D'ENGAGEMENT LÉGAL (MODE DRAFT SEUL) */}
+        {/* ───────────────────────────────────────────────────────── */}
+        {isDraftMode && !loadingForm && (
+          <View style={styles.legalNoticeContainer}>
+            <TouchableOpacity 
+              style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}
+              onPress={() => setHasAgreedToTerms(!hasAgreedToTerms)}
+              activeOpacity={0.8}
+            >
+              {/* Checkbox Visuelle */}
+              <View style={[
+                styles.checkboxVisual, 
+                { 
+                  borderColor: hasAgreedToTerms ? '#4A78FF' : '#A3A3A3',
+                  backgroundColor: hasAgreedToTerms ? '#4A78FF' : 'transparent'
+                }
+              ]}>
+                {hasAgreedToTerms && (
+                  <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>✓</Text>
+                )}
+              </View>
+
+              {/* Texte explicatif */}
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#171717', marginBottom: 4 }}>
+                  Certification & Engagement Officiel
+                </Text>
+                <Text style={{ fontSize: 13, color: '#404040', lineHeight: 18 }}>
+                  Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontWeight: '700' }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* ACTIONS DU BAS */}
         {isDraftMode && !loadingForm && (
           <View style={{ marginTop: 10, gap: 12 }}>
             <TouchableOpacity
@@ -394,7 +440,11 @@ export default function InscriptionDetailScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.submitButton, { backgroundColor: '#4A78FF' }, (isSubmitting || isSavingDraft || !!uploadingQuestionId) && { opacity: 0.7 }]}
+              style={[
+                styles.submitButton, 
+                { backgroundColor: '#4A78FF' }, 
+                (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { opacity: 0.6 }
+              ]}
               onPress={handleSubmit}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
             >
@@ -435,7 +485,26 @@ const styles = StyleSheet.create({
   responseValue: { fontSize: 14, fontWeight: '600', color: '#171717' },
   loaderContainer: { paddingVertical: 24, alignItems: 'center' },
 
-  // Styles rajoutés pour les boutons d'actions inférieurs (Draft & Submit)
   submitButton: { height: 48, borderRadius: 12, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' },
-  submitButtonText: { fontSize: 14, fontWeight: '600' }
+  submitButtonText: { fontSize: 14, fontWeight: '600' },
+
+  // 💡 NOUVEAUX STYLES AJOUTÉS
+  legalNoticeContainer: {
+    backgroundColor: '#FFF9F3', 
+    borderWidth: 1,
+    borderColor: '#FFE2C5',
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 8,
+    marginBottom: 20
+  },
+  checkboxVisual: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 2 
+  }
 });

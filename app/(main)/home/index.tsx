@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/context/AuthContext';
 import { getEvents } from '@/services/events.service';
 import { getClubs } from '@/services/clubs.service';
+import { getCurrentUser } from '@/services/auth';
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -28,13 +29,30 @@ export default function Home() {
   const isLoggedIn = !!user;
   const [carouselIndex, setCarouselIndex] = useState<number>(0);
   const CARD_WIDTH = 260; 
+  const [userName, setUserName] = useState<string | null>(null);
 
   const categories = [
-    { id: '1', name: 'Tennis', icon: 'tennisball' },
-    { id: '2', name: 'Padel', icon: 'trophy' },
-    { id: '3', name: 'Fitness', icon: 'fitness' },
-    { id: '4', name: 'Foot', icon: 'football' },
-  ];
+  { id: '1', name: 'Football', icon: 'football' },
+  { id: '2', name: 'Basketball', icon: 'basketball' },
+  { id: '3', name: 'Volleyball', icon: 'american-football' }, // meilleur compromis
+  { id: '4', name: 'Handball', icon: 'hand-left' },
+  { id: '5', name: 'Rugby', icon: 'american-football' },
+  { id: '6', name: 'Tennis', icon: 'tennisball' },
+  { id: '7', name: 'Padel', icon: 'tennisball' },
+  { id: '8', name: 'Badminton', icon: 'paper-plane' },
+  { id: '9', name: 'Fitness', icon: 'barbell' },
+  { id: '10', name: 'Musculation', icon: 'barbell' },
+  { id: '11', name: 'CrossFit', icon: 'fitness' },
+  { id: '12', name: 'Natation', icon: 'water' },
+  { id: '13', name: 'Course à pied', icon: 'walk' },
+  { id: '14', name: 'Cyclisme', icon: 'bicycle' },
+  { id: '15', name: 'Arts martiaux', icon: 'shield' },
+  { id: '16', name: 'Boxe', icon: 'flash' },
+  { id: '17', name: 'Danse', icon: 'musical-notes' },
+  { id: '18', name: 'Yoga', icon: 'leaf' },
+  { id: '19', name: 'Escalade', icon: 'triangle' },
+  { id: '20', name: 'Équitation', icon: 'paw' },
+];
 
   useEffect(() => {
     const loadHome = async () => {
@@ -50,6 +68,10 @@ export default function Home() {
         const clubs = clubsRes?.data ?? clubsRes ?? [];
         const clubsAny = clubs as any;
         setRecommendedClubs(Array.isArray(clubsAny) ? clubsAny : clubsAny?.data ?? []);
+        if (user) {
+          const currentUser = await getCurrentUser();
+          setUserName(currentUser?.firstName || null);
+        }
       } catch (err) {
         console.error('Erreur chargement homepage :', err);
       } finally {
@@ -67,7 +89,7 @@ export default function Home() {
         {/* 1. HEADER */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Bonjour 👋</Text>
+            <Text style={styles.greeting}>Bonjour {userName || ''} 👋</Text>
             <Text style={styles.userName}>Prêt à Bouger ?</Text>
           </View>
           <TouchableOpacity 

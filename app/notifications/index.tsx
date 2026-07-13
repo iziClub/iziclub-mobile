@@ -1,64 +1,44 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-type Message = {
-  id: string;
-  clubName: string;
-  audience: string;
-  subject: string;
-  body: string;
-  date: string;
-  isUnread: boolean;
-  isUrgent?: boolean;
-};
+import { getNotifications } from '@/services/notifications.service';
+import { Message } from '@/types/notification';
 
 export default function InboxScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [notifications, setNotifications] = useState<Message[]>([]);
 
-  // Mock data réaliste
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      clubName: 'Nancy Tennis Club',
-      audience: 'Section Tennis Adulte - Jeudi',
-      subject: 'Report du cours de ce soir (Intempéries)',
-      body: 'Bonjour à tous,\n\nEn raison des fortes pluies et des risques d\'inondation sur les terrains extérieurs, le cours de ce soir est malheureusement annulé et reporté à vendredi prochain aux mêmes horaires.\n\nMerci de votre compréhension.\nLe secrétariat.',
-      date: 'Aujourd\'hui, 14:22',
-      isUnread: true,
-      isUrgent: true,
-    },
-    {
-      id: '2',
-      clubName: 'Nancy Tennis Club',
-      audience: 'Tout le club',
-      subject: 'Inscriptions ouvertes pour les stages d\'été ☀️',
-      body: 'Chers adhérents,\n\nLes inscriptions pour nos traditionnels stages d\'été (Juillet et Août) sont désormais officiellement ouvertes en ligne ! Places limitées à 15 participants par session.\n\nTarif préférentiel pour les membres actuels du club.',
-      date: 'Hier, 10:15',
-      isUnread: true,
-    },
-    {
-      id: '3',
-      clubName: 'Metz Handball Association',
-      audience: 'Équipe U18 Masculine',
-      subject: 'Changement de lieu pour le match de samedi',
-      body: 'Salut l\'équipe,\n\nLe match contre Thionville de ce samedi ne se jouera pas au gymnase habituel mais au Complexe Sportif Saint-Symphorien. Rendez-vous sur place à 13h30 pétantes pour l\'échauffement.',
-      date: '24 Juin 2026',
-      isUnread: false,
+  const fetchNotifications = async () => {
+    setLoading(true);
+    try {
+      const response = await getNotifications();
+      console.log("Fetched notifications:", response);
+      // Petite sécurité au cas où l'API renvoie null/undefined
+      setNotifications(response?.data || []);
     }
-  ]);
+    catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+    finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   const handleOpenMessage = (msg: Message) => {
-  // Marquer comme lu localement
-  setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, isUnread: false } : m));
-  
-  // Redirection vers le nouvel écran avec l'ID du message
-  router.push(`../notifications/${msg.id}`); 
-};
+    // Marquer comme lu localement (sur ton state API désormais)
+    setNotifications(prev => prev.map(m => m.id === msg.id ? { ...m, isUnread: false } : m));
+    
+    // Redirection vers le nouvel écran avec l'ID du message
+    router.push(`../notifications/${msg.id}`); 
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -71,50 +51,69 @@ export default function InboxScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      {/* MESSAGES LIST */}
-      <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-        {messages.map((msg) => (
-          <TouchableOpacity 
-            key={msg.id} 
-            style={[styles.msgCard, msg.isUnread && styles.msgCardUnread]}
-            onPress={() => handleOpenMessage(msg)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.msgHeader}>
-              <View style={styles.clubRow}>
-                <Text style={styles.clubName}>{msg.clubName}</Text>
-                {msg.isUnread && <View style={styles.unreadBadge} />}
-              </View>
-              <Text style={styles.msgDate}>{msg.date}</Text>
-            </View>
-
-            {/* Objet du message */}
-            <Text style={[styles.msgSubject, msg.isUnread && styles.textBold]} numberOfLines={1}>
-              {msg.subject}
-            </Text>
-
-            {/* Aperçu du contenu */}
-            <Text style={styles.msgPreview} numberOfLines={2}>
-              {msg.body}
-            </Text>
-
-            {/* Footer de la carte : Cible / Audience */}
-            <View style={styles.msgFooter}>
-              <View style={[styles.audienceBadge, msg.isUrgent && styles.urgentBadge]}>
-                <Ionicons 
-                  name={msg.isUrgent ? "alert-circle" : "people-outline"} 
-                  size={12} 
-                  color={msg.isUrgent ? "#E63946" : "#666"} 
-                  style={{ marginRight: 4 }} 
-                />
-                <Text style={[styles.audienceText, msg.isUrgent && styles.urgentText]}>
-                  {msg.isUrgent ? 'URGENT • ' : ''}{msg.audience}
-                </Text>
-              </View>
-            </View>
+      {/* GESTION DE L'AFFICHAGE */}
+      {loading ? (
+        // 1. Écran de chargement
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color="#4A78FF" />
+        </View>
+      ) : notifications.length === 0 ? (
+        // 2. Écran liste vide (Empty State)
+        <View style={styles.centerContainer}>
+          <View style={styles.emptyIconContainer}>
+            <Ionicons name="mail-open-outline" size={48} color="#999" />
+          </View>
+          <Text style={styles.emptyTitle}>Tout est propre !</Text>
+          <Text style={styles.emptySubtitle}>
+            Vous n'avez reçu aucun message ou notification pour le moment.
+          </Text>
+          <TouchableOpacity style={styles.refreshButton} onPress={fetchNotifications}>
+            <Text style={styles.refreshButtonText}>Actualiser</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+        </View>
+      ) : (
+        // 3. Liste des messages
+        <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
+          {notifications.map((msg) => (
+            <TouchableOpacity 
+              key={msg.id} 
+              style={[styles.msgCard, msg.isUnread && styles.msgCardUnread]}
+              onPress={() => handleOpenMessage(msg)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.msgHeader}>
+                <View style={styles.clubRow}>
+                  <Text style={styles.clubName}>{msg.clubName}</Text>
+                  {msg.isUnread && <View style={styles.unreadBadge} />}
+                </View>
+                <Text style={styles.msgDate}>{msg.date}</Text>
+              </View>
+
+              <Text style={[styles.msgSubject, msg.isUnread && styles.textBold]} numberOfLines={1}>
+                {msg.title}
+              </Text>
+
+              <Text style={styles.msgPreview} numberOfLines={2}>
+                {msg.content}
+              </Text>
+
+              <View style={styles.msgFooter}>
+                <View style={[styles.audienceBadge, msg.isUrgent && styles.urgentBadge]}>
+                  <Ionicons 
+                    name={msg.isUrgent ? "alert-circle" : "people-outline"} 
+                    size={12} 
+                    color={msg.isUrgent ? "#E63946" : "#666"} 
+                    style={{ marginRight: 4 }} 
+                  />
+                  <Text style={[styles.audienceText, msg.isUrgent && styles.urgentText]}>
+                    {msg.isUrgent ? 'URGENT • ' : ''}{msg.sentTo}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -126,6 +125,14 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#1A1A1A' },
   listContainer: { padding: 20 },
   
+  // NOUVEAU : Styles pour les écrans de chargement et liste vide
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, backgroundColor: '#FFF' },
+  emptyIconContainer: { width: 90, height: 90, borderRadius: 45, backgroundColor: '#F8F9FF', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  emptyTitle: { fontSize: 18, fontWeight: '700', color: '#1A1A1A', marginBottom: 8, textAlign: 'center' },
+  emptySubtitle: { fontSize: 14, color: '#666', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+  refreshButton: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: '#F0F2F5' },
+  refreshButtonText: { fontSize: 14, fontWeight: '600', color: '#4A78FF' },
+
   // Cartes de messages
   msgCard: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#F2F2F2', shadowColor: '#000', shadowOpacity: 0.01, shadowRadius: 5, elevation: 1 },
   msgCardUnread: { backgroundColor: '#F8F9FF', borderColor: '#4A78FF20' },
@@ -144,17 +151,4 @@ const styles = StyleSheet.create({
   audienceText: { fontSize: 11, fontWeight: '500', color: '#555' },
   urgentBadge: { backgroundColor: '#FFF0F0' },
   urgentText: { color: '#E63946', fontWeight: '700' },
-
-  // Design modal (Feuille coulissante depuis le bas)
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: 'white', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, minHeight: '50%', maxHeight: '85%', alignItems: 'center' },
-  modalDragHandle: { width: 40, height: 5, backgroundColor: '#E5E5E5', borderRadius: 2.5, marginBottom: 16 },
-  modalHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' },
-  modalClubName: { fontSize: 16, fontWeight: '700', color: '#1A1A1A' },
-  closeModalButton: { padding: 4 },
-  modalDate: { fontSize: 12, color: '#999', marginTop: 2 },
-  divider: { height: 1, backgroundColor: '#F0F0F0', width: '100%', marginVertical: 16 },
-  modalSubject: { fontSize: 18, fontWeight: '800', color: '#1A1A1A', marginBottom: 14, lineHeight: 24 },
-  modalBodyScroll: { maxHeight: 300, width: '100%' },
-  modalBodyText: { fontSize: 14, color: '#333', lineHeight: 22, paddingBottom: 20 }
 });

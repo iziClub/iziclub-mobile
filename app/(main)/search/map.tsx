@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useSearch } from '../../../components/search/useSearch';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useLocation } from '@/context/LocationContext';
 
 export default function MapScreen() {
   const router = useRouter();
+  const { location, status, requestLocation } = useLocation();
 
+  // États pour la carte et la recherche
   const [region, setRegion] = useState({
     latitude: 48.692,
     longitude: 6.184,
@@ -23,10 +26,27 @@ export default function MapScreen() {
 
   const [showSearchButton, setShowSearchButton] = useState(false);
 
+  // --- NOUVEAUX ÉTATS POUR LES FILTRES ---
+  const [showClubs, setShowClubs] = useState(true);
+  const [showEvents, setShowEvents] = useState(true);
+
   const { clubs, events, loading } = useSearch("", searchParams.radius, true, "", {
     latitude: searchParams.latitude,
     longitude: searchParams.longitude,
   });
+
+  useEffect(() => {
+    if (location) {
+      setRegion(prev => ({ ...prev, latitude: location.latitude, longitude: location.longitude }));
+      setSearchParams(prev => ({ ...prev, latitude: location.latitude, longitude: location.longitude }));
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      requestLocation();
+    }
+  }, [status, requestLocation]);
 
   const handleSearchHere = () => {
     const calculatedRadius = Math.round((region.latitudeDelta * 111) / 2 * 1.2);
@@ -41,6 +61,34 @@ export default function MapScreen() {
     setShowSearchButton(false);
   };
 
+  const handleRequestLocation = async () => {
+    const granted = await requestLocation();
+    if (!granted) {
+      Alert.alert('Géolocalisation', 'La géolocalisation n’a pas été autorisée. Les résultats seront affichés autour de Paris par défaut.');
+    }
+  };
+
+  // Gestion intelligente des filtres pour éviter d'avoir 0 filtre sélectionné
+  const toggleFilter = (type: 'clubs' | 'events') => {
+    if (type === 'clubs') {
+      if (showClubs && !showEvents) {
+        // Si on désactive les clubs alors que les événements sont déjà masqués, on active les événements
+        setShowClubs(false);
+        setShowEvents(true);
+      } else {
+        setShowClubs(!showClubs);
+      }
+    } else {
+      if (showEvents && !showClubs) {
+        // Si on désactive les événements alors que les clubs sont déjà masqués, on active les clubs
+        setShowEvents(false);
+        setShowClubs(true);
+      } else {
+        setShowEvents(!showEvents);
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -53,8 +101,8 @@ export default function MapScreen() {
         }}
         showsUserLocation={true}
       >
-        {/* --- RENDU DES CLUBS --- */}
-        {clubs.map((club: any) => (
+        {/* --- RENDU DES CLUBS (Filtré) --- */}
+        {showClubs && clubs.map((club: any) => (
           <Marker
             key={`club-${club.id}`}
             coordinate={{
@@ -88,8 +136,8 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {/* --- RENDU DES ÉVÉNEMENTS --- */}
-        {events && events.map((event: any) => (
+        {/* --- RENDU DES ÉVÉNEMENTS (Filtré) --- */}
+        {showEvents && events && events.map((event: any) => (
           <Marker
             key={`event-${event.id}`}
             coordinate={{
@@ -124,24 +172,75 @@ export default function MapScreen() {
         ))}
       </MapView>
 
-      {/* Bouton "Rechercher ici" */}
-      {showSearchButton && (
-        <TouchableOpacity
-          style={styles.searchHereBtn}
-          onPress={handleSearchHere}
-          activeOpacity={0.9}
-          disabled={loading}
-        >
-          <Ionicons
-            name={loading ? "hourglass-outline" : "refresh"}
-            size={18}
-            color="#4A78FF"
-          />
-          <Text style={styles.searchHereText}>
-            {loading ? "Chargement..." : "Rechercher dans cette zone"}
-          </Text>
-        </TouchableOpacity>
-      )}
+      {/* --- CONTENEUR DES BOUTONS DE HAUT D'ÉCRAN --- */}
+      <View style={styles.topControlsContainer}>
+        {/* Bouton "Rechercher ici" */}
+        {showSearchButton && (
+          <TouchableOpacity
+            style={styles.searchHereBtn}
+            onPress={handleSearchHere}
+            activeOpacity={0.9}
+            disabled={loading}
+          >
+            <Ionicons
+              name={loading ? "hourglass-outline" : "refresh"}
+              size={18}
+              color="#4A78FF"
+            />
+            <Text style={styles.searchHereText}>
+              {loading ? "Chargement..." : "Rechercher dans cette zone"}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* BARRE DE FILTRES UI/UX */}
+        <View style={styles.filterContainer}>
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              showClubs ? styles.filterButtonClubActive : styles.filterButtonInactive
+            ]}
+            onPress={() => toggleFilter('clubs')}
+            activeOpacity={0.8}
+          >
+            <Ionicons 
+              name={showClubs ? "people-circle" : "people-circle-outline"} 
+              size={16} 
+              color={showClubs ? "white" : "#8E8E93"} 
+            />
+            <Text style={[styles.filterText, showClubs ? styles.filterTextActive : styles.filterTextInactive]}>
+              Clubs
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.filterButton,
+              showEvents ? styles.filterButtonEventActive : styles.filterButtonInactive
+            ]}
+            onPress={() => toggleFilter('events')}
+            activeOpacity={0.8}
+          >
+            <Ionicons 
+              name={showEvents ? "medal" : "medal-outline"} 
+              size={16} 
+              color={showEvents ? "white" : "#8E8E93"} 
+            />
+            <Text style={[styles.filterText, showEvents ? styles.filterTextActive : styles.filterTextInactive]}>
+              Événements
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Bouton Géolocalisation */}
+      <TouchableOpacity
+        style={styles.fabLocation}
+        onPress={handleRequestLocation}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="locate-outline" size={22} color="#4A78FF" />
+      </TouchableOpacity>
 
       {/* Bouton Retour Liste */}
       <TouchableOpacity
@@ -160,6 +259,70 @@ const styles = StyleSheet.create({
   container: { ...StyleSheet.absoluteFillObject },
   map: { ...StyleSheet.absoluteFillObject },
   
+  // Nouveau conteneur pour empiler proprement les éléments du haut sans chevauchement
+  topControlsContainer: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    gap: 12, // Crée un espace propre entre le bouton refresh et les filtres
+  },
+
+  searchHereBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingVertical: 11,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+  },
+  searchHereText: { marginLeft: 8, color: '#4A78FF', fontWeight: '600', fontSize: 13 },
+
+  // Styles de la barre de filtres
+  filterContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    padding: 4,
+    borderRadius: 20,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    gap: 6,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    gap: 6,
+  },
+  filterButtonClubActive: {
+    backgroundColor: '#4A78FF',
+  },
+  filterButtonEventActive: {
+    backgroundColor: '#FF6B6B',
+  },
+  filterButtonInactive: {
+    backgroundColor: 'transparent',
+  },
+  filterText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  filterTextActive: {
+    color: 'white',
+  },
+  filterTextInactive: {
+    color: '#8E8E93',
+  },
+
   markerShadowContainer: {
     width: 36,
     height: 36,
@@ -226,24 +389,18 @@ const styles = StyleSheet.create({
     marginTop: -1,
   },
 
-  // FAB Buttons
-  searchHereBtn: {
+  fabLocation: {
     position: 'absolute',
-    top: 60,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
+    bottom: 95,
+    right: 20,
     backgroundColor: 'white',
-    paddingVertical: 11,
-    paddingHorizontal: 20,
-    borderRadius: 25,
+    padding: 12,
+    borderRadius: 999,
     elevation: 6,
     shadowColor: '#000',
     shadowOpacity: 0.15,
-    shadowRadius: 5,
+    shadowRadius: 6,
   },
-  searchHereText: { marginLeft: 8, color: '#4A78FF', fontWeight: '600', fontSize: 13 },
-
   fabList: {
     position: 'absolute',
     bottom: 30,
