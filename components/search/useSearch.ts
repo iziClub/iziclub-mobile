@@ -63,7 +63,7 @@ export const useSearch = (
     return {
       nameQuery: query || undefined,
       city: city || undefined,
-      limit: 30,
+      limit: 20,
       page: pageNumber,
       latitude: mapCoords?.latitude ?? fallbackLocation.latitude,
       longitude: mapCoords?.longitude ?? fallbackLocation.longitude,

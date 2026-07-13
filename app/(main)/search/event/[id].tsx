@@ -234,8 +234,13 @@ export default function EventDetailScreen() {
         <Image source={{ uri: event.banner_url ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
         <TouchableOpacity 
           style={styles.backButton} 
-          onPress={() => router.back()}
-        
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/search');
+            }
+          }}
           activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={20} color="#0E011A" />
