@@ -52,7 +52,7 @@ export default function FilterBottomSheet({
         </View>
 
         {/* SECTION TRI */}
-        <Text style={styles.sectionTitle}>Trier par</Text>
+        {/* <Text style={styles.sectionTitle}>Trier par</Text>
         {sorts.map((item) => (
           <TouchableOpacity 
             key={item} 
@@ -64,7 +64,7 @@ export default function FilterBottomSheet({
               {selectedSort === item && <View style={styles.radioInner} />}
             </View>
           </TouchableOpacity>
-        ))}
+        ))} */}
 
         <View style={styles.divider} />
 
@@ -108,13 +108,13 @@ export default function FilterBottomSheet({
 
         <View style={styles.divider} />
 
-        {/* SECTION SPORT */}
+        {/* SECTION SPORT
         <Text style={styles.sectionTitle}>Type de sports</Text>
         <TextInput 
           style={styles.sportInput} 
           placeholder="Chercher un sport"
           placeholderTextColor="#999"
-        />
+        /> */}
         
         <View style={{ height: 50 }} />
       </BottomSheetScrollView>

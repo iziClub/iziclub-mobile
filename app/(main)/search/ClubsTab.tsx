@@ -1,23 +1,33 @@
 import React, { useState } from "react";
-import { View, FlatList, RefreshControl } from "react-native";
+import { View, FlatList, RefreshControl, ActivityIndicator } from "react-native";
 import Card from "@/components/card";
 import { useRouter } from "expo-router";
 import { ClubSearchItem } from "@/components/search/types";
 import { useEffect } from "react";
 
 interface Props {
-  data: ClubSearchItem[],
+  data: ClubSearchItem[];
   refreshing: boolean;
   onRefresh: () => void;
 }
 
 export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
-    const [localData, setLocalData] = useState(data);
+  const [localData, setLocalData] = useState(data);
   const router = useRouter();
-    useEffect(() => {
-        setLocalData(data);
-    }, [data]);
-    // console.info("Données reçues dans ClubsTab:", data);
+  useEffect(() => {
+    setLocalData(data);
+  }, [data]);
+
+  const isLoading = refreshing && (!localData || localData.length === 0);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "white" }}>
+        <ActivityIndicator size="large" color="#4A78FF" />
+      </View>
+    );
+  }
+
   return (
     <View style={{flex:1,paddingHorizontal:12,paddingTop:10}}>
       <FlatList

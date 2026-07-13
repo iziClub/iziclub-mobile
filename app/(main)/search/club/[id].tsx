@@ -20,7 +20,7 @@ import { getCurrentUser } from "@/services/auth";
 const SECTIONS = ["Informations", "Événements", "Adhésion","Galerie", "Calendrier", "Contact"];
 
 export default function ClubDetail() {
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
     const [activeSection, setActiveSection] = useState(SECTIONS[0]);
     const [isLoading, setIsLoading] = useState(true);
     const [club, setClub] = useState<ClubDetailDTO>();
@@ -130,7 +130,7 @@ export default function ClubDetail() {
         <View style={styles.container}>
             {/* HEADER */}
 
-            <HeaderClubDetails club={club} isLoggedIn={isLoggedIn} />
+            <HeaderClubDetails club={club} isLoggedIn={isLoggedIn} from={from} />
 
             {/* SECTIONS */}
 

@@ -14,6 +14,15 @@ interface Props {
 
 export default function EventsTab({ data, refreshing, onRefresh, onEndReached, loadingMore }: Props) {
   const router = useRouter();
+  const isLoading = refreshing && (!data || data.length === 0);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "white" }}>
+        <ActivityIndicator size="large" color="#4A78FF" />
+      </View>
+    );
+  }
 
   // Affiche un loader en bas de page uniquement si on charge la suite
   const renderFooter = () => {

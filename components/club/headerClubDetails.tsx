@@ -11,6 +11,7 @@ interface HeaderClubDetailsProps {
   initialIsLiked?: boolean;
   initialIsSaved?: boolean;
   isLoggedIn?: boolean;
+  from?: string;
 }
 
 export default function HeaderClubDetails({ 
@@ -18,6 +19,7 @@ export default function HeaderClubDetails({
   initialIsLiked = false, 
   initialIsSaved = false,
   isLoggedIn = false,
+  from,
 }: HeaderClubDetailsProps) {
   const router = useRouter();
 
@@ -96,10 +98,28 @@ export default function HeaderClubDetails({
     }
   };
 
+  const handleGoBack = () => {
+    if (from === 'myClubs') {
+      router.replace('/profile/myClubs');
+      return;
+    }
+
+    if (from === 'search') {
+      router.replace('/search');
+      return;
+    }
+
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/search');
+    }
+  };
+
   return (
     <View style={styles.header}>
       {/* Bouton Retour */}
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
       </TouchableOpacity>
 

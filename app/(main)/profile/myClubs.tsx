@@ -35,7 +35,7 @@ export default function MyClubsScreen() {
       <TouchableOpacity
         style={styles.clubCard}
         activeOpacity={0.8}
-        onPress={() => router.push(`/search/club/${item.id}`)}
+        onPress={() => router.push({ pathname: `/search/club/${item.id}`, params: { from: 'myClubs' } })}
       >
         <Image source={{ uri: imageUrl }} style={styles.clubImage} />
         <View style={styles.clubContent}>
