@@ -220,8 +220,19 @@ export default function EventDetailScreen() {
 
   if (!event) {
     return (
-      <View>
-        <ActivityIndicator size="large" color="#4A78FF" />
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={{ height: 260, backgroundColor: '#E5E7EB' }} />
+        <View style={{ padding: 20 }}>
+          <View style={{ height: 24, width: '70%', borderRadius: 12, backgroundColor: '#E5E7EB', marginBottom: 16 }} />
+          <View style={{ height: 16, width: '40%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 20 }} />
+          <View style={{ height: 12, width: '95%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
+          <View style={{ height: 12, width: '90%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
+          <View style={{ height: 12, width: '85%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 24 }} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: '#E5E7EB' }} />
+            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: '#E5E7EB' }} />
+          </View>
+        </View>
       </View>
     );
   }

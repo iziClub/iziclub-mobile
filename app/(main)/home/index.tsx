@@ -151,9 +151,9 @@ export default function Home() {
           scrollEventThrottle={16}
         >
           {loadingHome ? (
-            <View style={{ width: '100%', padding: 20, alignItems: 'center' }}>
-              <ActivityIndicator size="large" color="#4A78FF" />
-            </View>
+            Array.from({ length: 2 }).map((_, index) => (
+              <View key={index} style={{ width: CARD_WIDTH, height: 140, borderRadius: 18, marginRight: 15, backgroundColor: '#E5E7EB' }} />
+            ))
           ) : (
             featuredEvents.map((event: any) => (
               <TouchableOpacity key={event.id} activeOpacity={0.9} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 15 }}>
@@ -231,7 +231,15 @@ export default function Home() {
 
         <View style={styles.recomendedContainer}>
           {loadingHome ? (
-            <ActivityIndicator size="small" color="#4A78FF" />
+            <View style={styles.clubGrid}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <View key={index} style={styles.clubGridItem}>
+                  <View style={[styles.clubImage, { backgroundColor: '#E5E7EB' }]} />
+                  <View style={{ height: 14, width: '70%', marginTop: 10, borderRadius: 8, backgroundColor: '#E5E7EB' }} />
+                  <View style={{ height: 12, width: '45%', marginTop: 8, borderRadius: 8, backgroundColor: '#E5E7EB' }} />
+                </View>
+              ))}
+            </View>
           ) : (
             <View style={styles.clubGrid}>
               {recommendedClubs.map((club: any) => (

@@ -95,11 +95,11 @@ export default function Card({
             </View>
 
             {/* Autres tags */}
-            {tags?.map((tag, index) => (
+            {/* {tags?.map((tag, index) => (
               <View key={index} style={[styles.extraTag, { flexShrink: 0 }]}>
                 <Text style={styles.extraTagText}>{tag}</Text>
               </View>
-            ))}
+            ))} */}
           </ScrollView>
         </View>
       </View>
