@@ -196,7 +196,6 @@ export default function EventDetailScreen() {
     const fetchEvent = async () => {
       if (eventId) {
         const eventData = await getEventById(eventId);
-
         if (isLoggedIn) {
           const eventStatus = await getEventStatus(eventId);
           eventData.status = eventStatus;
@@ -281,6 +280,25 @@ export default function EventDetailScreen() {
         )}
         <Text style={styles.clubName}>Publié par {club?.name}</Text>
       </TouchableOpacity>
+
+      {event.partnerClubs && event.partnerClubs.length > 0 && (
+        <View style={styles.partnerSection}>
+          <Text style={styles.partnerTitle}>Clubs partenaires</Text>
+          {event.partnerClubs.map((partner) => (
+            <TouchableOpacity
+              key={partner.id}
+              style={styles.partnerChip}
+              onPress={() => router.push(`/search/club/${partner.id}`)}
+            >
+              {partner.profileImagePath ? (
+                <Image source={{ uri: partner.profileImagePath }} style={styles.partnerImage} />
+              ) : null}
+              <Text style={styles.partnerName}>{partner.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
       {/* DESCRIPTION */}
       {event.description && (
         <Text style={styles.description}>{event.description}</Text>

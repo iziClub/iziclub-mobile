@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 
@@ -29,6 +29,7 @@ export default function InscriptionDetailScreen() {
   const submittedAt = date ? new Date(date) : null;
 
   const isDraftMode = status === 'draft';
+  const isNeedsMoreInfo = status === 'needs_more_info';
 
   // États de données
   const [formStructure, setFormStructure] = useState<any | null>(null);
@@ -44,44 +45,48 @@ export default function InscriptionDetailScreen() {
   const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false);
   const [uploadingQuestionId, setUploadingQuestionId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchFormStructure = async () => {
-      if (!formId) {
-        setLoadingForm(false);
-        return;
-      }
-      try {
-        setLoadingForm(true);
-        const response = await getFormByFormId(formId);
-        const formData = response?.data || response;
-        setFormStructure(formData);
+  const fetchFormStructure = async () => {
+    if (!formId) {
+      setLoadingForm(false);
+      return;
+    }
+    try {
+      setLoadingForm(true);
+      const response = await getFormByFormId(formId);
+      const formData = response?.data || response;
+      setFormStructure(formData);
 
-        if (params.answers) {
-          const rawAnswers = JSON.parse(params.answers as string);
-          const localResponses: Record<string, any> = {};
-          rawAnswers.forEach((ans: any) => {
-            if (ans.value && String(ans.value).startsWith('form-submissions/')) {
-              localResponses[ans.questionId] = {
-                filePath: ans.value,
-                fileName: ans.value.split('/').pop() || "Document existant"
-              };
-            } else if (String(ans.value).includes(', ')) {
-              localResponses[ans.questionId] = ans.value.split(', ');
-            } else {
-              localResponses[ans.questionId] = ans.value;
-            }
-          });
-          setFormResponses(localResponses);
-        }
-      } catch (error) {
-        console.error("Erreur métadonnées formulaire:", error);
-      } finally {
-        setLoadingForm(false);
+      if (params.answers) {
+        const rawAnswers = JSON.parse(params.answers as string);
+        const localResponses: Record<string, any> = {};
+        rawAnswers.forEach((ans: any) => {
+          if (ans.value && String(ans.value).startsWith('form-submissions/')) {
+            localResponses[ans.questionId] = {
+              filePath: ans.value,
+              fileName: ans.value.split('/').pop() || "Document existant"
+            };
+          } else if (String(ans.value).includes(', ')) {
+            localResponses[ans.questionId] = ans.value.split(', ');
+          } else {
+            localResponses[ans.questionId] = ans.value;
+          }
+        });
+        setFormResponses(localResponses);
+      } else {
+        setFormResponses({});
       }
-    };
+    } catch (error) {
+      console.error("Erreur métadonnées formulaire:", error);
+    } finally {
+      setLoadingForm(false);
+    }
+  };
 
-    fetchFormStructure();
-  }, [formId, params.answers]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchFormStructure();
+    }, [formId, params.answers])
+  );
 
   const handleTextChange = (questionId: string, value: string) => {
     setFormResponses((prev) => ({ ...prev, [questionId]: value }));
@@ -216,6 +221,40 @@ export default function InscriptionDetailScreen() {
     }
   };
 
+  // Resubmit flow when club requested more info
+  const handleResubmit = async () => {
+    if (!formStructure?.questions) return;
+
+    for (const question of formStructure.questions) {
+      if (question.required) {
+        const response = formResponses[question.id];
+        const hasValue = response && typeof response === "object" ? !!response.filePath : !!response;
+
+        if (!hasValue || (Array.isArray(response) && response.length === 0)) {
+          Alert.alert("Champ obligatoire", `Le champ \"${question.name}\" doit être renseigné.`);
+          return;
+        }
+      }
+    }
+
+    setIsSubmitting(true);
+    try {
+      const formattedAnswers = formatAnswersForApi();
+      if (formattedAnswers.length > 0) {
+        await addAnswersToSubmission(submissionId, { answers: formattedAnswers });
+      }
+      await submitFormSubmission(submissionId);
+      Alert.alert("Soumission renvoyée", "Votre réponse a bien été renvoyée au club.", [
+        { text: "OK", onPress: () => router.replace("/profile/inscriptions") }
+      ]);
+    } catch (error) {
+      console.error("Erreur renvoi soumission :", error);
+      Alert.alert("Erreur", "Impossible de renvoyer la soumission.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleDeleteInscription = () => {
     Alert.alert(
       "Supprimer la demande",
@@ -256,7 +295,7 @@ export default function InscriptionDetailScreen() {
     switch (status) {
       case 'approved': return { color: '#10B981', bg: '#E6F4EA', label: 'Dossier Validé', icon: 'verified' };
       case 'rejected': return { color: '#EF4444', bg: '#FCE8E6', label: 'Dossier Refusé', icon: 'cancel' };
-      case 'pending_info': return { color: '#F59E0B', bg: '#FEF3C7', label: 'Action requise', icon: 'error' };
+      case 'needs_more_info': return { color: '#F59E0B', bg: '#FEF3C7', label: 'Action requise', icon: 'error' };
       case 'draft': return { color: '#4A78FF', bg: '#F0F4FF', label: 'Brouillon', icon: 'edit' };
       default: return { color: '#3B82F6', bg: '#EBF5FF', label: 'En cours d\'analyse', icon: 'hourglass-top' };
     }
@@ -345,7 +384,7 @@ export default function InscriptionDetailScreen() {
             <View style={styles.loaderContainer}>
               <ActivityIndicator size="small" color="#3B82F6" />
             </View>
-          ) : isDraftMode && formStructure?.questions ? (
+          ) : (isDraftMode || isNeedsMoreInfo) && formStructure?.questions ? (
             <View style={{ gap: 16 }}>
               {formStructure.questions.map((question: any) => {
                 const responseValue = formResponses[question.id];
@@ -395,7 +434,7 @@ export default function InscriptionDetailScreen() {
         {/* ───────────────────────────────────────────────────────── */}
         {/* 💡 NOUVEAU : ENCADRÉ D'ENGAGEMENT LÉGAL (MODE DRAFT SEUL) */}
         {/* ───────────────────────────────────────────────────────── */}
-        {isDraftMode && !loadingForm && (
+        {(isDraftMode || isNeedsMoreInfo) && !loadingForm && (
           <View style={styles.legalNoticeContainer}>
             <TouchableOpacity 
               style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}
@@ -429,7 +468,7 @@ export default function InscriptionDetailScreen() {
         )}
 
         {/* ACTIONS DU BAS */}
-        {isDraftMode && !loadingForm && (
+        {(isDraftMode || isNeedsMoreInfo) && !loadingForm && (
           <View style={{ marginTop: 10, gap: 12 }}>
             <TouchableOpacity
               style={[styles.submitButton, { backgroundColor: '#F0F4FF', borderColor: '#4A78FF', borderWidth: 1 }]}
@@ -445,10 +484,10 @@ export default function InscriptionDetailScreen() {
                 { backgroundColor: '#4A78FF' }, 
                 (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { opacity: 0.6 }
               ]}
-              onPress={handleSubmit}
+              onPress={isNeedsMoreInfo ? handleResubmit : handleSubmit}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
             >
-              {isSubmitting ? <ActivityIndicator size="small" color="white" /> : <Text style={[styles.submitButtonText, { color: '#FFF' }]}>Envoyer mon dossier finalisé</Text>}
+              {isSubmitting ? <ActivityIndicator size="small" color="white" /> : <Text style={[styles.submitButtonText, { color: '#FFF' }]}>{isNeedsMoreInfo ? 'Renvoyer la soumission' : 'Envoyer mon dossier finalisé'}</Text>}
             </TouchableOpacity>
           </View>
         )}

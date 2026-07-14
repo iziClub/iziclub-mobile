@@ -41,7 +41,7 @@ export default function ProfileScreen() {
     affiliatedClubsCount: 0,
     participationsCount: 0, // Tu peux le lier à ton API d'inscriptions ou d'événements à venir
     dossiersCount: 0,
-    notificationsCount: 0
+    notificationsCount: 0,
   });
 
   // 💡 useFocusEffect s'exécute à CHAQUE FOIS que l'écran devient actif
@@ -155,14 +155,24 @@ export default function ProfileScreen() {
   };
 
   // Grille incluant désormais la boîte de réception à la place idéale
-  const savedCategories = [
+  type SavedCategoryPath = "/notifications" | "/profile/likedItems" | "/profile/savedItems" | "/profile/myClubs" | "/profile/upcomingEvents";
+  type SavedCategory = {
+    id: string;
+    title: string;
+    icon: string;
+    color: string;
+    path: SavedCategoryPath;
+    badge?: number;
+  };
+
+  const savedCategories: SavedCategory[] = [
     {
       id: 'messages',
       title: 'Boîte de réception',
       icon: 'mail-unread',
       color: '#FFB900',
       path: "/notifications",
-      badge: stats.clubsCount // 💡 Badge dynamique basé sur le nombre de notifications non lues
+      badge: stats.notificationsCount // 💡 Badge dynamique basé sur le nombre de notifications non lues
     },
     {
       id: '1',
@@ -233,7 +243,7 @@ export default function ProfileScreen() {
           <Text style={styles.sectionTitle}>Espace personnel & Suivis</Text>
           <View style={styles.gridContainer}>
             {savedCategories.map((cat) => (
-              <TouchableOpacity key={cat.id} style={styles.gridCard} onPress={() => router.push(`${cat.path}`)}>
+              <TouchableOpacity key={cat.id} style={styles.gridCard} onPress={() => router.push({ pathname: cat.path })}>
                 <View style={[styles.iconCircle, { backgroundColor: cat.color + '15' }]}>
                   <Ionicons name={cat.icon as any} size={22} color={cat.color} />
                 </View>

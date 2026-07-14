@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -18,6 +18,8 @@ import { useAuth } from '@/context/AuthContext';
 import { getEvents } from '@/services/events.service';
 import { getClubs } from '@/services/clubs.service';
 import { getCurrentUser } from '@/services/auth';
+import { useFocusEffect } from 'expo-router';
+import { getNotifications } from '@/services/notifications.service';
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -30,6 +32,7 @@ export default function Home() {
   const [carouselIndex, setCarouselIndex] = useState<number>(0);
   const CARD_WIDTH = 260; 
   const [userName, setUserName] = useState<string | null>(null);
+  const [notificationsCount, setNotificationsCount] = useState<number>(0);
 
   const categories = [
   { id: '1', name: 'Football', icon: 'football' },
@@ -80,7 +83,29 @@ export default function Home() {
     };
 
     loadHome();
-  }, []);
+  }, [user]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const refreshNotifications = async () => {
+        if (!user) {
+          setNotificationsCount(0);
+          return;
+        }
+
+        try {
+          const notificationsRes = await getNotifications();
+          const allNotifications = notificationsRes?.data || [];
+          const unreadCount = allNotifications.filter((notification: any) => notification.isUnread).length;
+          setNotificationsCount(unreadCount);
+        } catch (err) {
+          console.error("Erreur chargement notifications :", err);
+        }
+      };
+
+      refreshNotifications();
+    }, [user])
+  );
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -98,7 +123,7 @@ export default function Home() {
 >
   <Ionicons name="notifications-outline" size={24} color="black" />
   {/* Pastille rouge de notification non lue */}
-  <View style={styles.notificationDot} />
+  {notificationsCount > 0 && <View style={styles.notificationDot} />}
 </TouchableOpacity>
         </View>
 

@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAllSubmissions } from '@/services/forms.service';
 
-export type InscriptionStatus = 'approved' | 'rejected' | 'pending_info' | 'submitted' | 'draft';
+export type InscriptionStatus = 'approved' | 'rejected' | 'needs_more_info' | 'submitted' | 'draft';
 // Type pour notre filtre de sélection ('all' inclus pour tout afficher)
 type FilterStatus = 'all' | InscriptionStatus;
 
@@ -40,7 +40,7 @@ export default function InscriptionsListScreen() {
   const filterTabs: { key: FilterStatus; label: string }[] = [
     { key: 'all', label: 'Toutes' },
     { key: 'submitted', label: 'En attente' },
-    { key: 'pending_info', label: 'Info requise' },
+    { key: 'needs_more_info', label: 'Info requise' },
     { key: 'approved', label: 'Acceptées' },
     { key: 'rejected', label: 'Refusées' },
   ];
@@ -68,7 +68,7 @@ export default function InscriptionsListScreen() {
     switch (status) {
       case 'approved': return 'Acceptée';
       case 'rejected': return 'Refusée';
-      case 'pending_info': return 'Info requise';
+      case 'needs_more_info': return 'Info requise';
       case 'submitted': return 'En cours';
       case 'draft': return 'Brouillon';
       default: return status;
@@ -79,7 +79,7 @@ export default function InscriptionsListScreen() {
     switch (status) {
       case 'approved': return { bg: '#E8F5E9', text: '#2E7D32', icon: 'checkmark-circle' };
       case 'rejected': return { bg: '#FFEBEE', text: '#C62828', icon: 'close-circle' };
-      case 'pending_info': return { bg: '#FFF3E0', text: '#EF6C00', icon: 'alert-circle' };
+      case 'needs_more_info': return { bg: '#FFF3E0', text: '#EF6C00', icon: 'alert-circle' };
       case 'submitted': return { bg: '#E3F2FD', text: '#1565C0', icon: 'time' };
       case 'draft': return { bg: '#F3E5F5', text: '#6A1B9A', icon: 'document-text' };
       default: return { bg: '#E8EAF6', text: '#3F51B5', icon: 'time' };

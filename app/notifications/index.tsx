@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNotifications } from '@/services/notifications.service';
+import { getClubById } from '@/services/clubs.service';
 import { Message } from '@/types/notification';
 
 export default function InboxScreen() {
@@ -17,8 +18,36 @@ export default function InboxScreen() {
     try {
       const response = await getNotifications();
       console.log("Fetched notifications:", response);
-      // Petite sécurité au cas où l'API renvoie null/undefined
-      setNotifications(response?.data || []);
+      const rawNotifications: Message[] = response?.data || [];
+
+      const clubNameCache = new Map<string, string>();
+      const enrichedNotifications = await Promise.all(
+        rawNotifications.map(async (msg) => {
+          if (msg.clubId) {
+            const cachedName = clubNameCache.get(msg.clubId);
+            if (cachedName) {
+              return { ...msg, clubName: cachedName };
+            }
+
+            try {
+              const clubResponse = await getClubById(msg.clubId);
+              const clubData = Array.isArray(clubResponse?.data)
+                ? clubResponse.data[0]
+                : (clubResponse?.data || clubResponse);
+              const clubName = clubData?.name || msg.clubName || 'Club inconnu';
+              clubNameCache.set(msg.clubId, clubName);
+              return { ...msg, clubName };
+            } catch (clubError) {
+              console.error(`Erreur récupération club ${msg.clubId}:`, clubError);
+              return { ...msg, clubName: msg.clubName || 'Club inconnu' };
+            }
+          }
+
+          return msg;
+        })
+      );
+
+      setNotifications(enrichedNotifications);
     }
     catch (error) {
       console.error("Error fetching notifications:", error);

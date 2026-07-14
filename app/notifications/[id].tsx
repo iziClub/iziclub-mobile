@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Message } from '@/types/notification';
+import { getNotificationById } from '@/services/notifications.service';
+import { getClubById } from '@/services/clubs.service';
 // On réutilise le même type (Idéalement à exporter depuis un fichier types.ts)
 
 // Mock data (Copie conforme de ton index pour la démo)
@@ -38,16 +40,77 @@ import { Message } from '@/types/notification';
 //   }
 // ];
 
+const formatDate = (dateString?: string) => {
+  if (!dateString) {
+    return "Date non disponible";
+  }
+
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  const formattedDate = date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  const formattedTime = date.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).replace(':', 'h');
+
+  return `${formattedDate} à ${formattedTime}`;
+};
+
 export default function MessageDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const { clubId } = useLocalSearchParams<{ clubId: string }>();
+  const { id, clubId } = useLocalSearchParams<{ id: string; clubId?: string }>();
   const [message, setMessage] = useState<Message | undefined>(undefined);
-  // Trouver le message correspondant à l'ID reçu dans l'URL
-  // const message = MOCK_MESSAGES.find(m => m.id === id);
+  const [loading, setLoading] = useState(true);
 
-  if (!message) {
+  const fetchMessage = async () => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await getNotificationById(id); // Appel à ton service pour récupérer le message par ID
+      let notificationData = response.data;
+
+      if (notificationData?.clubId) {
+        try {
+          const clubResponse = await getClubById(notificationData.clubId);
+          const clubData = Array.isArray(clubResponse?.data)
+            ? clubResponse.data[0]
+            : (clubResponse?.data || clubResponse);
+          notificationData = {
+            ...notificationData,
+            clubName: clubData?.name || notificationData.clubName || 'Club inconnu',
+          };
+        } catch (clubError) {
+          console.error(`Erreur récupération club ${notificationData.clubId}:`, clubError);
+        }
+      }
+      setMessage(notificationData);
+    } catch (error) {
+      console.error("Error fetching notification:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMessage();
+    }, [id])
+  );
+
+  if (!message && !loading) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}>
         <Text>Message introuvable</Text>
@@ -57,17 +120,14 @@ export default function MessageDetailScreen() {
       </View>
     );
   }
-  useEffect(() => {
-    const fetchMessage = async () => {
-      try {
-        const response = await getNotificationsById(id, clubId); // Appel à ton service pour récupérer le message par ID
-        setMessage(response.data);
-      } catch (error) {
-        console.error("Error fetching notification:", error);
-      }
-    };
-    fetchMessage();
-  }, [id]);
+
+  if (!message) {
+    return (
+      <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text>Chargement du message...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -81,7 +141,7 @@ export default function MessageDetailScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.date}>{message.date}</Text>
+        <Text style={styles.date}>{formatDate(message.createdAt ?? message.date)}</Text>
 
         <View style={[styles.audienceBadge, message.isUrgent && styles.urgentBadge]}>
           <Ionicons 
@@ -119,7 +179,3 @@ const styles = StyleSheet.create({
   urgentBadge: { backgroundColor: '#FFF0F0' },
   urgentText: { color: '#E63946', fontWeight: '700' },
 });
-
-function getNotificationsById(id: string) {
-  throw new Error('Function not implemented.');
-}
