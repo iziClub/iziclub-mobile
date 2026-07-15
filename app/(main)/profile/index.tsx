@@ -67,7 +67,7 @@ export default function ProfileScreen() {
           const totalAffiliatedClubs = memberClubsRes?.data?.length || 0;
           const totalParticipations = participationsRes?.data?.length || 0;
           const totalDossiers = dossierRes?.data?.submissions?.length || 0;
-          const totalUnreadNotifications = notificationRes?.data?.filter((n: any) => n.isUnread).length || 0;
+          const totalUnreadNotifications = notificationRes?.data?.filter((n: any) => n.isSeen === false || n.isUnread === true).length || 0;
           setStats(prev => ({
             ...prev,
             likedCount: totalLikes,

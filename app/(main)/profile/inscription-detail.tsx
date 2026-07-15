@@ -303,17 +303,98 @@ export default function InscriptionDetailScreen() {
 
   const config = getStatusConfig(status);
 
-  const getReadableAnswer = (questionId: string, value: any) => {
+  const getFileName = (value: any) => {
+    if (!value) return '';
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          return getFileName(parsed);
+        } catch {
+          // ignore invalid JSON and fallback to plain string
+        }
+      }
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      if ('fileName' in value && value.fileName) return value.fileName;
+      if ('name' in value && value.name) return value.name;
+      if ('filePath' in value && value.filePath) {
+        const sanitized = String(value.filePath).split('/').filter(Boolean);
+        return sanitized.length > 0 ? sanitized[sanitized.length - 1] : String(value.filePath);
+      }
+      if ('value' in value) return getFileName(value.value);
+      return String(value);
+    }
+
+    if (typeof value === 'string') {
+      const sanitized = value.split('/').filter(Boolean);
+      if (sanitized.length > 0 && value.match(/\.[a-zA-Z0-9]{1,5}$/)) {
+        return sanitized[sanitized.length - 1];
+      }
+      return value;
+    }
+
+    return String(value);
+  };
+
+  const isMetaAnswerKey = (key: string) => {
+    const normalized = key?.toLowerCase()?.replace(/[-_ ]/g, '');
+    return ['filename', 'filepath', 'file_path', 'file-path', 'path'].includes(normalized);
+  };
+
+  const normalizeId = (id: any) => String(id ?? "").trim();
+
+  const getDisplayAnswers = () => {
+    const rawAnswers = JSON.parse(params.answers as string || '[]');
+    const questionIds = new Set((formStructure?.questions || []).map((q: any) => normalizeId(q.id)));
+
+    return rawAnswers
+      .filter((ans: any) => {
+        const id = normalizeId(ans.questionId);
+        if (!id) return false;
+        if (questionIds.has(id)) return true;
+        return !isMetaAnswerKey(id);
+      })
+      .map((ans: any) => ({ ...ans, value: ans.value }));
+  };
+
+  const getReadableAnswer = (answer: any) => {
+    const questionId = answer?.questionId || '';
+    const rawValue = answer?.value ?? answer?.filePath ?? answer;
+
+    const isDocument =
+      (typeof rawValue === 'object' && rawValue !== null && 'filePath' in rawValue) ||
+      (typeof rawValue === 'string' && rawValue.includes('form-submissions/'));
+
     if (!formStructure || !formStructure.questions) {
-      return { title: "Question", textValue: String(value) };
+      return {
+        title: questionId || 'Question',
+        textValue: isDocument ? 'Fichier déposé' : String(rawValue)
+      };
     }
-    const question = formStructure.questions.find((q: any) => q.id === questionId);
-    if (!question) return { title: "Question", textValue: String(value) };
-    if (!value || (Array.isArray(value) && value.length === 0)) {
-      return { title: question.name, textValue: "Non renseigné" };
+
+    const question = formStructure.questions.find((q: any) => normalizeId(q.id) === normalizeId(questionId));
+    const title = question?.name || questionId || 'Question';
+
+    if (!rawValue || (Array.isArray(rawValue) && rawValue.length === 0)) {
+      return { title, textValue: 'Non renseigné' };
     }
-    const textValue = Array.isArray(value) ? value.join(', ') : String(value);
-    return { title: question.name, textValue };
+
+    if (isDocument) {
+      return { title, textValue: 'Fichier déposé' };
+    }
+
+    let textValue = '';
+    if (Array.isArray(rawValue)) {
+      textValue = rawValue.join(', ');
+    } else {
+      textValue = String(rawValue);
+    }
+
+    return { title, textValue };
   };
 
   return (
@@ -415,11 +496,11 @@ export default function InscriptionDetailScreen() {
             </View>
           ) : (
             <View style={styles.responsesCard}>
-              {JSON.parse(params.answers as string || '[]').map((ans: any, index: number, arr: any[]) => {
-                const mapped = getReadableAnswer(ans.questionId, ans.value);
+              {getDisplayAnswers().map((ans: any, index: number, arr: any[]) => {
+                const mapped = getReadableAnswer(ans);
                 return (
                   <View
-                    key={ans.questionId}
+                    key={ans.questionId || index}
                     style={[styles.responseRow, index === arr.length - 1 && { borderBottomWidth: 0 }]}
                   >
                     <Text style={styles.responseQuestion}>{mapped.title}</Text>

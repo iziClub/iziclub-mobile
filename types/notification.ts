@@ -7,6 +7,7 @@ export interface Message {
   content: string;
   date: string;
   createdAt?: string;
-  isUnread: boolean;
+  isUnread?: boolean;
+  isSeen?: boolean;
   isUrgent?: boolean;
 };

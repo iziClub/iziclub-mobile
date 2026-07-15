@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { getNotifications } from '@/services/notifications.service';
+import { getNotifications, markNotificationAsRead } from '@/services/notifications.service';
 import { getClubById } from '@/services/clubs.service';
 import { Message } from '@/types/notification';
 
@@ -61,12 +61,18 @@ export default function InboxScreen() {
     fetchNotifications();
   }, []);
 
-  const handleOpenMessage = (msg: Message) => {
-    // Marquer comme lu localement (sur ton state API désormais)
-    setNotifications(prev => prev.map(m => m.id === msg.id ? { ...m, isUnread: false } : m));
-    
-    // Redirection vers le nouvel écran avec l'ID du message
-    router.push(`../notifications/${msg.id}`); 
+  const isMessageUnread = (msg: Message) => msg.isSeen === false || msg.isUnread === true;
+
+  const handleOpenMessage = async (msg: Message) => {
+    setNotifications(prev => prev.map(m => m.id === msg.id ? { ...m, isSeen: true, isUnread: false } : m));
+
+    try {
+      await markNotificationAsRead(msg.id);
+    } catch (error) {
+      console.error(`Erreur marquage notification ${msg.id} comme lue :`, error);
+    }
+
+    router.push(`../notifications/${msg.id}`);
   };
 
   return (
@@ -103,22 +109,24 @@ export default function InboxScreen() {
       ) : (
         // 3. Liste des messages
         <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-          {notifications.map((msg) => (
-            <TouchableOpacity 
-              key={msg.id} 
-              style={[styles.msgCard, msg.isUnread && styles.msgCardUnread]}
-              onPress={() => handleOpenMessage(msg)}
-              activeOpacity={0.7}
-            >
+          {notifications.map((msg) => {
+            const unread = isMessageUnread(msg);
+            return (
+              <TouchableOpacity 
+                key={msg.id} 
+                style={[styles.msgCard, unread && styles.msgCardUnread]}
+                onPress={() => handleOpenMessage(msg)}
+                activeOpacity={0.7}
+              >
               <View style={styles.msgHeader}>
                 <View style={styles.clubRow}>
                   <Text style={styles.clubName}>{msg.clubName}</Text>
-                  {msg.isUnread && <View style={styles.unreadBadge} />}
+                  {unread && <View style={styles.unreadBadge} />}
                 </View>
                 <Text style={styles.msgDate}>{msg.date}</Text>
               </View>
 
-              <Text style={[styles.msgSubject, msg.isUnread && styles.textBold]} numberOfLines={1}>
+              <Text style={[styles.msgSubject, unread && styles.textBold]} numberOfLines={1}>
                 {msg.title}
               </Text>
 
@@ -140,7 +148,7 @@ export default function InboxScreen() {
                 </View>
               </View>
             </TouchableOpacity>
-          ))}
+          )})}
         </ScrollView>
       )}
     </View>

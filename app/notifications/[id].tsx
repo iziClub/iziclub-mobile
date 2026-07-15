@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Message } from '@/types/notification';
-import { getNotificationById } from '@/services/notifications.service';
+import { getNotificationById, markNotificationAsRead } from '@/services/notifications.service';
 import { getClubById } from '@/services/clubs.service';
 // On réutilise le même type (Idéalement à exporter depuis un fichier types.ts)
 
@@ -97,6 +97,15 @@ export default function MessageDetailScreen() {
         }
       }
       setMessage(notificationData);
+
+      if (notificationData.isSeen === false || notificationData.isUnread === true) {
+        try {
+          await markNotificationAsRead(id);
+          setMessage(prev => prev ? { ...prev, isSeen: true, isUnread: false } : prev);
+        } catch (markError) {
+          console.error(`Erreur marquage notification ${id} comme lue :`, markError);
+        }
+      }
     } catch (error) {
       console.error("Error fetching notification:", error);
     } finally {

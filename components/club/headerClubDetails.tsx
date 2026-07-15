@@ -12,6 +12,7 @@ interface HeaderClubDetailsProps {
   initialIsSaved?: boolean;
   isLoggedIn?: boolean;
   from?: string;
+  onSharePress?: () => void;
 }
 
 export default function HeaderClubDetails({ 
@@ -20,6 +21,7 @@ export default function HeaderClubDetails({
   initialIsSaved = false,
   isLoggedIn = false,
   from,
+  onSharePress,
 }: HeaderClubDetailsProps) {
   const router = useRouter();
 
@@ -176,6 +178,17 @@ export default function HeaderClubDetails({
             />
           )}
         </TouchableOpacity>
+
+        {/* BOUTON PARTAGE */}
+        {onSharePress && (
+          <TouchableOpacity
+            onPress={onSharePress}
+            style={styles.actionButton}
+            hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
+          >
+            <Ionicons name="share-social-outline" size={24} color="#1A1A1A" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

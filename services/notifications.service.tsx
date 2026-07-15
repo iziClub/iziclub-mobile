@@ -6,7 +6,7 @@ export const getNotifications = async () => {
 }
 
 export const markNotificationAsRead = async (notificationId: string) => {
-  const response = await api.post(`/clubs/me/announcements/${notificationId}/read`);
+  const response = await api.post(`/clubs/me/announcements/${notificationId}/seen`);
   return response.data;
 }
 

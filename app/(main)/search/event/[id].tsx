@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   Linking,
+  Share,
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useRouter, useGlobalSearchParams } from "expo-router";
@@ -18,7 +19,6 @@ import { getClubById } from "@/services/clubs.service";
 import { getEventById, getEventsLikeCount, getEventStatus } from "@/services/events.service";
 import { Club } from "@/types/club";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import SocialShareModal from "@/components/SocialShareModal";
 import EngagementBar from "@/components/EngagementBar";
 import { useAuth } from "@/context/AuthContext";
 import { styles } from "./_styles";
@@ -168,7 +168,6 @@ export default function EventDetailScreen() {
   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
   const [event, setEvent] = useState<Event | null>(null);
   const router = useRouter();
-  const [shareModalVisible, setShareModalVisible] = useState(false);
   const { user } = useAuth();
   const isLoggedIn = !!user;
 
@@ -391,26 +390,28 @@ export default function EventDetailScreen() {
         paddingHorizontal: 12,
         borderRadius: 12
       }]}
-        onPress={() => setShareModalVisible(true)}
+        onPress={async () => {
+          const tags = ["iziclub", "sport", event.type?.toLowerCase() || "event", event.address.city?.toLowerCase().replace(/\s+/g, "")]
+            .filter(Boolean)
+            .map((tag) => `#${tag}`)
+            .join(" ");
+
+          const shareText = `Regarde cet événement !\n\n🎉 ${event.name}\n📍 ${event.address.city}\n🗓️ ${formatEventDate(event.eventDate)}\n⏰ ${formatEventTime(event.startDate)} - ${formatEventTime(event.endDate)}\n\n${event.description || "Un événement à découvrir sur iziclub."}\n\n${tags}\n\nDécouvre l'événement sur iziclub : https://iziclub.fr`;
+
+          try {
+            await Share.share({
+              title: `Regarde cet événement : ${event.name}`,
+              message: shareText,
+              url: event.banner_url,
+            });
+          } catch (error) {
+            console.error("Erreur partage natif :", error);
+          }
+        }}
       >
         <Ionicons name="share-social-outline" size={20} color="white" />
         <Text style={styles.calendarButtonText}>Partager</Text>
       </TouchableOpacity>
-      <SocialShareModal
-        visible={shareModalVisible}
-        onClose={() => setShareModalVisible(false)}
-        item={{
-          type: "event",
-          name: event.name,
-          description: event.description,
-          location: `${event.address.street}, ${event.address.city}`,
-          imageUrl: event.banner_url,
-          date: event.eventDate,
-          startTime: event.startDate,
-          endTime: event.endDate,
-          tags: event.tags,
-        }}
-      />
     </ScrollView>
   );
 }

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Share } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import ClubCalendar from "@/components/calendar";
@@ -125,12 +125,38 @@ export default function ClubDetail() {
         }
     };
 
+    const shareTags = ["iziclub", "sport", club.type?.toLowerCase() || "club", club.city?.toLowerCase().replace(/\s+/g, "")]
+      .filter(Boolean)
+      .map((tag) => `#${tag}`)
+      .join(" ");
+
+    const shareImage = club.profile.profileImagePath || club.profile.bannerPath;
+
+    const shareMessage = `Regarde ce club !\n\n🏆 ${club.name}\n📍 ${club.city}\n${club.profile.slogan || club.profile.description || "Un club à découvrir sur iziclub."}\n\n${shareTags}\n\nDécouvre ce club sur iziclub : https://iziclub.fr`;
+
+    const handleNativeShare = async () => {
+        try {
+            await Share.share({
+                message: shareMessage,
+                title: `Regarde ce club : ${club.name}`,
+                url: shareImage,
+            });
+        } catch (error) {
+            console.error("Erreur partage natif :", error);
+        }
+    };
+
     return (
         
         <View style={styles.container}>
             {/* HEADER */}
 
-            <HeaderClubDetails club={club} isLoggedIn={isLoggedIn} from={from} />
+            <HeaderClubDetails
+                club={club}
+                isLoggedIn={isLoggedIn}
+                from={from}
+                onSharePress={handleNativeShare}
+            />
 
             {/* SECTIONS */}
 

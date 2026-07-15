@@ -96,7 +96,7 @@ export default function Home() {
         try {
           const notificationsRes = await getNotifications();
           const allNotifications = notificationsRes?.data || [];
-          const unreadCount = allNotifications.filter((notification: any) => notification.isUnread).length;
+          const unreadCount = allNotifications.filter((notification: any) => notification.isSeen === false || notification.isUnread === true).length;
           setNotificationsCount(unreadCount);
         } catch (err) {
           console.error("Erreur chargement notifications :", err);
