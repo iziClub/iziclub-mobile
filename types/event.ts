@@ -9,10 +9,12 @@ export interface Event {
   name: string;
   description: string;
   sport: string | null;
+  sportId?: number;
   type: string;
   latitude: string;
   longitude: string;
   imageUrl: string | undefined;
+  banner_url?: string | null;
   startDate: string | null;
   endDate: string | null;
   price: string | null;
@@ -23,10 +25,10 @@ export interface Event {
   address: {
     street: string;
     city: string;
-    longitude: string;
     latitude: string;
+    longitude: string;
   };
-  banner_url: string;
+  coverImagePath: string | null;
   partnerClubs?: PartnerClub[];
   status?: {
     isLiked: boolean;

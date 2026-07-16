@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Switch } from 'react-native';
 import BottomSheet, { BottomSheetView, BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,8 @@ interface Props {
   radius: number;
   useRadius: boolean;           // <-- Nouvelle prop
   setUseRadius: (val: boolean) => void; // <-- Nouvelle prop
+  sportQuery: string;
+  setSportQuery: (val: string) => void;
   setRadius: (val: number) => void;
   selectedSort: string;
   setSelectedSort: (val: string) => void;
@@ -21,7 +23,9 @@ export default function FilterBottomSheet({
   selectedSort, 
   setSelectedSort,
   useRadius,
-  setUseRadius
+  setUseRadius,
+  sportQuery,
+  setSportQuery,
 }: Props) {
   // Points d'arrêt : la feuille s'ouvrira à 85% de l'écran
   const snapPoints = useMemo(() => ['85%'], []);
@@ -108,13 +112,15 @@ export default function FilterBottomSheet({
 
         <View style={styles.divider} />
 
-        {/* SECTION SPORT
-        <Text style={styles.sectionTitle}>Type de sports</Text>
-        <TextInput 
-          style={styles.sportInput} 
-          placeholder="Chercher un sport"
+        <Text style={styles.sectionTitle}>Sport</Text>
+        <TextInput
+          style={styles.sportInput}
+          placeholder="Ex: Handball, Escalade..."
           placeholderTextColor="#999"
-        /> */}
+          value={sportQuery}
+          onChangeText={setSportQuery}
+          autoCapitalize="words"
+        />
         
         <View style={{ height: 50 }} />
       </BottomSheetScrollView>

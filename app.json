@@ -10,9 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "infoPlist": {
-        "NSCalendarsUsageDescription": "Cette application a besoin d'accéder à votre calendrier pour ajouter des événements."
+        "NSCalendarsUsageDescription": "Cette application a besoin d'accéder à votre calendrier pour ajouter des événements.",
+        "ITSAppUsesNonExemptEncryption": false
       },
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "iziClub"
     },
     "android": {
       "permissions": [
@@ -26,7 +28,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.gaut_er.iziClub"
     },
     "web": {
       "output": "static",
@@ -51,6 +54,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ccdb0353-ccbd-4855-a5b3-66ff589fee5d"
+      }
     }
   }
 }

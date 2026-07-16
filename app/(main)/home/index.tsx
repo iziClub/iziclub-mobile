@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/context/AuthContext';
+import { useLocation } from '@/context/LocationContext';
 import { getEvents } from '@/services/events.service';
 import { getClubs } from '@/services/clubs.service';
 import { getCurrentUser } from '@/services/auth';
@@ -24,6 +25,7 @@ import { getNotifications } from '@/services/notifications.service';
 export default function Home() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { location } = useLocation();
 
   const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
   const [recommendedClubs, setRecommendedClubs] = useState<any[]>([]);
@@ -61,13 +63,18 @@ export default function Home() {
     const loadHome = async () => {
       setLoadingHome(true);
       try {
-        const eventsRes = await getEvents({ per_page: 6 });
-        // getEvents returns the axios response data; try common shapes
+        const locationParams = {
+          latitude: location?.latitude,
+          longitude: location?.longitude,
+          radiusInKm: 1500,
+        };
+
+        const eventsRes = await getEvents({ per_page: 6, ...locationParams });
         const events = eventsRes?.data ?? eventsRes?.data?.data ?? eventsRes ?? [];
         const eventsAny = events as any;
         setFeaturedEvents(Array.isArray(eventsAny) ? eventsAny : eventsAny?.data ?? []);
 
-        const clubsRes = await getClubs({ limit: 6 });
+        const clubsRes = await getClubs({ limit: 6, ...locationParams });
         const clubs = clubsRes?.data ?? clubsRes ?? [];
         const clubsAny = clubs as any;
         setRecommendedClubs(Array.isArray(clubsAny) ? clubsAny : clubsAny?.data ?? []);
@@ -83,7 +90,7 @@ export default function Home() {
     };
 
     loadHome();
-  }, [user]);
+  }, [user, location?.latitude, location?.longitude]);
 
   useFocusEffect(
     useCallback(() => {
@@ -108,7 +115,7 @@ export default function Home() {
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         
         {/* 1. HEADER */}
@@ -183,7 +190,7 @@ export default function Home() {
             featuredEvents.map((event: any) => (
               <TouchableOpacity key={event.id} activeOpacity={0.9} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 15 }}>
                 <ImageBackground 
-                  source={{ uri: event.banner_url || event.imageUrl || event.image || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
+                  source={{ uri: event.coverImagePath || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                   style={styles.eventCardImage}
                   imageStyle={{ borderRadius: 18 }}
                 >

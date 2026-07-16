@@ -14,6 +14,7 @@ import { mapApiClubToDetail } from "@/mappers/club.mapper";
 import { getEventsByClubId } from "@/services/events.service";
 import { ClubDetailDTO } from "@/types/club";
 import { useAuth } from "../../../../context/AuthContext";
+import { useLocation } from "../../../../context/LocationContext";
 import ImportedClubDetail from "./importClubDetail";
 import { getCurrentUser } from "@/services/auth";
 
@@ -24,7 +25,8 @@ export default function ClubDetail() {
     const [activeSection, setActiveSection] = useState(SECTIONS[0]);
     const [isLoading, setIsLoading] = useState(true);
     const [club, setClub] = useState<ClubDetailDTO>();
-    const { user } = useAuth()
+    const { user } = useAuth();
+    const { location } = useLocation();
     const [userData, setUserData] = useState<any>(null);
 
     const isLoggedIn = !!user;
@@ -33,8 +35,13 @@ export default function ClubDetail() {
             if (!id) return;
             try {
                 setIsLoading(true);
-                const dataClub = await getClubById(id);
-                const eventsFromClub = await getEventsByClubId(id);
+                const locationParams = {
+                  latitude: location?.latitude ?? 48.8566,
+                  longitude: location?.longitude ?? 2.3522,
+                  radiusInKm: 1500,
+                };
+                                const dataClub = await getClubById(id, locationParams);
+                const eventsFromClub = await getEventsByClubId(id, locationParams);
                 dataClub.data[0].events = eventsFromClub.data; // Ajoute les événements au club
                 const galleryImages = await getGalleryImagesByClubId(id);
                 dataClub.data[0].gallery = galleryImages.data;
@@ -57,6 +64,7 @@ export default function ClubDetail() {
                 } else {
                     setUserData(null);
                 }
+                console.log("-------------------evecnts du club:", dataClub.data[0].events)
             } catch (error) {
                 console.error("Erreur lors de la récupération du club:", error);
             } finally {
@@ -65,7 +73,7 @@ export default function ClubDetail() {
         };
 
         fetchClubData();
-    }, [id, isLoggedIn]);
+    }, [id, isLoggedIn, location?.latitude, location?.longitude]);
 
     if (isLoading) {
         return (

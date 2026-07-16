@@ -27,7 +27,8 @@ export interface EventSearchItem extends BaseSearchItem {
   day: string;
   month: string;
   clubId: string;
-  banner_url: string | null;
+  // banner_url: string | null;
+  coverImagePath: string | null;
 }
 
 export type SearchItem = ClubSearchItem | EventSearchItem;

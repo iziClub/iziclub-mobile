@@ -4,11 +4,19 @@ import { Picture } from "./picture";
 export interface Address {
   street: string;
   city: string;
-  zip_code: string;
-  latitude: string;
-  longitude: string;
-  department_code: string;
-  region: string;
+  zip_code?: string;
+  zipCode?: string;
+  latitude: string | number;
+  longitude: string | number;
+  department_code?: string;
+  region?: string;
+}
+
+export interface SocialLinks {
+  instagram?: string;
+  linkedin?: string;
+  facebook?: string;
+  tiktok?: string;
 }
 
 export interface Category {
@@ -53,6 +61,9 @@ export interface Club {
     profileImagePath: string;
     bannerPath: string;
     description: string;
+    phone?: string;
+    email?: string;
+    socialLinks?: SocialLinks;
   };
   sport: string | null;
   events: Event[];
@@ -100,6 +111,9 @@ export interface ClubDetailDTO {
       address: Address;
       profileImagePath: string;
       bannerPath: string;
+      phone?: string;
+      email?: string;
+      socialLinks?: SocialLinks;
     };
     events: Event[]; // Remplace any par ton type Event si tu l'as
     sport: string | null;

@@ -4,16 +4,31 @@ interface EventQueryParams {
   q?: string;
   type?: string;
   city?: string;
-  radius_km?: number;
+  sportId?: number;
+  radiusInKm?: number;
   longitude?: number;
   latitude?: number;
   per_page?: number;
+  limit?: number;
   page?: number;
 }
 
 export async function getEvents(params?: EventQueryParams) {
-  const res = await api.get("/events", { params });
-  console.log("Request params for getEvents:", params); // Log the request parameters
+  const cleanParams: any = {};
+
+  if (params?.q) cleanParams.q = params.q;
+  if (params?.type) cleanParams.type = params.type;
+  if (params?.city) cleanParams.city = params.city;
+  if (params?.sportId !== undefined) cleanParams.sportId = params.sportId.toString();
+  if (params?.per_page) cleanParams.per_page = params.per_page.toString();
+  if (!params?.per_page && params?.limit) cleanParams.per_page = params.limit.toString();
+  if (params?.page) cleanParams.page = params.page.toString();
+  if (params?.latitude !== undefined) cleanParams.latitude = params.latitude.toString();
+  if (params?.longitude !== undefined) cleanParams.longitude = params.longitude.toString();
+  if (params?.radiusInKm !== undefined) cleanParams.radiusInKm = params.radiusInKm.toString();
+
+  const res = await api.get("/events", { params: cleanParams });
+  console.log("Request params for getEvents:", cleanParams); // Log the request parameters
   console.log("Response from getEvents:", res.data); // Log the response data
   return res.data;
 }
@@ -27,9 +42,22 @@ export const getEventById = async (id: string) => {
   return response.data.data;
 }
 
-export const getEventsByClubId = async (clubId: string) => {
+export const getEventsByClubId = async (
+  clubId: string,
+  params?: {
+    latitude?: number;
+    longitude?: number;
+    radiusInKm?: number;
+  }
+) => {
+  const requestParams: any = { clubId };
+
+  if (params?.latitude !== undefined) requestParams.latitude = params.latitude;
+  if (params?.longitude !== undefined) requestParams.longitude = params.longitude;
+  if (params?.radiusInKm !== undefined) requestParams.radiusInKm = params.radiusInKm;
+
   const response = await api.get(`/events`, {
-    params: { clubId, longitude: 2.363616001901619, latitude: 48.85712301088664, radius_km: 50 }
+    params: requestParams,
   });
   return response.data;
 }

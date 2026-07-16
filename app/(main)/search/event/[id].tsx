@@ -21,6 +21,7 @@ import { Club } from "@/types/club";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import EngagementBar from "@/components/EngagementBar";
 import { useAuth } from "@/context/AuthContext";
+import { getSportById } from "@/services/sports.service";
 import { styles } from "./_styles";
 
 // -------------------
@@ -167,6 +168,7 @@ export default function EventDetailScreen() {
   const params = useGlobalSearchParams();
   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
   const [event, setEvent] = useState<Event | null>(null);
+  const [resolvedSportName, setResolvedSportName] = useState<string | null>(null);
   const router = useRouter();
   const { user } = useAuth();
   const isLoggedIn = !!user;
@@ -179,6 +181,7 @@ export default function EventDetailScreen() {
     longitudeDelta: 0.05,
   };
   const [region, setRegion] = useState(regionFake);
+  const eventTags = event?.tags || [];
 
   useEffect(() => {
     const fetchClub = async () => {
@@ -203,6 +206,9 @@ export default function EventDetailScreen() {
         } else {
           eventData.status = {};
         }
+
+        const sportDetails = await getSportById(eventData?.sportId);
+        setResolvedSportName(eventData?.sport || sportDetails?.name || null);
 
         setEvent(eventData);
         const newRegion = { ...regionFake };
@@ -260,9 +266,14 @@ export default function EventDetailScreen() {
       <Text style={styles.title}>{event.name}</Text>
 
       {/* TAGS */}
-      {event.tags && event.tags.length > 0 && (
+      {(eventTags.length > 0 || resolvedSportName) && (
         <View style={styles.tagContainer}>
-          {event.tags.map((tag) => (
+          {resolvedSportName ? (
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>{resolvedSportName}</Text>
+            </View>
+          ) : null}
+          {eventTags.map((tag) => (
             <View key={tag} style={styles.tag}>
               <Text style={styles.tagText}>{tag}</Text>
             </View>
@@ -289,9 +300,6 @@ export default function EventDetailScreen() {
               style={styles.partnerChip}
               onPress={() => router.push(`/search/club/${partner.id}`)}
             >
-              {partner.profileImagePath ? (
-                <Image source={{ uri: partner.profileImagePath }} style={styles.partnerImage} />
-              ) : null}
               <Text style={styles.partnerName}>{partner.name}</Text>
             </TouchableOpacity>
           ))}
@@ -373,6 +381,11 @@ export default function EventDetailScreen() {
           <FontAwesome name="eur" size={22} color="#0E011A" />
           <Text style={styles.infoText}>{event.price ?? "Non précisé"}</Text>
         </View>
+
+        <View style={styles.infoRow}>
+          <Ionicons name="fitness-outline" size={22} color="#0E011A" />
+          <Text style={styles.infoText}>{resolvedSportName || "Sport non précisé"}</Text>
+        </View>
       </View>
 
       <EngagementBar
@@ -402,7 +415,7 @@ export default function EventDetailScreen() {
             await Share.share({
               title: `Regarde cet événement : ${event.name}`,
               message: shareText,
-              url: event.banner_url,
+              url: event.coverImagePath,
             });
           } catch (error) {
             console.error("Erreur partage natif :", error);

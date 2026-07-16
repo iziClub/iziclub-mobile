@@ -119,6 +119,18 @@ export default function MessageDetailScreen() {
     }, [id])
   );
 
+  const getAudienceLabel = (msg: Message) => {
+    const categoryNames = (msg.categories || [])
+      .map((category) => category?.name)
+      .filter((name): name is string => !!name && name.trim().length > 0);
+
+    if (categoryNames.length > 0) {
+      return categoryNames.join(" • ");
+    }
+
+    return msg.sentTo || "Toutes les catégories";
+  };
+
   if (!message && !loading) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}>
@@ -160,7 +172,7 @@ export default function MessageDetailScreen() {
             style={{ marginRight: 4 }} 
           />
           <Text style={[styles.audienceText, message.isUrgent && styles.urgentText]}>
-            Destiné à : {message.sentTo}
+            Destiné à : {getAudienceLabel(message)}
           </Text>
         </View>
 

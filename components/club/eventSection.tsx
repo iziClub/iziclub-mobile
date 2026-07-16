@@ -21,7 +21,7 @@ export default function EventSection({events}: {events: EventSearchItem[]}) {
                     <View style={{ width: "49%", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}>
                   <Card
                     title={item.name}
-                    banner={item.banner_url ?? "https://via.placeholder.com/300x150"}
+                    banner={item.coverImagePath ?? "https://via.placeholder.com/300x150"}
                     address={`${item.street}, ${item.city}`}
                     distanceInKm={item.distanceInKm}
                     tags={[item.type]}

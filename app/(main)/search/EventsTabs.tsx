@@ -85,7 +85,7 @@ export default function EventsTab({ data, refreshing, onRefresh, onEndReached, l
           <View style={{ width: "49%" }}>
             <Card
               title={item.name}
-              banner={item.image!}
+              banner={item.coverImagePath!}
               address={`${item.street}, ${item.city}`}
               distanceInKm={item.distanceInKm}
               tags={[item.sport || "Sport non précisé", item.type]}

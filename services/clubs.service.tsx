@@ -11,6 +11,12 @@ interface GetClubsParams {
   city?: string;
 }
 
+interface GetClubByIdParams {
+  latitude?: number;
+  longitude?: number;
+  radiusInKm?: number;
+}
+
 export interface MemberClubsResponse {
   data: Club[];
 }
@@ -37,11 +43,22 @@ export const getClubs = async (
   return response.data;
 };
 
-export const getClubById = async (id: string) => {
+export const getClubById = async (id: string, params?: GetClubByIdParams) => {
+  const latitude = params?.latitude ?? 48.8566;
+  const longitude = params?.longitude ?? 2.3522;
+  const radiusInKm = params?.radiusInKm ?? 1500;
+
+  const cleanParams = {
+    clubId: id,
+    latitude: latitude.toString(),
+    longitude: longitude.toString(),
+    radiusInKm: radiusInKm.toString(),
+  };
+
   const response = await api.get(`/clubs`, {
-    params: { clubId: id },
+    params: cleanParams,
   });
-  console.log(`Request params for getClubById (id: ${id}):`, { clubId: id }); // Log the request parameters
+  console.log(`Request params for getClubById (id: ${id}):`, cleanParams); // Log the request parameters
   console.log(`Response from getClubById (id: ${id}):`, response.data); // Log the response data
   return response.data;
 }

@@ -117,7 +117,7 @@ useFocusEffect(
   const renderItem = ({ item }: { item: any }) => {
     const isEvent = activeTab === 'events';
     const title = item.name || item.title;
-    const imageSource = item.profile?.profileImagePath || item.imageUrl || (isEvent 
+    const imageSource = item.profile?.profileImagePath || item.coverImagePath || (isEvent 
       ? 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg'
       : 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg');
     return (

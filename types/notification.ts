@@ -1,13 +1,19 @@
+export interface NotificationCategory {
+  id: string;
+  name: string;
+}
+
 export interface Message {
   id: string;
   clubId?: string;
-  clubName: string;
-  sentTo: string;
+  clubName?: string;
+  sentTo?: string;
   title: string;
   content: string;
-  date: string;
+  date?: string;
   createdAt?: string;
   isUnread?: boolean;
   isSeen?: boolean;
   isUrgent?: boolean;
+  categories?: NotificationCategory[];
 };

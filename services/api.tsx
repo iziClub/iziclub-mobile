@@ -1,8 +1,10 @@
 import axios from "axios";
+import * as SecureStore from 'expo-secure-store';
+import { router } from "expo-router";
 import { tokenStorage } from "./tokenStorage";
 
 const api = axios.create({
-  baseURL: "https://api.dev.iziclub.fr/api/v1/",
+  baseURL: "https://api.iziclub.fr/api/v1/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -26,6 +28,27 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error?.response?.status;
+
+    if (status === 401) {
+      try {
+        await tokenStorage.clearToken();
+        await SecureStore.deleteItemAsync('user_data');
+        delete api.defaults.headers.common['Authorization'];
+        delete axios.defaults.headers.common['Authorization'];
+        router.replace('/login');
+      } catch (redirectError) {
+        console.error('Erreur lors du traitement du 401 :', redirectError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );

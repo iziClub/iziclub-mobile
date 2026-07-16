@@ -61,6 +61,18 @@ export default function InboxScreen() {
     fetchNotifications();
   }, []);
 
+  const getAudienceLabel = (msg: Message) => {
+    const categoryNames = (msg.categories || [])
+      .map((category) => category?.name)
+      .filter((name): name is string => !!name && name.trim().length > 0);
+
+    if (categoryNames.length > 0) {
+      return categoryNames.join(" • ");
+    }
+
+    return msg.sentTo || "Toutes les catégories";
+  };
+
   const isMessageUnread = (msg: Message) => msg.isSeen === false || msg.isUnread === true;
 
   const handleOpenMessage = async (msg: Message) => {
@@ -143,7 +155,7 @@ export default function InboxScreen() {
                     style={{ marginRight: 4 }} 
                   />
                   <Text style={[styles.audienceText, msg.isUrgent && styles.urgentText]}>
-                    {msg.isUrgent ? 'URGENT • ' : ''}{msg.sentTo}
+                    {msg.isUrgent ? 'URGENT • ' : ''}{getAudienceLabel(msg)}
                   </Text>
                 </View>
               </View>

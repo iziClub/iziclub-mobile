@@ -8,8 +8,8 @@ export const mapClubToSearchItem = (club: Club): ClubSearchItem => {
     name: club.name,
     city: club.profile.address.city,
     type: "club",
-    latitude: club.profile.address.latitude,
-    longitude: club.profile.address.longitude,
+    latitude: String(club.profile.address.latitude ?? "0"),
+    longitude: String(club.profile.address.longitude ?? "0"),
     image: club.profile.profileImagePath,
     banner : club.profile.bannerPath,
     street: club.profile.address.street,
@@ -37,12 +37,21 @@ export const mapApiClubToDetail = (apiClub: ClubDetailDTO) : Club => {
         city: apiClub.profile.address?.city || "Ville non renseignée",
         latitude: apiClub.profile.address?.latitude || "0",
         longitude: apiClub.profile.address?.longitude || "0",
-        zip_code: apiClub.profile.address.zip_code, // Si tu as cette info, mappe-la ici
+        zip_code: apiClub.profile.address?.zip_code || apiClub.profile.address?.zipCode,
+        zipCode: apiClub.profile.address?.zipCode || apiClub.profile.address?.zip_code,
         department_code: apiClub.profile.address.department_code, // Si tu as cette info, mappe-la ici
         region: apiClub.profile.address.region, // Si tu as cette info, mappe-la ici
       },
       profileImagePath: apiClub.profile.profileImagePath,
-      bannerPath: apiClub.profile.bannerPath,  
+      bannerPath: apiClub.profile.bannerPath,
+      phone: apiClub.profile.phone,
+      email: apiClub.profile.email,
+      socialLinks: {
+        instagram: apiClub.profile.socialLinks?.instagram,
+        linkedin: apiClub.profile.socialLinks?.linkedin,
+        facebook: apiClub.profile.socialLinks?.facebook,
+        tiktok: apiClub.profile.socialLinks?.tiktok,
+      },
     },
     sport: apiClub.sport || null, // Ajout du sport si disponible, sinon null
     distanceInKm: apiClub.distanceInKm, // Si tu as cette info, mappe-la ici
