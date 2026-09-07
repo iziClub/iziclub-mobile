@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, TextInput, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useRouter } from 'expo-router';
@@ -11,10 +10,11 @@ import FilterBottomSheet from "../../../components/search/FilterModal";
 import { useSearch } from "../../../components/search/useSearch";
 import { useLocalSearchParams } from 'expo-router';
 
-const Tab = createMaterialTopTabNavigator();
+type SearchTab = "Clubs" | "Événements";
 
 export default function SearchScreen() {
   const { q, tab } = useLocalSearchParams<{ q?: string, tab?: string }>();
+  const [activeTab, setActiveTab] = useState<SearchTab>(tab === "Événements" ? "Événements" : "Clubs");
   const [query, setQuery] = useState(q || "");
   const [debouncedQuery, setDebouncedQuery] = useState(q || "");
   const [radius, setRadius] = useState(30);
@@ -74,27 +74,33 @@ export default function SearchScreen() {
       </View>
 
       {/* TABS NAVIGATION */}
-      <Tab.Navigator
-        initialRouteName={tab === "Événements" ? "Événements" : "Clubs"}
-        screenOptions={{
-          tabBarIndicatorStyle: { backgroundColor: "black", height: 2 },
-          tabBarLabelStyle: { fontWeight: "bold", textTransform: "none", fontSize: 15 },
-        }}
-      >
-        <Tab.Screen 
-          name="Clubs" 
-          options={{ tabBarLabel: `Clubs (${clubs?.length || 0})` }}
+      <View style={styles.tabBar}>
+        <TouchableOpacity
+          style={styles.tabItem}
+          onPress={() => setActiveTab("Clubs")}
         >
-          {() => <ClubsTab data={clubs} refreshing={loading} onRefresh={refresh} />}
-        </Tab.Screen>
+          <Text style={[styles.tabLabel, activeTab === "Clubs" && styles.tabLabelActive]}>
+            Clubs ({clubs?.length || 0})
+          </Text>
+          {activeTab === "Clubs" && <View style={styles.tabIndicator} />}
+        </TouchableOpacity>
 
-        <Tab.Screen 
-          name="Événements" 
-          options={{ tabBarLabel: `Événements (${events?.length || 0})` }}
+        <TouchableOpacity
+          style={styles.tabItem}
+          onPress={() => setActiveTab("Événements")}
         >
-          {() => <EventsTab data={events} refreshing={loading} onRefresh={refresh} onEndReached={fetchMoreEvents} loadingMore={loadingMore} />}
-        </Tab.Screen>
-      </Tab.Navigator>
+          <Text style={[styles.tabLabel, activeTab === "Événements" && styles.tabLabelActive]}>
+            Événements ({events?.length || 0})
+          </Text>
+          {activeTab === "Événements" && <View style={styles.tabIndicator} />}
+        </TouchableOpacity>
+      </View>
+
+      {activeTab === "Clubs" ? (
+        <ClubsTab data={clubs} refreshing={loading} onRefresh={refresh} />
+      ) : (
+        <EventsTab data={events} refreshing={loading} onRefresh={refresh} onEndReached={fetchMoreEvents} loadingMore={loadingMore} />
+      )}
 
       {/* BOUTONS FLOTTANTS (FABs) */}
       <View style={styles.fabContainer}>
@@ -139,6 +145,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, 
     paddingTop: 20, 
     paddingBottom: 15 
+  },
+  tabBar: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEE',
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  tabLabel: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    color: '#999',
+  },
+  tabLabelActive: {
+    color: 'black',
+  },
+  tabIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: 'black',
   },
   searchBar: {
     flexDirection: 'row',

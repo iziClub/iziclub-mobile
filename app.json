@@ -7,7 +7,6 @@
     "icon": "./assets/images/logo.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "infoPlist": {
         "NSCalendarsUsageDescription": "Cette application a besoin d'accéder à votre calendrier pour ajouter des événements.",
@@ -27,7 +26,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.gaut_er.iziClub"
     },
@@ -49,7 +47,12 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font",
+      "expo-image",
+      "expo-sharing",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
