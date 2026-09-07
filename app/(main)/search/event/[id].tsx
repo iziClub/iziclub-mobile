@@ -181,6 +181,7 @@ export default function EventDetailScreen() {
     longitudeDelta: 0.05,
   };
   const [region, setRegion] = useState(regionFake);
+  const [isMapReady, setIsMapReady] = useState(false);
   const eventTags = event?.tags || [];
 
   useEffect(() => {
@@ -356,15 +357,22 @@ export default function EventDetailScreen() {
             {/* LA CARTE */}
             <View style={styles.mapWrapper}>
               <MapView
-                provider={PROVIDER_GOOGLE}
+                provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
                 style={styles.map}
                 initialRegion={region}
                 scrollEnabled={false}
                 zoomEnabled={false}
+                onMapReady={() => setIsMapReady(true)}
                 onPress={() => openNavigation(event.address.street, event.address.city)}
               >
                 <Marker coordinate={region} pinColor="#1C52D2" />
               </MapView>
+
+              {!isMapReady && (
+                <View style={styles.mapLoadingOverlay} pointerEvents="none">
+                  <ActivityIndicator size="small" color="#1C52D2" />
+                </View>
+              )}
 
               <TouchableOpacity
                 style={styles.navOverlayButton}

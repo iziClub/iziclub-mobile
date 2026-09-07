@@ -13,7 +13,8 @@ export const useSearch = (
   useRadius?: boolean,
   city?: string,
   mapCoords?: { latitude: number; longitude: number },
-  sportQuery?: string
+  sportQuery?: string,
+  eventType?: string
 ) => {
   const { location } = useLocation();
 
@@ -84,6 +85,7 @@ export const useSearch = (
       longitude: mapCoords?.longitude ?? fallbackLocation.longitude,
       radiusInKm: useRadius ? radius : 1500,
       sportId,
+      eventType: eventType || undefined,
     };
   };
 
@@ -123,7 +125,7 @@ export const useSearch = (
   // Déclencheur automatique lors des changements de filtres / query
   useEffect(() => {
     fetchData();
-  }, [query, radius, useRadius, city, sportQuery, mapCoords?.latitude, mapCoords?.longitude, location?.latitude, location?.longitude]);
+  }, [query, radius, useRadius, city, sportQuery, eventType, mapCoords?.latitude, mapCoords?.longitude, location?.latitude, location?.longitude]);
 
   return { 
     clubs, 

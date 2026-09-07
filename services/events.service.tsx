@@ -2,7 +2,7 @@ import api from "./api";
 
 interface EventQueryParams {
   q?: string;
-  type?: string;
+  eventType?: string;
   city?: string;
   sportId?: number;
   radiusInKm?: number;
@@ -17,7 +17,7 @@ export async function getEvents(params?: EventQueryParams) {
   const cleanParams: any = {};
 
   if (params?.q) cleanParams.q = params.q;
-  if (params?.type) cleanParams.type = params.type;
+  if (params?.eventType) cleanParams.eventType = params.eventType;
   if (params?.city) cleanParams.city = params.city;
   if (params?.sportId !== undefined) cleanParams.sportId = params.sportId.toString();
   if (params?.per_page) cleanParams.per_page = params.per_page.toString();

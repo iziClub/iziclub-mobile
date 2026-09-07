@@ -5,6 +5,7 @@ import {
   Keyboard,
   Modal,
   PanResponder,
+  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -27,8 +28,20 @@ interface Props {
   setRadius: (val: number) => void;
   selectedSort: string;
   setSelectedSort: (val: string) => void;
+  eventType: string;
+  setEventType: (val: string) => void;
   onReset?: () => void;
 }
+
+const EVENT_TYPES: { value: string; label: string }[] = [
+  { value: 'training', label: 'Entraînement' },
+  { value: 'friendly_match', label: 'Match amical' },
+  { value: 'tournament', label: 'Tournoi' },
+  { value: 'technique_session', label: 'Séance technique' },
+  { value: 'gala', label: 'Gala' },
+  { value: 'championship', label: 'Championnat' },
+  { value: 'mixed_session', label: 'Séance mixte' },
+];
 
 const SHEET_HEIGHT = Math.round(Dimensions.get('window').height * 0.72);
 
@@ -41,6 +54,8 @@ export default function FilterBottomSheet({
   setUseRadius,
   sportQuery,
   setSportQuery,
+  eventType,
+  setEventType,
   onReset,
 }: Props) {
   const translateY = useRef(new Animated.Value(SHEET_HEIGHT)).current;
@@ -108,7 +123,12 @@ export default function FilterBottomSheet({
 
           <View style={styles.divider} />
 
-          <View style={styles.content}>
+          <ScrollView
+            style={styles.content}
+            contentContainerStyle={styles.contentContainer}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
             {/* SECTION DISTANCE */}
             <View style={[styles.rowBetween, { marginBottom: 10 }]}>
               <View>
@@ -157,7 +177,33 @@ export default function FilterBottomSheet({
               returnKeyType="done"
               onSubmitEditing={Keyboard.dismiss}
             />
-          </View>
+
+            <View style={styles.divider} />
+
+            <Text style={styles.sectionTitle}>Type d'événement</Text>
+            <Text style={styles.subLabel}>Ne s'applique qu'à l'onglet Événements</Text>
+            <View style={styles.chipsWrap}>
+              <TouchableOpacity
+                style={[styles.chip, !eventType && styles.chipActive]}
+                onPress={() => setEventType('')}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.chipText, !eventType && styles.chipTextActive]}>Tous</Text>
+              </TouchableOpacity>
+              {EVENT_TYPES.map((item) => (
+                <TouchableOpacity
+                  key={item.value}
+                  style={[styles.chip, eventType === item.value && styles.chipActive]}
+                  onPress={() => setEventType(eventType === item.value ? '' : item.value)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.chipText, eventType === item.value && styles.chipTextActive]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
 
           <View style={styles.footer}>
             <TouchableOpacity
@@ -211,8 +257,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#CCC',
   },
   content: {
-    paddingHorizontal: 20,
     flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   header: {
     flexDirection: 'row',
@@ -232,6 +281,29 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 15,
     fontSize: 16,
+  },
+  chipsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+  },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 18,
+    backgroundColor: '#F5F5F5',
+  },
+  chipActive: {
+    backgroundColor: '#4A78FF',
+  },
+  chipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+  },
+  chipTextActive: {
+    color: 'white',
   },
   footer: {
     flexDirection: 'row',

@@ -31,6 +31,12 @@ export const styles = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFill,
   },
+  mapLoadingOverlay: {
+    ...StyleSheet.absoluteFill,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#E5E7EB",
+  },
   navOverlayButton: {
     position: "absolute",
     bottom: 10,
