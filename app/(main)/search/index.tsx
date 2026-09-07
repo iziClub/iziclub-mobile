@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TextInput, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
 import { useRouter } from 'expo-router';
 // Tes imports
 import ClubsTab from "./ClubsTab";
@@ -45,8 +44,8 @@ export default function SearchScreen() {
     sportQuery
   );
   
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  
+  const [showFilters, setShowFilters] = useState(false);
+
   // Un filtre est considéré comme "actif" si le rayon n'est plus à sa valeur par défaut
   const hasActiveFilters = radius !== 30 || !!sportQuery.trim() || useRadius;
 
@@ -107,7 +106,7 @@ export default function SearchScreen() {
         {/* BOUTON FILTRES */}
         <TouchableOpacity 
           style={styles.fabWhite} 
-          onPress={() => bottomSheetRef.current?.expand()}
+          onPress={() => setShowFilters(true)}
         >
           <Ionicons name="options-outline" size={20} color="black" />
           <Text style={styles.fabTextBlack}>Filtres</Text>
@@ -124,9 +123,10 @@ export default function SearchScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* OVERLAY FILTRES (GORHOM) */}
+      {/* OVERLAY FILTRES */}
       <FilterBottomSheet 
-        sheetRef={bottomSheetRef}
+        visible={showFilters}
+        onClose={() => setShowFilters(false)}
         radius={radius}
         setRadius={setRadius}
         selectedSort={selectedSort}
@@ -135,6 +135,11 @@ export default function SearchScreen() {
         setUseRadius={setUseRadius}
         sportQuery={sportQuery}
         setSportQuery={setSportQuery}
+        onReset={() => {
+          setRadius(30);
+          setUseRadius(false);
+          setSportQuery("");
+        }}
       />
     </View>
   );

@@ -186,8 +186,13 @@ export default function EventDetailScreen() {
   useEffect(() => {
     const fetchClub = async () => {
       if (event?.clubId) {
-        const clubData = await getClubById(event.clubId);
-        setClub(clubData.data[0]);
+        try {
+          const clubData = await getClubById(event.clubId);
+          setClub(clubData.data[0] ?? null);
+        } catch (error) {
+          console.error("Erreur lors de la récupération du club organisateur:", error);
+          setClub(null);
+        }
       }
     };
 
@@ -197,25 +202,29 @@ export default function EventDetailScreen() {
   useEffect(() => {
     const fetchEvent = async () => {
       if (eventId) {
-        const eventData = await getEventById(eventId);
-        if (isLoggedIn) {
-          const eventStatus = await getEventStatus(eventId);
-          eventData.status = eventStatus;
-          const eventLikeCount = await getEventsLikeCount(eventId);
-          eventData.status.countLikes = eventLikeCount;
-        } else {
-          eventData.status = {};
+        try {
+          const eventData = await getEventById(eventId);
+          if (isLoggedIn) {
+            const eventStatus = await getEventStatus(eventId);
+            eventData.status = eventStatus;
+            const eventLikeCount = await getEventsLikeCount(eventId);
+            eventData.status.countLikes = eventLikeCount;
+          } else {
+            eventData.status = {};
+          }
+
+          const sportDetails = await getSportById(eventData?.sportId);
+          setResolvedSportName(eventData?.sport || sportDetails?.name || null);
+
+          setEvent(eventData);
+          const newRegion = { ...regionFake };
+          newRegion.latitude = parseFloat(eventData?.address.latitude || "49.1191");
+          newRegion.longitude = parseFloat(eventData?.address.longitude || "6.1727");
+
+          setRegion(newRegion);
+        } catch (error) {
+          console.error("Erreur lors de la récupération de l'événement:", error);
         }
-
-        const sportDetails = await getSportById(eventData?.sportId);
-        setResolvedSportName(eventData?.sport || sportDetails?.name || null);
-
-        setEvent(eventData);
-        const newRegion = { ...regionFake };
-        newRegion.latitude = parseFloat(eventData?.address.latitude || "49.1191");
-        newRegion.longitude = parseFloat(eventData?.address.longitude || "6.1727");
-
-        setRegion(newRegion);
       }
     };
 
@@ -283,7 +292,8 @@ export default function EventDetailScreen() {
 
       <TouchableOpacity
         style={styles.clubContainer}
-        onPress={() => router.push(`/search/club/${event.clubId}`)}
+        disabled={!event.clubId}
+        onPress={() => event.clubId && router.push(`/search/club/${event.clubId}`)}
       >
         {club?.profile.profileImagePath != undefined && (
           <Image source={{ uri: club.profile.profileImagePath }} style={styles.clubImage} />
