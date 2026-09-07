@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import * as DocumentPicker from 'expo-document-picker'; 
+import * as FileSystem from 'expo-file-system/legacy';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
@@ -148,23 +149,20 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
 
       const urlResponse = await getUploadUrl(submissionId, contentType);
       const { uploadUrl, filePath } = urlResponse?.data.data;
-      const fileToUpload = {
-        uri: file.uri.startsWith('file://') ? file.uri : `file://${file.uri}`,
-        type: contentType,
-        name: file.name || `document_${questionId}.pdf`,
-      };
+      const localUri = file.uri.startsWith('file://') ? file.uri : `file://${file.uri}`;
 
-      const s3Response = await fetch(uploadUrl, {
-        method: "PUT",
-        body: fileToUpload as any, 
+      // Upload direct du binaire local vers l'URL pré-signée S3 (fetch n'accepte plus
+      // {uri, type, name} comme BodyInit sur cette version de React Native)
+      const uploadResult = await FileSystem.uploadAsync(uploadUrl, localUri, {
+        httpMethod: "PUT",
+        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
         headers: {
           "Content-Type": contentType,
         },
       });
 
-      if (!s3Response.ok) {
-        const errorText = await s3Response.text();
-        console.error("Réponse S3 invalide :", errorText);
+      if (uploadResult.status < 200 || uploadResult.status >= 300) {
+        console.error("Réponse S3 invalide :", uploadResult.body);
         throw new Error("Le dépôt du fichier sur le serveur S3 a échoué.");
       }
 
