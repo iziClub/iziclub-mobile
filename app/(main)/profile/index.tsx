@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/context/AuthContext';
 import GravatarImage from "@/components/profile/GravatarImage";
 import { getCurrentUser } from "@/services/auth";
@@ -187,26 +188,56 @@ export default function ProfileScreen() {
   ];
   // --- GUEST VIEW ---
   if (!user) {
+    const guestFeatures = [
+      { icon: 'heart', color: '#FF5A5F', label: 'Retrouve tes clubs et événements favoris' },
+      { icon: 'bookmark', color: '#4A78FF', label: 'Enregistre les clubs qui t’intéressent' },
+      { icon: 'document-text', color: '#0CA789', label: 'Gère tes dossiers d’adhésion et tes pass' },
+      { icon: 'notifications', color: '#6D5AD3', label: 'Reçois les notifications de tes clubs' },
+    ] as const;
+
     return (
-      <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', paddingHorizontal: 30 }]}>
-        <View style={styles.guestContent}>
+      <ScrollView
+        style={[styles.container]}
+        contentContainerStyle={{ paddingTop: insets.top, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <LinearGradient
+          colors={['#0E011A', '#241547']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.guestHero}
+        >
           <View style={styles.guestIconCircle}>
-            <Ionicons name="person-outline" size={60} color="#4A78FF" />
+            <Ionicons name="person" size={48} color="#4A78FF" />
           </View>
           <Text style={styles.guestTitle}>Rejoins l'aventure !</Text>
           <Text style={styles.guestSubtitle}>
-            Connecte-toi pour sauvegarder tes clubs favoris, gérer tes documents et accéder à tes pass.
+            Connecte-toi pour profiter de toutes les fonctionnalités d'iziClub.
           </Text>
+        </LinearGradient>
 
-          <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(auth)/login")}>
+        <View style={styles.guestFeatureList}>
+          {guestFeatures.map((feature) => (
+            <View key={feature.label} style={styles.guestFeatureRow}>
+              <View style={[styles.guestFeatureIcon, { backgroundColor: `${feature.color}1A` }]}>
+                <Ionicons name={feature.icon as any} size={20} color={feature.color} />
+              </View>
+              <Text style={styles.guestFeatureLabel}>{feature.label}</Text>
+              <Ionicons name="lock-closed" size={16} color="#C7C7CC" />
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.guestActions}>
+          <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(auth)/login")} activeOpacity={0.85}>
             <Text style={styles.loginButtonText}>Se connecter</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.registerLink} onPress={() => router.push("/(auth)/register")}>
-            <Text style={styles.registerLinkText}>Créer un compte</Text>
+          <TouchableOpacity style={styles.registerButton} onPress={() => router.push("/(auth)/register")} activeOpacity={0.85}>
+            <Text style={styles.registerButtonText}>Créer un compte</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 
@@ -601,21 +632,58 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  guestContent: { alignItems: 'center' },
+  guestHero: {
+    alignItems: 'center',
+    paddingTop: 30,
+    paddingBottom: 40,
+    paddingHorizontal: 30,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+  },
   guestIconCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#F0F4FF',
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: 'rgba(255,255,255,0.95)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
   },
-  guestTitle: { fontSize: 24, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 10 },
-  guestSubtitle: { fontSize: 16, color: '#666', textAlign: 'center', lineHeight: 22, marginBottom: 30 },
-  loginButton: { backgroundColor: '#0E011A', width: '100%', padding: 18, borderRadius: 15, alignItems: 'center', marginBottom: 15 },
+  guestTitle: { fontSize: 24, fontWeight: 'bold', color: 'white', marginBottom: 8, textAlign: 'center' },
+  guestSubtitle: { fontSize: 15, color: 'rgba(255,255,255,0.75)', textAlign: 'center', lineHeight: 21 },
+  guestFeatureList: {
+    marginTop: -20,
+    marginHorizontal: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+  },
+  guestFeatureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F2',
+    gap: 12,
+  },
+  guestFeatureIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  guestFeatureLabel: { flex: 1, fontSize: 14, color: '#333', fontWeight: '500' },
+  guestActions: { paddingHorizontal: 30, marginTop: 28 },
+  loginButton: { backgroundColor: '#0E011A', width: '100%', padding: 18, borderRadius: 15, alignItems: 'center', marginBottom: 12 },
   loginButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  registerLink: { padding: 10 },
-  registerLinkText: { color: '#4A78FF', fontWeight: '600', textDecorationLine: 'underline' },
+  registerButton: { backgroundColor: '#F0F4FF', width: '100%', padding: 18, borderRadius: 15, alignItems: 'center' },
+  registerButtonText: { color: '#4A78FF', fontWeight: 'bold', fontSize: 16 },
   logoutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15, marginTop: 10 },
 });
