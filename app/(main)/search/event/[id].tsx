@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useRouter, useGlobalSearchParams } from "expo-router";
-import * as Calendar from "expo-calendar";
+import * as Calendar from "expo-calendar/legacy";
 import { Event } from "@/types/event";
 import { getClubById } from "@/services/clubs.service";
 import { getEventById, getEventsLikeCount, getEventStatus } from "@/services/events.service";
