@@ -8,6 +8,8 @@ import {
   View,
 } from "react-native";
 import * as DocumentPicker from 'expo-document-picker'; 
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 import MembershipHeader from "./MembershipHeader";
 import ProfileCard from "./ProfileCard";
@@ -22,7 +24,8 @@ import {
   createDraftSubmission,
   addAnswersToSubmission,
   submitFormSubmission,
-  getUploadUrl 
+  getUploadUrl,
+  getAllSubmissions,
 } from "@/services/forms.service";
 
 type Props = {
@@ -32,6 +35,7 @@ type Props = {
 };
 
 export default function MembershipSection({ club, isLoggedIn, user }: Props) {
+  const router = useRouter();
   const [currentForm, setCurrentForm] = useState<DynamicForm | null>(null);
   const [formResponses, setFormResponses] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState<boolean>(true);
@@ -41,6 +45,41 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSavingDraft, setIsSavingDraft] = useState<boolean>(false);
   const [uploadingQuestionId, setUploadingQuestionId] = useState<string | null>(null); 
+  const [hasResumedDraft, setHasResumedDraft] = useState<boolean>(false);
+
+  // Transforme les réponses brutes de l'API (answers[]) en dictionnaire questionId -> valeur
+  const parseAnswersFromApi = (rawAnswers: any[] = []) => {
+    const parsed: Record<string, any> = {};
+    (rawAnswers || []).forEach((answer: any) => {
+      if (!answer) return;
+      const value = answer.value;
+      if (typeof value === "string" && value.includes(", ")) {
+        parsed[answer.questionId] = value.split(", ");
+      } else {
+        parsed[answer.questionId] = value;
+      }
+    });
+    return parsed;
+  };
+
+  // Recherche un brouillon existant pour ce formulaire afin d'éviter à l'utilisateur de tout ressaisir
+  const checkForExistingDraft = async (formId: string) => {
+    try {
+      const response = await getAllSubmissions();
+      const submissions = response?.data?.submissions || response?.submissions || [];
+      const draft = submissions.find(
+        (submission: any) => submission.formId === formId && submission.status === "draft"
+      );
+      if (draft) {
+        setActiveSubmissionId(draft.id);
+        setFormResponses(parseAnswersFromApi(draft.answers));
+        setHasResumedDraft(true);
+      }
+    } catch (error) {
+      // L'absence de brouillon ne doit jamais bloquer l'affichage du formulaire
+      console.error("Erreur récupération des brouillons existants:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchForm = async () => {
@@ -51,12 +90,18 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
         const formData = response?.data || response;
         if (formData && formData.questions) {
           setCurrentForm(formData);
+          await checkForExistingDraft(formData.id);
         } else {
           setCurrentForm(null);
         }
-      } catch (error) {
-        console.error("Erreur récupération formulaire:", error);
-        Alert.alert("Erreur", "Impossible de charger le formulaire.");
+      } catch (error: any) {
+        // Pas de formulaire en ligne pour ce club : cas normal, pas d'alerte
+        if (error?.response?.status === 404) {
+          setCurrentForm(null);
+        } else {
+          console.error("Erreur récupération formulaire:", error);
+          Alert.alert("Erreur", "Impossible de charger le formulaire.");
+        }
       } finally {
         setLoading(false);
       }
@@ -65,6 +110,13 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   }, [club?.id, isLoggedIn]);
 
   if (!isLoggedIn) return <LoginRequired />;
+
+  const handleRestartFromScratch = () => {
+    setFormResponses({});
+    setHasAgreedToTerms(false);
+    setHasResumedDraft(false);
+  };
+
 
   // ─────────────────────────────────────────────────────────
   // 💡 LOGIQUE D'UPLOAD S3 VIA PRE-SIGNED URL
@@ -220,7 +272,11 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
     try {
       const submissionId = await executeDraftWorkflow();
       await submitFormSubmission(submissionId);
-      Alert.alert("Félicitations !", "Votre dossier complet a été envoyé avec succès au club.");
+      Alert.alert(
+        "Félicitations !",
+        "Votre dossier complet a été envoyé avec succès au club. Tu peux suivre son avancement à tout moment depuis tes inscriptions.",
+        [{ text: "Voir mon dossier", onPress: () => router.replace("/profile/inscriptions") }]
+      );
     } catch (error) {
       console.error("Erreur soumission finale :", error);
       Alert.alert("Erreur lors de l'envoi", "Une erreur est survenue pendant la finalisation.");
@@ -252,6 +308,37 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
       <MembershipHeader form={currentForm} />
       <ProfileCard user={user} />
+
+      {hasResumedDraft && (
+        <View
+          style={{
+            backgroundColor: "#F0F4FF",
+            borderWidth: 1,
+            borderColor: "#D6E0FF",
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 16,
+            flexDirection: "row",
+            alignItems: "flex-start",
+            gap: 10,
+          }}
+        >
+          <Ionicons name="document-text" size={20} color="#4A78FF" />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontWeight: "700", color: "#1A1A1A", marginBottom: 2 }}>
+              Brouillon retrouvé
+            </Text>
+            <Text style={{ fontSize: 13, color: "#4A5568", lineHeight: 18 }}>
+              Tu avais déjà commencé ce dossier, on a préremplis tes réponses. Tu peux continuer ou repartir de zéro.
+            </Text>
+            <TouchableOpacity onPress={handleRestartFromScratch} style={{ marginTop: 8 }}>
+              <Text style={{ color: "#4A78FF", fontWeight: "600", fontSize: 13 }}>
+                Repartir de zéro
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       {currentForm.questions.map((question) => {
         const responseValue = formResponses[question.id];

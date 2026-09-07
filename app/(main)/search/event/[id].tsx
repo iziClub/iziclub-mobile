@@ -246,7 +246,7 @@ export default function EventDetailScreen() {
       {/* IMAGE */}
       
       <View style={styles.imageContainer}>
-        <Image source={{ uri: event.banner_url ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
+        <Image source={{ uri: event.coverImagePath ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
         <TouchableOpacity 
           style={styles.backButton} 
           onPress={() => {
@@ -334,7 +334,6 @@ export default function EventDetailScreen() {
 
         </View>
 
-        {/* LOCALISATION */}
         {event.address.city && event.address.street ? (
           <>
             <View style={[styles.infoRow, { marginBottom: 10 }]}>
@@ -350,14 +349,13 @@ export default function EventDetailScreen() {
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}
                 initialRegion={region}
-                scrollEnabled={false} // On bloque pour éviter les conflits avec le ScrollView
+                scrollEnabled={false}
                 zoomEnabled={false}
                 onPress={() => openNavigation(event.address.street, event.address.city)}
               >
                 <Marker coordinate={region} pinColor="#1C52D2" />
               </MapView>
 
-              {/* BOUTON ITINÉRAIRE SUR LA CARTE */}
               <TouchableOpacity
                 style={styles.navOverlayButton}
                 onPress={() => openNavigation(event.address.street, event.address.city)}

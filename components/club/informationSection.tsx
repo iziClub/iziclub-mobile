@@ -73,9 +73,8 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                         contentContainerStyle={{ gap: 12, paddingRight: 16, marginBottom: 24 }}
                     >
                         {club.events.map((event) => (
-                            <View style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}>
+                            <View key={event.id} style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}>
                             <Card
-                                key={event.id}
                                 title={event.name}
                                 banner={event.coverImagePath ?? "https://via.placeholder.com/300x150"}
                                 address={`${event.address.street}, ${event.address.city}`}

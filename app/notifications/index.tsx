@@ -19,7 +19,6 @@ export default function InboxScreen() {
       const response = await getNotifications();
       console.log("Fetched notifications:", response);
       const rawNotifications: Message[] = response?.data || [];
-
       const clubNameCache = new Map<string, string>();
       const enrichedNotifications = await Promise.all(
         rawNotifications.map(async (msg) => {
@@ -65,7 +64,6 @@ export default function InboxScreen() {
     const categoryNames = (msg.categories || [])
       .map((category) => category?.name)
       .filter((name): name is string => !!name && name.trim().length > 0);
-
     if (categoryNames.length > 0) {
       return categoryNames.join(" • ");
     }
