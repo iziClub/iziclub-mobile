@@ -28,8 +28,6 @@ export async function getEvents(params?: EventQueryParams) {
   if (params?.radiusInKm !== undefined) cleanParams.radiusInKm = params.radiusInKm.toString();
 
   const res = await api.get("/events", { params: cleanParams });
-  console.log("Request params for getEvents:", cleanParams); // Log the request parameters
-  console.log("Response from getEvents:", res.data); // Log the response data
   return res.data;
 }
 
@@ -84,7 +82,6 @@ export const unsaveEvent = async (eventId: string) => {
 
 export const getLikedEvents = async () => {
   const response = await api.get(`/events/likes/user`);
-  console.log("Response from getLikedEvents:", response.data); // Log the response data
   return response.data;
 }
 

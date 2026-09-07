@@ -12,15 +12,10 @@ type LocationContextType = {
   requestLocation: () => Promise<boolean>;
 };
 
-const defaultLocation: UserLocation = {
-  latitude: 48.8566,
-  longitude: 2.3522,
-};
-
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
 export const LocationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [location, setLocation] = useState<UserLocation | null>(defaultLocation);
+  const [location, setLocation] = useState<UserLocation | null>(null);
   const [status, setStatus] = useState<'idle' | 'granted' | 'denied' | 'loading'>('idle');
 
   const requestLocation = async () => {

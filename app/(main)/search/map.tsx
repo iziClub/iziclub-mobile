@@ -13,18 +13,26 @@ const DEFAULT_REGION: Region = {
   longitudeDelta: 0.0421,
 };
 
+const toRegion = (coords: { latitude: number; longitude: number }): Region => ({
+  latitude: coords.latitude,
+  longitude: coords.longitude,
+  latitudeDelta: DEFAULT_REGION.latitudeDelta,
+  longitudeDelta: DEFAULT_REGION.longitudeDelta,
+});
+
 export default function MapScreen() {
   const router = useRouter();
   const { location, status, requestLocation } = useLocation();
 
-  // États pour la carte et la recherche
-  const [region, setRegion] = useState<Region>(DEFAULT_REGION);
+  // États pour la carte et la recherche : on part de la position de l'utilisateur si elle est
+  // déjà connue (résolue au lancement de l'app), sinon on retombe sur la région par défaut.
+  const [region, setRegion] = useState<Region>(() => (location ? toRegion(location) : DEFAULT_REGION));
 
-  const [searchParams, setSearchParams] = useState({
-    latitude: DEFAULT_REGION.latitude,
-    longitude: DEFAULT_REGION.longitude,
+  const [searchParams, setSearchParams] = useState(() => ({
+    latitude: location?.latitude ?? DEFAULT_REGION.latitude,
+    longitude: location?.longitude ?? DEFAULT_REGION.longitude,
     radius: 30,
-  });
+  }));
 
   const [showSearchButton, setShowSearchButton] = useState(false);
 
@@ -33,7 +41,8 @@ export default function MapScreen() {
   const [showEvents, setShowEvents] = useState(true);
   const [mapReady, setMapReady] = useState(false);
 
-  const hasCenteredOnUser = useRef(false);
+  // Si la position était déjà connue au montage, inutile de la recentrer une seconde fois.
+  const hasCenteredOnUser = useRef(!!location);
   const mapRef = useRef<MapView>(null);
 
   const { clubs, events, loading } = useSearch("", searchParams.radius, true, "", {
@@ -41,16 +50,12 @@ export default function MapScreen() {
     longitude: searchParams.longitude,
   });
 
-  // Centre la carte sur l'utilisateur dès que sa position est connue (une seule fois)
+  // Centre la carte sur l'utilisateur dès que sa position est connue (si elle n'était pas
+  // encore disponible au montage de l'écran)
   React.useEffect(() => {
     if (location && !hasCenteredOnUser.current) {
       hasCenteredOnUser.current = true;
-      const nextRegion: Region = {
-        latitude: location.latitude,
-        longitude: location.longitude,
-        latitudeDelta: DEFAULT_REGION.latitudeDelta,
-        longitudeDelta: DEFAULT_REGION.longitudeDelta,
-      };
+      const nextRegion = toRegion(location);
       setRegion(nextRegion);
       setSearchParams(prev => ({ ...prev, latitude: location.latitude, longitude: location.longitude }));
       mapRef.current?.animateToRegion(nextRegion, 400);
@@ -120,7 +125,7 @@ export default function MapScreen() {
         ref={mapRef}
         provider={mapProvider}
         style={styles.map}
-        initialRegion={DEFAULT_REGION}
+        initialRegion={region}
         onMapReady={() => setMapReady(true)}
         onRegionChangeComplete={(newRegion) => {
           setRegion(newRegion);

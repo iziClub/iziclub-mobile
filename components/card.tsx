@@ -29,7 +29,8 @@ export default function Card({
   //   distanceInKm, title
   // });
   return (
-    <View style={[styles.card, { width }]}>
+    <View style={[styles.cardShadow, { width }]}>
+    <View style={styles.card}>
       {/* Bannière */}
       {banner ? (
         <Image source={{ uri: banner }} style={styles.banner} />
@@ -104,20 +105,26 @@ export default function Card({
         </View>
       </View>
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  cardShadow: {
+    borderRadius: 14,
+    marginBottom: 14,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    elevation: 6,
+  },
   card: {
     // width: "100%",
     backgroundColor: "white",
     borderRadius: 14,
     overflow: "hidden",
-    marginBottom: 14,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
   },
 
   banner: {

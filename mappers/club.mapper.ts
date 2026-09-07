@@ -2,7 +2,6 @@ import { Club, ClubDetailDTO } from "../types/club";
 import { ClubSearchItem } from "@/components/search/types";
 
 export const mapClubToSearchItem = (club: Club): ClubSearchItem => {
-  // console.log("Mapping club to search item:", club); // Log the club object being mapped
   return {
     id: club.id,
     name: club.name,

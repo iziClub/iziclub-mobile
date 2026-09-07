@@ -38,8 +38,6 @@ export const getClubs = async (
   const response = await api.get("/clubs", {
     params: cleanParams,
   });
-  console.log("Request params for getClubs:", cleanParams); // Log the request parameters
-  // console.log("Response from getClubs:", response.data); // Log the response data
   return response.data;
 };
 
@@ -58,8 +56,6 @@ export const getClubById = async (id: string, params?: GetClubByIdParams) => {
   const response = await api.get(`/clubs`, {
     params: cleanParams,
   });
-  console.log(`Request params for getClubById (id: ${id}):`, cleanParams); // Log the request parameters
-  console.log(`Response from getClubById (id: ${id}):`, response.data); // Log the response data
   return response.data;
 }
 
@@ -73,7 +69,6 @@ export const getGalleryImagesByClubId = async (clubId: string) => {
 
 export const getLikedClubs = async () => {
   const response = await api.get(`/clubs/likes/user`);
-  console.log("Response from getLikedClubs:", response.data); // Log the response data
   return response.data;
 }
 
@@ -114,7 +109,6 @@ export const getSavedClubs = async () => {
 
 export const getMemberClubs = async (): Promise<MemberClubsResponse> => {
   const response = await api.get(`/member/me/clubs`);
-  console.log("Response from getMemberClubs:", response.data);
   return response.data;
 }
 

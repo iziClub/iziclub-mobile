@@ -2,14 +2,11 @@ import api from "./api";
 
 export const createDraftSubmission = async (id: string) => {
   const response = await api.post(`/forms/${id}/submissions`);
-  console.log("Response from createDraftSubmission:", response.data); // Log the response data
   return response.data;
 }
 
 export const addAnswersToSubmission = async (submissionId: string, answers: any) => {
-    console.log("DATA from addAnswersToSubmission:", answers); // Log the data
   const response = await api.patch(`/forms/submissions/${submissionId}`,  answers );
-  console.log("Response from addAnswersToSubmission:", response.data); // Log the response data
 
   return response.data;
 }

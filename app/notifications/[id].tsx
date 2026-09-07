@@ -81,7 +81,6 @@ export default function MessageDetailScreen() {
       setLoading(true);
       const response = await getNotificationById(id); // Appel à ton service pour récupérer le message par ID
       let notificationData = response.data;
-      console.log("Fetched notification data:", notificationData);
       if (notificationData?.clubId) {
         try {
           const clubResponse = await getClubById(notificationData.clubId);
@@ -123,7 +122,6 @@ export default function MessageDetailScreen() {
     const categoryNames = (msg.categories || [])
       .map((category) => category?.name)
       .filter((name): name is string => !!name && name.trim().length > 0);
-    console.log("Category names:", categoryNames);
     if (categoryNames.length > 0) {
       return categoryNames.join(" • ");
     }

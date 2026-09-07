@@ -19,7 +19,6 @@ export default function ForgotPassword() {
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
 
   const handleResetPassword = () => {
-    console.log("Demande de reset envoyée pour :", email);
     alert("Un email de réinitialisation a été envoyé !");
   };
 

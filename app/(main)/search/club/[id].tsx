@@ -64,7 +64,6 @@ export default function ClubDetail() {
                 } else {
                     setUserData(null);
                 }
-                console.log("-------------------evecnts du club:", dataClub.data[0].events)
             } catch (error) {
                 console.error("Erreur lors de la récupération du club:", error);
             } finally {

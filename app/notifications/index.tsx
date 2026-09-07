@@ -17,7 +17,6 @@ export default function InboxScreen() {
     setLoading(true);
     try {
       const response = await getNotifications();
-      console.log("Fetched notifications:", response);
       const rawNotifications: Message[] = response?.data || [];
       const clubNameCache = new Map<string, string>();
       const enrichedNotifications = await Promise.all(
