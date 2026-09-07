@@ -3,8 +3,16 @@ import * as SecureStore from 'expo-secure-store';
 import { router } from "expo-router";
 import { tokenStorage } from "./tokenStorage";
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+if (!API_URL) {
+  throw new Error(
+    "EXPO_PUBLIC_API_URL est manquant. Ajoutez-le à votre fichier .env (voir .env.example)."
+  );
+}
+
 const api = axios.create({
-  baseURL: "https://api.iziclub.fr/api/v1/",
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
