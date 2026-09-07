@@ -93,7 +93,7 @@ export const styles = StyleSheet.create({
         backgroundColor: "#E5E7EB",
     },
     map: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
     },
     navButton: {
         flexDirection: "row",

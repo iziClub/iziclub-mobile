@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
-import { useSearch } from '../../../components/search/useSearch';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Callout, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { useLocation } from '@/context/LocationContext';
+import { useSearch } from '../../../components/search/useSearch';
+
+const DEFAULT_REGION: Region = {
+  latitude: 48.692,
+  longitude: 6.184,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
 
 export default function MapScreen() {
   const router = useRouter();
   const { location, status, requestLocation } = useLocation();
 
   // États pour la carte et la recherche
-  const [region, setRegion] = useState({
-    latitude: 48.692,
-    longitude: 6.184,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
+  const [region, setRegion] = useState<Region>(DEFAULT_REGION);
 
   const [searchParams, setSearchParams] = useState({
-    latitude: 48.692,
-    longitude: 6.184,
+    latitude: DEFAULT_REGION.latitude,
+    longitude: DEFAULT_REGION.longitude,
     radius: 30,
   });
 
@@ -29,24 +31,40 @@ export default function MapScreen() {
   // --- NOUVEAUX ÉTATS POUR LES FILTRES ---
   const [showClubs, setShowClubs] = useState(true);
   const [showEvents, setShowEvents] = useState(true);
+  const [mapReady, setMapReady] = useState(false);
+
+  const hasCenteredOnUser = useRef(false);
+  const mapRef = useRef<MapView>(null);
 
   const { clubs, events, loading } = useSearch("", searchParams.radius, true, "", {
     latitude: searchParams.latitude,
     longitude: searchParams.longitude,
   });
 
-  useEffect(() => {
-    if (location) {
-      setRegion(prev => ({ ...prev, latitude: location.latitude, longitude: location.longitude }));
+  // Centre la carte sur l'utilisateur dès que sa position est connue (une seule fois)
+  React.useEffect(() => {
+    if (location && !hasCenteredOnUser.current) {
+      hasCenteredOnUser.current = true;
+      const nextRegion: Region = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        latitudeDelta: DEFAULT_REGION.latitudeDelta,
+        longitudeDelta: DEFAULT_REGION.longitudeDelta,
+      };
+      setRegion(nextRegion);
       setSearchParams(prev => ({ ...prev, latitude: location.latitude, longitude: location.longitude }));
+      mapRef.current?.animateToRegion(nextRegion, 400);
     }
   }, [location]);
 
-  useEffect(() => {
-    if (status === 'idle') {
-      requestLocation();
-    }
-  }, [status, requestLocation]);
+  // Demande la géolocalisation à l'arrivée sur l'écran
+  useFocusEffect(
+    useCallback(() => {
+      if (status === 'idle') {
+        requestLocation();
+      }
+    }, [status, requestLocation])
+  );
 
   const handleSearchHere = () => {
     const calculatedRadius = Math.round((region.latitudeDelta * 111) / 2 * 1.2);
@@ -89,20 +107,30 @@ export default function MapScreen() {
     }
   };
 
+  // Apple Maps par défaut sur iOS (Google Maps y nécessite une clé API dédiée et n'est pas
+  // disponible tel quel dans Expo Go). Google Maps par défaut sur Android.
+  const mapProvider = Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined;
+
+  const visibleClubs = useMemo(() => (showClubs ? clubs ?? [] : []), [showClubs, clubs]);
+  const visibleEvents = useMemo(() => (showEvents ? events ?? [] : []), [showEvents, events]);
+
   return (
     <View style={styles.container}>
       <MapView
-        provider={PROVIDER_GOOGLE}
+        ref={mapRef}
+        provider={mapProvider}
         style={styles.map}
-        initialRegion={region}
+        initialRegion={DEFAULT_REGION}
+        onMapReady={() => setMapReady(true)}
         onRegionChangeComplete={(newRegion) => {
           setRegion(newRegion);
           setShowSearchButton(true);
         }}
-        showsUserLocation={true}
+        showsUserLocation={status === 'granted'}
+        showsMyLocationButton={false}
       >
-        {/* --- RENDU DES CLUBS (Filtré) --- */}
-        {showClubs && clubs.map((club: any) => (
+        {/* --- RENDU DES CLUBS --- */}
+        {visibleClubs.map((club: any) => (
           <Marker
             key={`club-${club.id}`}
             coordinate={{
@@ -136,8 +164,8 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {/* --- RENDU DES ÉVÉNEMENTS (Filtré) --- */}
-        {showEvents && events && events.map((event: any) => (
+        {/* --- RENDU DES ÉVÉNEMENTS --- */}
+        {visibleEvents.map((event: any) => (
           <Marker
             key={`event-${event.id}`}
             coordinate={{
@@ -171,6 +199,13 @@ export default function MapScreen() {
           </Marker>
         ))}
       </MapView>
+
+      {/* Indicateur pendant l'initialisation native de la carte */}
+      {!mapReady && (
+        <View style={styles.mapLoadingOverlay} pointerEvents="none">
+          <ActivityIndicator size="large" color="#4A78FF" />
+        </View>
+      )}
 
       {/* --- CONTENEUR DES BOUTONS DE HAUT D'ÉCRAN --- */}
       <View style={styles.topControlsContainer}>
@@ -256,9 +291,16 @@ export default function MapScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { ...StyleSheet.absoluteFillObject },
-  map: { ...StyleSheet.absoluteFillObject },
-  
+  container: { flex: 1, backgroundColor: '#E5E7EB' },
+  map: { ...StyleSheet.absoluteFill },
+
+  mapLoadingOverlay: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E5E7EB',
+  },
+
   // Nouveau conteneur pour empiler proprement les éléments du haut sans chevauchement
   topControlsContainer: {
     position: 'absolute',

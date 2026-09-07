@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     borderColor: "#EEE",
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   navOverlayButton: {
     position: "absolute",
