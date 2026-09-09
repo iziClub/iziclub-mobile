@@ -51,7 +51,7 @@ api.interceptors.response.use(
         await SecureStore.deleteItemAsync('user_data');
         delete api.defaults.headers.common['Authorization'];
         delete axios.defaults.headers.common['Authorization'];
-        router.replace('/login');
+        // router.replace('/login');
       } catch (redirectError) {
         console.error('Erreur lors du traitement du 401 :', redirectError);
       }
