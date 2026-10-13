@@ -17,19 +17,28 @@ export default function RegisterScreen() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
+  // Vérifie si l'adresse email est valide
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  // Vérifie si le formulaire est valide
+  const isFormValid =
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    isValidEmail(email.trim());
+
   const handleNextStep = () => {
-    if (!email || !firstName || !lastName) {
-      alert("Oups ! Il manque des informations pour continuer.");
+    if (!isFormValid) {
       return;
     }
 
-    // On passe les données à l'écran de création de mot de passe
     router.push({
       pathname: "/passwordCreation",
-      params: { 
-        email: email.toLowerCase().trim(), 
-        first_name: firstName.trim(), 
-        last_name: lastName.trim() 
+      params: {
+        email: email.toLowerCase().trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
       },
     });
   };
@@ -53,6 +62,7 @@ export default function RegisterScreen() {
           style={styles.image}
           resizeMode="contain"
         />
+
         <Text style={styles.title}>Inscris-toi</Text>
 
         <Text style={styles.label}>Prénom</Text>
@@ -73,17 +83,34 @@ export default function RegisterScreen() {
 
         <Text style={styles.label}>Email</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            email.length > 0 && !isValidEmail(email.trim())
+              ? styles.inputError
+              : null,
+          ]}
           placeholder="Ton adresse email"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
+          autoCorrect={false}
         />
 
-        <TouchableOpacity 
-          style={[styles.button, { marginTop: 30 }]} 
+        {email.length > 0 && !isValidEmail(email.trim()) && (
+          <Text style={styles.errorText}>
+            Veuillez entrer une adresse email valide.
+          </Text>
+        )}
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            { marginTop: 30 },
+            !isFormValid && styles.buttonDisabled,
+          ]}
           onPress={handleNextStep}
+          disabled={!isFormValid}
         >
           <Text style={styles.buttonText}>Créer un mot de passe</Text>
         </TouchableOpacity>
@@ -91,22 +118,6 @@ export default function RegisterScreen() {
         <TouchableOpacity onPress={handleAlreadyAccount}>
           <Text style={styles.forgotPassword}>J'ai déjà un compte</Text>
         </TouchableOpacity>
-
-        {/* <View style={styles.separatorContainer}>
-          <View style={styles.line} />
-          <Text style={styles.separatorText}>Ou</Text>
-          <View style={styles.line} />
-        </View> */}
-
-        {/* <TouchableOpacity style={[styles.button, styles.googleButton]}>
-          <Image
-            source={require("../../assets/images/google-logo.png")}
-            style={styles.googleIcon}
-          />
-          <Text style={[styles.buttonText, { color: "black" }]}>
-            S'inscrire avec Google
-          </Text>
-        </TouchableOpacity> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -120,7 +131,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 350, // Réduit légèrement pour laisser de la place aux nouveaux champs
+    height: 350,
   },
   title: {
     fontSize: 32,
@@ -144,6 +155,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     alignSelf: "center",
   },
+  inputError: {
+    borderColor: "#D32F2F",
+  },
+  errorText: {
+    color: "#D32F2F",
+    fontSize: 13,
+    width: "90%",
+    alignSelf: "center",
+    marginTop: -8,
+    marginBottom: 5,
+  },
   button: {
     backgroundColor: "#0E011A",
     padding: 20,
@@ -151,6 +173,9 @@ const styles = StyleSheet.create({
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
+  },
+  buttonDisabled: {
+    backgroundColor: "#B8B4B1",
   },
   buttonText: {
     color: "white",
@@ -165,35 +190,4 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     paddingRight: 20,
   },
-  separatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 20,
-    width: "90%",
-    alignSelf: "center"
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#ccc",
-  },
-  separatorText: {
-    marginHorizontal: 10,
-    fontSize: 14,
-    color: "#999",
-    fontWeight: "500",
-  },
-  googleButton: {
-    backgroundColor: "#F7F6F5", 
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#eee"
-  },
-  googleIcon: {
-    width: 20, 
-    height: 20, 
-    marginRight: 10 
-  }
 });

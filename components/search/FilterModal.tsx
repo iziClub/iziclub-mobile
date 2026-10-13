@@ -166,7 +166,7 @@ export default function FilterBottomSheet({
 
             <View style={styles.divider} />
 
-            <Text style={styles.sectionTitle}>Sport</Text>
+            <Text style={styles.sectionTitle}>Sport (événements)</Text>
             <TextInput
               style={styles.sportInput}
               placeholder="Ex: Handball, Escalade..."

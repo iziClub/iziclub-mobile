@@ -50,6 +50,16 @@ export default function MapScreen() {
     longitude: searchParams.longitude,
   });
 
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
+  
+    return (events || []).filter((event) => {
+      if (!event.starts_at) return false;
+  
+      return new Date(event.starts_at) >= now;
+    });
+  }, [events]);
+
   // Centre la carte sur l'utilisateur dès que sa position est connue (si elle n'était pas
   // encore disponible au montage de l'écran)
   React.useEffect(() => {
@@ -117,7 +127,7 @@ export default function MapScreen() {
   const mapProvider = Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined;
 
   const visibleClubs = useMemo(() => (showClubs ? clubs ?? [] : []), [showClubs, clubs]);
-  const visibleEvents = useMemo(() => (showEvents ? events ?? [] : []), [showEvents, events]);
+  const visibleEvents = useMemo(() => (showEvents ? upcomingEvents ?? [] : []), [showEvents, upcomingEvents]);
 
   return (
     <View style={styles.container}>

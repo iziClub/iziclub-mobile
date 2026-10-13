@@ -32,11 +32,27 @@ export default function PasswordCreationScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const rules = [
-    { label: "Au moins 8 caractères.", test: (pw: string) => pw.length >= 8 },
-    { label: "Au moins une lettre en majuscule.", test: (pw: string) => /[A-Z]/.test(pw) },
-    { label: "Au moins une lettre en minuscule.", test: (pw: string) => /[a-z]/.test(pw) },
-    { label: "Au moins un chiffre.", test: (pw: string) => /\d/.test(pw) },
-  ];
+  {
+    label: "Au moins 12 caractères.",
+    test: (pw: string) => pw.length >= 12,
+  },
+  {
+    label: "Au moins une lettre en majuscule.",
+    test: (pw: string) => /[A-Z]/.test(pw),
+  },
+  {
+    label: "Au moins une lettre en minuscule.",
+    test: (pw: string) => /[a-z]/.test(pw),
+  },
+  {
+    label: "Au moins un chiffre.",
+    test: (pw: string) => /[0-9]/.test(pw),
+  },
+  {
+    label: "Au moins un caractère spécial (# ? ! @ $ % ^ & * -).",
+    test: (pw: string) => /[#?!@$%^&*-]/.test(pw),
+  },
+];
 
   const allValid = rules.every((rule) => rule.test(password));
 
@@ -141,25 +157,6 @@ export default function PasswordCreationScreen() {
         <TouchableOpacity onPress={handleGoBack}>
           <Text style={styles.forgotPassword}>Modifier mes informations</Text>
         </TouchableOpacity>
-
-        {/* <View style={styles.separatorContainer}>
-          <View style={styles.line} />
-          <Text style={styles.separatorText}>Ou</Text>
-          <View style={styles.line} />
-        </View> */}
-
-        {/* <TouchableOpacity 
-          style={[styles.button, styles.googleButton]}
-          disabled={isSubmitting}
-        >
-          <Image
-            source={require("../../assets/images/google-logo.png")}
-            style={{ width: 20, height: 20, marginRight: 10 }}
-          />
-          <Text style={[styles.buttonText, { color: "black" }]}>
-            S'inscrire avec Google
-          </Text>
-        </TouchableOpacity> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );

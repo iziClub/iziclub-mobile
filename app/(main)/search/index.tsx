@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { View, TextInput, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
@@ -21,7 +21,7 @@ export default function SearchScreen() {
   const [useRadius, setUseRadius] = useState(false);
   const [sportQuery, setSportQuery] = useState("");
   const [eventType, setEventType] = useState("");
-  // Debounce pour éviter de spammer l'API à chaque lettre tapée
+
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
     return () => clearTimeout(handler);
@@ -46,9 +46,18 @@ export default function SearchScreen() {
     eventType
   );
   
+  const upcomingEvents = useMemo(() => {
+  const now = new Date();
+
+  return (events || []).filter((event) => {
+    if (!event.starts_at) return false;
+
+    return new Date(event.starts_at) >= now;
+  });
+}, [events]);
+
   const [showFilters, setShowFilters] = useState(false);
 
-  // Un filtre est considéré comme "actif" si le rayon n'est plus à sa valeur par défaut
   const hasActiveFilters = radius !== 30 || !!sportQuery.trim() || useRadius || !!eventType;
 
   return (
@@ -91,7 +100,7 @@ export default function SearchScreen() {
           onPress={() => setActiveTab("Événements")}
         >
           <Text style={[styles.tabLabel, activeTab === "Événements" && styles.tabLabelActive]}>
-            Événements ({events?.length || 0})
+            Événements ({upcomingEvents?.length || 0})
           </Text>
           {activeTab === "Événements" && <View style={styles.tabIndicator} />}
         </TouchableOpacity>
@@ -100,7 +109,7 @@ export default function SearchScreen() {
       {activeTab === "Clubs" ? (
         <ClubsTab data={clubs} refreshing={loading} onRefresh={refresh} />
       ) : (
-        <EventsTab data={events} refreshing={loading} onRefresh={refresh} onEndReached={fetchMoreEvents} loadingMore={loadingMore} />
+        <EventsTab data={upcomingEvents} refreshing={loading} onRefresh={refresh} onEndReached={fetchMoreEvents} loadingMore={loadingMore} />
       )}
 
       {/* BOUTONS FLOTTANTS (FABs) */}
