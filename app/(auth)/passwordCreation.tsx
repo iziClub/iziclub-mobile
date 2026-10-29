@@ -17,6 +17,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { registerUser } from "../../services/auth";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 export default function PasswordCreationScreen() {
   const { login } = useAuth();
@@ -117,7 +118,7 @@ export default function PasswordCreationScreen() {
             onPress={() => setShowPassword(!showPassword)}
             style={styles.eyeButton}
           >
-            <Text style={{ fontSize: 18 }}>{showPassword ? "🙈" : "👁️"}</Text>
+            <Text style={{ fontSize: 18, fontFamily: Fonts.regular }}>{showPassword ? "🙈" : "👁️"}</Text>
           </TouchableOpacity>
         </View>
 
@@ -129,10 +130,10 @@ export default function PasswordCreationScreen() {
                 <Checkbox
                   value={valid}
                   color={valid ? Colors.vert : undefined}
-                  style={{ marginRight: 10, width: 18, height: 18 }}
+                  style={{ marginRight: 12, width: 18, height: 18 }}
                   disabled
                 />
-                <Text style={{ color: valid ? Colors.vert : Colors.gris, fontSize: 14 }}>
+                <Text style={{ color: valid ? Colors.vert : Colors.gris, fontSize: 14, fontFamily: Fonts.regular }}>
                   {rule.label}
                 </Text>
               </View>
@@ -176,18 +177,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontFamily: Fonts.titre,
     marginBottom: 20,
     paddingLeft: 20,
     color: Colors.noir,
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: Fonts.medium,
     alignSelf: "flex-start",
     marginLeft: 20,
     marginBottom: 8,
-    color: Colors.gris,
+    color: Colors.grisTexte,
   },
   input: {
     borderWidth: 1,
@@ -203,29 +204,29 @@ const styles = StyleSheet.create({
   rulesContainer: {
     width: "90%",
     alignSelf: "center",
-    marginBottom: 30,
+    marginBottom: 32,
     backgroundColor: Colors.fond,
-    padding: 15,
+    padding: 16,
     borderRadius: 12,
   },
   ruleItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 5,
+    marginVertical: 4,
   },
   button: {
     backgroundColor: Colors.noir,
-    padding: 16,
-    borderRadius: 999,
+    minHeight: 52,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    borderRadius: 12,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
-    height: 56,
-    justifyContent: "center"
   },
   buttonText: {
     color: Colors.blanc,
-    fontWeight: "bold",
+    fontFamily: Fonts.medium,
     textAlign: "center",
     fontSize: 16,
   },
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.grisClair,
     borderRadius: 12,
-    paddingRight: 10,
+    paddingRight: 12,
     marginBottom: 20,
     alignSelf: "center",
   },
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
   forgotPassword: {
     color: Colors.bleu,
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 12,
     marginBottom: 12,
     textDecorationLine: "underline",
   },
@@ -263,17 +264,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grisClair,
   },
   separatorText: {
-    marginHorizontal: 10,
+    marginHorizontal: 12,
     fontSize: 14,
-    color: "#999",
-    fontWeight: "500",
+    color: Colors.grisTexte,
+    fontFamily: Fonts.medium,
   },
   googleButton: {
-    backgroundColor: "#F7F6F5", 
+    backgroundColor: Colors.fond, 
     flexDirection: "row", 
     alignItems: "center", 
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#eee"
+    borderColor: Colors.grisClair
   }
 });

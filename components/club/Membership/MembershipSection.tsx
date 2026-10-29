@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import * as DocumentPicker from 'expo-document-picker'; 
 import * as FileSystem from 'expo-file-system/legacy';
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 import MembershipHeader from "./MembershipHeader";
@@ -29,6 +28,8 @@ import {
   getUploadUrl,
   getAllSubmissions,
 } from "@/services/forms.service";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 type Props = {
   club: any;
@@ -287,8 +288,8 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 40, backgroundColor: Colors.fond }}>
-        <ActivityIndicator size="large" color={Colors.bleu} />
-        <Text style={{ marginTop: 12, color: Colors.gris }}>Chargement du formulaire...</Text>
+        <ActivityIndicator size="large" color={Colors.noir} />
+        <Text style={{ marginTop: 12, color: Colors.grisTexte }}>Chargement du formulaire...</Text>
       </View>
     );
   }
@@ -296,7 +297,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   if (!currentForm) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 40, backgroundColor: Colors.fond }}>
-        <Text style={{ fontSize: 16, fontWeight: "600", color: Colors.noir, textAlign: "center" }}>
+        <Text style={{ fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir, textAlign: "center" }}>
           Aucun formulaire d'inscription disponible
         </Text>
       </View>
@@ -315,23 +316,23 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
             borderWidth: 1,
             borderColor: Colors.grisClair,
             borderRadius: 16,
-            padding: 14,
+            padding: 16,
             marginBottom: 16,
             flexDirection: "row",
             alignItems: "flex-start",
-            gap: 10,
+            gap: 12,
           }}
         >
-          <Ionicons name="document-text" size={20} color={Colors.bleu} />
+          <Icon name="document-text" size={20} color={Colors.bleu} />
           <View style={{ flex: 1 }}>
-            <Text style={{ fontWeight: "700", color: Colors.noir, marginBottom: 2 }}>
+            <Text style={{ fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 2 }}>
               Brouillon retrouvé
             </Text>
-            <Text style={{ fontSize: 13, color: Colors.noir, lineHeight: 18 }}>
+            <Text style={{ fontSize: 14, fontFamily: Fonts.regular, color: Colors.noir, lineHeight: 18 }}>
               Tu avais déjà commencé ce dossier, on a préremplis tes réponses. Tu peux continuer ou repartir de zéro.
             </Text>
             <TouchableOpacity onPress={handleRestartFromScratch} style={{ marginTop: 8 }}>
-              <Text style={{ color: Colors.bleu, fontWeight: "600", fontSize: 13 }}>
+              <Text style={{ color: Colors.bleu, fontFamily: Fonts.medium, fontSize: 14 }}>
                 Repartir de zéro
               </Text>
             </TouchableOpacity>
@@ -386,25 +387,25 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
           <View style={{
             width: 22,
             height: 22,
-            borderRadius: 6,
+            borderRadius: 8,
             borderWidth: 2,
-            borderColor: hasAgreedToTerms ? Colors.bleu : Colors.grisClair,
-            backgroundColor: hasAgreedToTerms ? Colors.bleu : 'transparent',
+            borderColor: hasAgreedToTerms ? Colors.noir : Colors.grisClair,
+            backgroundColor: hasAgreedToTerms ? Colors.noir : 'transparent',
             justifyContent: 'center',
             alignItems: 'center',
             marginTop: 2 
           }}>
             {hasAgreedToTerms && (
-              <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>✓</Text>
+              <Text style={{ color: Colors.blanc, fontSize: 12, fontFamily: Fonts.medium }}>✓</Text>
             )}
           </View>
 
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: Colors.noir, marginBottom: 4 }}>
+            <Text style={{ fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 4 }}>
               Certification & Engagement Officiel
             </Text>
-            <Text style={{ fontSize: 13, color: Colors.gris, lineHeight: 18 }}>
-              Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontWeight: '700', color: Colors.noir }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
+            <Text style={{ fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, lineHeight: 18 }}>
+              Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontFamily: Fonts.medium, color: Colors.noir }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
             </Text>
           </View>
         </TouchableOpacity>
@@ -418,7 +419,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
           disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
         >
           {isSavingDraft ? (
-            <ActivityIndicator size="small" color={Colors.bleu} />
+            <ActivityIndicator size="small" color={Colors.noir} />
           ) : (
             <Text style={[styles.submitButtonText, { color: Colors.noir }]}>Enregistrer en brouillon</Text>
           )}
@@ -427,15 +428,15 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
         <TouchableOpacity
           style={[
             styles.submitButton, 
-            (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { opacity: 0.6 }
+            (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { backgroundColor: Colors.grisClair }
           ]}
           onPress={handleSubmit}
           disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
         >
           {isSubmitting ? (
-            <ActivityIndicator size="small" color="white" />
+            <ActivityIndicator size="small" color={Colors.blanc} />
           ) : (
-            <Text style={styles.submitButtonText}>Envoyer mon dossier</Text>
+            <Text style={[styles.submitButtonText, { color: (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) ? Colors.gris : Colors.blanc }]}>Envoyer mon dossier</Text>
           )}
         </TouchableOpacity>
       </View>

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 interface Props {
     activeSection: string;
@@ -69,13 +70,13 @@ const styles = StyleSheet.create({
     },
 
     sectionText: {
-        color: Colors.gris,
-        fontSize: 13,
-        fontWeight: "500",
+        color: Colors.grisTexte,
+        fontSize: 14,
+        fontFamily: Fonts.medium,
     },
 
     sectionTextActive: {
         color: Colors.blanc,
-        fontWeight: "700",
+        fontFamily: Fonts.medium,
     },
 });

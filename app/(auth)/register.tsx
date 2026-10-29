@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -107,13 +108,13 @@ export default function RegisterScreen() {
         <TouchableOpacity
           style={[
             styles.button,
-            { marginTop: 30 },
+            { marginTop: 32 },
             !isFormValid && styles.buttonDisabled,
           ]}
           onPress={handleNextStep}
           disabled={!isFormValid}
         >
-          <Text style={styles.buttonText}>Créer un mot de passe</Text>
+          <Text style={[styles.buttonText, !isFormValid && { color: Colors.gris }]}>Créer un mot de passe</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleAlreadyAccount}>
@@ -136,18 +137,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontFamily: Fonts.titre,
     marginBottom: 20,
     paddingLeft: 20,
     color: Colors.noir,
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: Fonts.medium,
     alignSelf: "flex-start",
     marginLeft: 20,
     marginBottom: 8,
-    color: Colors.gris,
+    color: Colors.grisTexte,
   },
   input: {
     borderWidth: 1,
@@ -165,16 +166,18 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: Colors.rouge,
-    fontSize: 13,
+    fontSize: 14, fontFamily: Fonts.regular,
     width: "90%",
     alignSelf: "center",
     marginTop: -8,
-    marginBottom: 5,
+    marginBottom: 4,
   },
   button: {
     backgroundColor: Colors.noir,
-    padding: 16,
-    borderRadius: 999,
+    minHeight: 52,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    borderRadius: 12,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
@@ -184,7 +187,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.blanc,
-    fontWeight: "bold",
+    fontFamily: Fonts.medium,
     textAlign: "center",
     fontSize: 16,
   },

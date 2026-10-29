@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 export default function StartRegisterScreen() {
   const router = useRouter(); // <- hook pour naviguer
@@ -68,7 +69,7 @@ export default function StartRegisterScreen() {
           />
           <Image
             source={require("../../assets/images/google-logo.png")}
-            style={{ width: 20, height: 20, marginRight: 10 }}
+            style={{ width: 20, height: 20, marginRight: 12 }}
           />
           <Text style={[styles.buttonText, { color: Colors.noir }]}>
             Se connecter avec Google
@@ -92,19 +93,19 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontFamily: Fonts.titre,
     marginBottom: 20,
     paddingLeft: 20,
     color: Colors.noir,
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: Fonts.medium,
     alignSelf: "flex-start",
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 8,
-    color: Colors.gris,
+    color: Colors.grisTexte,
   },
   input: {
     borderWidth: 1,
@@ -119,8 +120,10 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.noir,
-    padding: 16,
-    borderRadius: 999,
+    minHeight: 52,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    borderRadius: 12,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: Colors.blanc,
     borderWidth: 1.5,
-    borderColor: Colors.grisClair,
+    borderColor: Colors.noir,
   },
   googleButton: {
     backgroundColor: Colors.blanc,
@@ -140,7 +143,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.blanc,
-    fontWeight: "bold",
+    fontFamily: Fonts.medium,
     textAlign: "center",
     fontSize: 16,
   },
@@ -151,7 +154,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.grisClair,
     borderRadius: 12,
-    paddingRight: 10,
+    paddingRight: 12,
     marginBottom: 12,
     alignSelf: "center",
   },
@@ -178,9 +181,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grisClair,
   },
   separatorText: {
-    marginHorizontal: 10,
+    marginHorizontal: 12,
     fontSize: 14,
-    color: Colors.gris,
-    fontWeight: "500",
+    color: Colors.grisTexte,
+    fontFamily: Fonts.medium,
   },
 });

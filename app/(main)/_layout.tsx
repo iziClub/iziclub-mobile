@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Colors } from "@/constants/colors";
+import Icon from "@/components/ui/Icon";
 
 export default function MainLayout() {
   return (
@@ -21,7 +21,7 @@ export default function MainLayout() {
           borderTopWidth: 1,
           borderTopColor: Colors.grisClair,
         },
-        tabBarActiveTintColor: Colors.bleu,
+        tabBarActiveTintColor: Colors.noir,
         tabBarInactiveTintColor: Colors.gris,
         sceneStyle: {
           backgroundColor: Colors.fond,
@@ -33,7 +33,7 @@ export default function MainLayout() {
         options={{
           title: "",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+            <Icon name="home-outline" size={size} color={color} />
           ),
         }}
       />
@@ -49,7 +49,7 @@ export default function MainLayout() {
         options={{
           title: "",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search-outline" size={size} color={color} />
+            <Icon name="search-outline" size={size} color={color} />
           ),
         }}
       />
@@ -64,7 +64,7 @@ export default function MainLayout() {
         options={{
           title: "",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Icon name="person-outline" size={size} color={color} />
           ),
         }}
       />

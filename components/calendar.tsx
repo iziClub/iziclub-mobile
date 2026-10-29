@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { Calendar, CalendarEvent } from "react-native-big-calendar";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 const { width } = Dimensions.get("window");
 
@@ -101,7 +102,7 @@ export default function ClubCalendar({ sessions }: Props) {
                 endAccessor="end"
                 eventCellStyle={(event: any) => ({
                     backgroundColor: event.color,
-                    borderRadius: 6,
+                    borderRadius: 8,
                     padding: 4,
                     opacity: 0.95,
                     borderLeftWidth: 4,
@@ -125,8 +126,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.fond,
     },
     title: {
-        fontSize: 22,
-        fontWeight: "700",
+        fontSize: 24,
+        fontFamily: Fonts.titre,
         paddingHorizontal: 16,
         paddingVertical: 16,
         color: Colors.noir,

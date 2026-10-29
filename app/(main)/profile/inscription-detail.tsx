@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 
 import { InscriptionStatus } from './inscriptions';
@@ -15,6 +14,8 @@ import {
   submitFormSubmission,
   getUploadUrl
 } from '@/services/forms.service';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 export default function InscriptionDetailScreen() {
   const router = useRouter();
@@ -295,8 +296,8 @@ export default function InscriptionDetailScreen() {
   const getStatusConfig = (status: InscriptionStatus) => {
     switch (status) {
       case 'approved': return { color: Colors.vert, bg: Colors.vertClair, label: 'Dossier Validé', icon: 'verified' };
-      case 'rejected': return { color: Colors.rouge, bg: '#FCE8E9', label: 'Dossier Refusé', icon: 'cancel' };
-      case 'needs_more_info': return { color: '#D97706', bg: '#FEF3C7', label: 'Action requise', icon: 'error' };
+      case 'rejected': return { color: Colors.rouge, bg: Colors.rougeClair, label: 'Dossier Refusé', icon: 'cancel' };
+      case 'needs_more_info': return { color: Colors.noir, bg: Colors.grisClair, label: 'Action requise', icon: 'error' };
       case 'draft': return { color: Colors.bleu, bg: Colors.bleuClair, label: 'Brouillon', icon: 'edit' };
       default: return { color: Colors.bleu, bg: Colors.bleuClair, label: 'En cours d\'analyse', icon: 'hourglass-top' };
     }
@@ -403,13 +404,13 @@ export default function InscriptionDetailScreen() {
       {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={22} color="#1A1A1A" />
+          <Icon name="arrow-back" size={22} color={Colors.noir} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{isDraftMode ? "Modifier le brouillon" : "Détail de la demande"}</Text>
 
         <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteInscription} disabled={isDeleting}>
-          {isDeleting ? <ActivityIndicator size="small" color="#EF4444" /> : <Ionicons name="trash-outline" size={20} color="#EF4444" />}
+          {isDeleting ? <ActivityIndicator size="small" color={Colors.rouge} /> : <Icon name="trash-outline" size={20} color={Colors.rouge} />}
         </TouchableOpacity>
       </View>
 
@@ -417,17 +418,17 @@ export default function InscriptionDetailScreen() {
         <View style={{ marginBottom: 16 }}>
           <Text style={styles.formName}>{formName}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-            <Ionicons name="business-outline" size={14} color="#737373" style={{ marginRight: 4 }} />
-            <Text style={{ fontSize: 14, color: '#666', fontWeight: '500' }}>
-              Destinataire : <Text style={{ color: '#171717', fontWeight: '600' }}>{clubName}</Text>
+            <Icon name="business-outline" size={14} color={Colors.grisTexte} style={{ marginRight: 4 }} />
+            <Text style={{ fontSize: 14, color: Colors.grisTexte, fontFamily: Fonts.medium }}>
+              Destinataire : <Text style={{ color: Colors.noir, fontFamily: Fonts.medium }}>{clubName}</Text>
             </Text>
           </View>
         </View>
 
         {/* BANNIÈRE DE STATUT */}
         <View style={[styles.statusBanner, { backgroundColor: config.bg, borderColor: config.color + '20' }]}>
-          <View style={[styles.iconWrapper, { backgroundColor: '#FFF' }]}>
-            <MaterialIcons name={config.icon as any} size={24} color={config.color} />
+          <View style={[styles.iconWrapper, { backgroundColor: Colors.blanc }]}>
+            <Icon name={config.icon as any} size={24} color={config.color} />
           </View>
           <View style={styles.statusBannerText}>
             <Text style={[styles.statusLabel, { color: config.color }]}>{config.label}</Text>
@@ -451,7 +452,7 @@ export default function InscriptionDetailScreen() {
               </View>
             ) : (
               <View style={styles.emptyMessageContainer}>
-                <Ionicons name="chatbox-ellipses-outline" size={24} color="#A3A3A3" />
+                <Icon name="chatbox-ellipses-outline" size={24} color={Colors.gris} />
                 <Text style={styles.emptyMessageText}>Aucune remarque ou consigne particulière.</Text>
               </View>
             )}
@@ -464,7 +465,7 @@ export default function InscriptionDetailScreen() {
 
           {loadingForm ? (
             <View style={styles.loaderContainer}>
-              <ActivityIndicator size="small" color={Colors.bleu} />
+              <ActivityIndicator size="small" color={Colors.noir} />
             </View>
           ) : (isDraftMode || isNeedsMoreInfo) && formStructure?.questions ? (
             <View style={{ gap: 16 }}>
@@ -527,22 +528,22 @@ export default function InscriptionDetailScreen() {
               <View style={[
                 styles.checkboxVisual, 
                 { 
-                  borderColor: hasAgreedToTerms ? Colors.bleu : Colors.grisClair,
-                  backgroundColor: hasAgreedToTerms ? Colors.bleu : 'transparent'
+                  borderColor: hasAgreedToTerms ? Colors.noir : Colors.grisClair,
+                  backgroundColor: hasAgreedToTerms ? Colors.noir : 'transparent'
                 }
               ]}>
                 {hasAgreedToTerms && (
-                  <Text style={{ color: 'white', fontSize: 12, fontWeight: 'bold' }}>✓</Text>
+                  <Text style={{ color: Colors.blanc, fontSize: 12, fontFamily: Fonts.medium }}>✓</Text>
                 )}
               </View>
 
               {/* Texte explicatif */}
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: '700', color: Colors.noir, marginBottom: 4 }}>
+                <Text style={{ fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 4 }}>
                   Certification & Engagement Officiel
                 </Text>
-                <Text style={{ fontSize: 13, color: Colors.gris, lineHeight: 18 }}>
-                  Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontWeight: '700', color: Colors.noir }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
+                <Text style={{ fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, lineHeight: 18 }}>
+                  Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontFamily: Fonts.medium, color: Colors.noir }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
                 </Text>
               </View>
             </TouchableOpacity>
@@ -551,25 +552,25 @@ export default function InscriptionDetailScreen() {
 
         {/* ACTIONS DU BAS */}
         {(isDraftMode || isNeedsMoreInfo) && !loadingForm && (
-          <View style={{ marginTop: 10, gap: 12 }}>
+          <View style={{ marginTop: 12, gap: 12 }}>
             <TouchableOpacity
               style={[styles.submitButton, { backgroundColor: Colors.blanc, borderColor: Colors.grisClair, borderWidth: 1.5 }]}
               onPress={handleDraftSave}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
             >
-              {isSavingDraft ? <ActivityIndicator size="small" color={Colors.bleu} /> : <Text style={[styles.submitButtonText, { color: Colors.noir }]}>Mettre à jour le brouillon</Text>}
+              {isSavingDraft ? <ActivityIndicator size="small" color={Colors.noir} /> : <Text style={[styles.submitButtonText, { color: Colors.noir }]}>Mettre à jour le brouillon</Text>}
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.submitButton, 
                 { backgroundColor: Colors.noir }, 
-                (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { opacity: 0.6 }
+                (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { backgroundColor: Colors.grisClair }
               ]}
               onPress={isNeedsMoreInfo ? handleResubmit : handleSubmit}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
             >
-              {isSubmitting ? <ActivityIndicator size="small" color="white" /> : <Text style={[styles.submitButtonText, { color: Colors.blanc }]}>{isNeedsMoreInfo ? 'Renvoyer la soumission' : 'Envoyer mon dossier finalisé'}</Text>}
+              {isSubmitting ? <ActivityIndicator size="small" color={Colors.blanc} /> : <Text style={[styles.submitButtonText, { color: (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) ? Colors.gris : Colors.blanc }]}>{isNeedsMoreInfo ? 'Renvoyer la soumission' : 'Envoyer mon dossier finalisé'}</Text>}
             </TouchableOpacity>
           </View>
         )}
@@ -579,41 +580,41 @@ export default function InscriptionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  formName: { fontSize: 18, fontWeight: '700', color: Colors.noir, marginBottom: 16 },
+  formName: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 16 },
   container: { flex: 1, backgroundColor: Colors.fond },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 60, backgroundColor: Colors.blanc, borderBottomWidth: 1, borderColor: Colors.grisClair },
   backButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: Colors.fond },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.noir, flex: 1, textAlign: 'center' },
-  deleteButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: '#FCE8E9' },
+  headerTitle: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir, flex: 1, textAlign: 'center' },
+  deleteButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: Colors.rougeClair },
   scrollContainer: { padding: 20, paddingBottom: 40 },
-  statusBanner: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 20, borderWidth: 1, marginBottom: 24 },
+  statusBanner: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, borderWidth: 1, marginBottom: 24 },
   iconWrapper: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
   statusBannerText: { marginLeft: 16, flex: 1 },
-  statusLabel: { fontSize: 16, fontWeight: '700' },
-  statusSubtitle: { fontSize: 12, color: Colors.gris, marginTop: 2 },
+  statusLabel: { fontSize: 16, fontFamily: Fonts.medium },
+  statusSubtitle: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, marginTop: 2 },
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 11, fontWeight: '700', color: Colors.gris, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 },
-  messageBubbleClub: { backgroundColor: Colors.blanc, borderRadius: 20, padding: 16, borderWidth: 1, borderColor: Colors.grisClair },
+  sectionTitle: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.grisTexte, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 },
+  messageBubbleClub: { backgroundColor: Colors.blanc, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: Colors.grisClair },
   clubMessageHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  clubMessageSender: { fontWeight: '700', color: Colors.noir, fontSize: 14 },
-  clubMessageTime: { fontSize: 12, color: Colors.gris, fontWeight: '500' },
-  clubMessageBody: { fontSize: 14, color: Colors.noir, lineHeight: 22 },
-  emptyMessageContainer: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: Colors.blanc, borderRadius: 20, borderWidth: 1, borderColor: Colors.grisClair },
-  emptyMessageText: { fontSize: 13, color: Colors.gris, marginLeft: 12, flex: 1 },
-  responsesCard: { backgroundColor: Colors.blanc, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 4, borderWidth: 1, borderColor: Colors.grisClair },
-  responseRow: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: Colors.grisClair },
-  responseQuestion: { fontSize: 13, fontWeight: '500', color: Colors.gris, marginBottom: 4 },
-  responseValue: { fontSize: 14, fontWeight: '600', color: Colors.noir },
+  clubMessageSender: { fontFamily: Fonts.medium, color: Colors.noir, fontSize: 14 },
+  clubMessageTime: { fontSize: 12, color: Colors.grisTexte, fontFamily: Fonts.medium },
+  clubMessageBody: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.noir, lineHeight: 22 },
+  emptyMessageContainer: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: Colors.blanc, borderRadius: 16, borderWidth: 1, borderColor: Colors.grisClair },
+  emptyMessageText: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginLeft: 12, flex: 1 },
+  responsesCard: { backgroundColor: Colors.blanc, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 4, borderWidth: 1, borderColor: Colors.grisClair },
+  responseRow: { paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: Colors.grisClair },
+  responseQuestion: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte, marginBottom: 4 },
+  responseValue: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir },
   loaderContainer: { paddingVertical: 24, alignItems: 'center' },
 
   submitButton: { height: 48, borderRadius: 999, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' },
-  submitButtonText: { fontSize: 14, fontWeight: '600' },
+  submitButtonText: { fontSize: 14, fontFamily: Fonts.medium },
 
   legalNoticeContainer: {
     backgroundColor: Colors.blanc, 
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 16,
     marginTop: 8,
     marginBottom: 20
@@ -621,7 +622,7 @@ const styles = StyleSheet.create({
   checkboxVisual: {
     width: 22,
     height: 22,
-    borderRadius: 6,
+    borderRadius: 8,
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',

@@ -78,7 +78,7 @@ export default function ClubDetail() {
     if (isLoading) {
         return (
             <View style={styles.center}>
-                <ActivityIndicator size="large" color={Colors.bleu} />
+                <ActivityIndicator size="large" color={Colors.noir} />
             </View>
         );
     }

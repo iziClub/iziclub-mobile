@@ -14,9 +14,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 interface Props {
   visible: boolean;
@@ -118,7 +119,7 @@ export default function FilterBottomSheet({
           <View style={styles.header}>
             <Text style={styles.title}>Filtres</Text>
             <TouchableOpacity onPress={onClose} hitSlop={10}>
-              <Ionicons name="close-circle" size={30} color={Colors.gris} />
+              <Icon name="close-circle" size={30} color={Colors.gris} />
             </TouchableOpacity>
           </View>
 
@@ -131,7 +132,7 @@ export default function FilterBottomSheet({
             keyboardShouldPersistTaps="handled"
           >
             {/* SECTION DISTANCE */}
-            <View style={[styles.rowBetween, { marginBottom: 10 }]}>
+            <View style={[styles.rowBetween, { marginBottom: 12 }]}>
               <View>
                 <Text style={styles.sectionTitle}>Distance</Text>
                 <Text style={styles.subLabel}>Filtrer par proximité</Text>
@@ -139,7 +140,7 @@ export default function FilterBottomSheet({
               <Switch
                 value={useRadius}
                 onValueChange={setUseRadius}
-                trackColor={{ false: Colors.grisClair, true: Colors.bleu }}
+                trackColor={{ false: Colors.grisClair, true: Colors.noir }}
                 thumbColor={Colors.blanc}
               />
             </View>
@@ -160,8 +161,8 @@ export default function FilterBottomSheet({
                 value={radius}
                 onValueChange={setRadius}
                 disabled={!useRadius}
-                minimumTrackTintColor={Colors.bleu}
-                thumbTintColor={useRadius ? Colors.bleu : Colors.grisClair}
+                minimumTrackTintColor={Colors.noir}
+                thumbTintColor={useRadius ? Colors.noir : Colors.grisClair}
               />
             </View>
 
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
   },
   handleArea: {
     alignItems: 'center',
-    paddingTop: 10,
+    paddingTop: 12,
     paddingBottom: 4,
   },
   handleBar: {
@@ -271,19 +272,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 4,
   },
-  title: { fontSize: 28, fontWeight: 'bold', color: Colors.noir },
-  sectionTitle: { fontSize: 17, fontWeight: '700', marginTop: 15, marginBottom: 10, color: Colors.noir },
-  subLabel: { fontSize: 13, color: Colors.gris, marginBottom: 10 },
-  divider: { height: 1, backgroundColor: Colors.grisClair, marginVertical: 15, marginHorizontal: 20 },
+  title: { fontSize: 32, fontFamily: Fonts.titre, color: Colors.noir },
+  sectionTitle: { fontSize: 18, fontFamily: Fonts.titre, marginTop: 16, marginBottom: 12, color: Colors.noir },
+  subLabel: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginBottom: 12 },
+  divider: { height: 1, backgroundColor: Colors.grisClair, marginVertical: 16, marginHorizontal: 20 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  distanceValue: { fontSize: 18, fontWeight: 'bold', color: Colors.bleu },
+  distanceValue: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   sportInput: {
     backgroundColor: Colors.fond,
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    padding: 14,
-    fontSize: 15,
+    padding: 16,
+    fontSize: 16, fontFamily: Fonts.regular,
     color: Colors.noir,
   },
   chipsWrap: {
@@ -301,13 +302,13 @@ const styles = StyleSheet.create({
     borderColor: Colors.grisClair,
   },
   chipActive: {
-    backgroundColor: Colors.bleu,
-    borderColor: Colors.bleu,
+    backgroundColor: Colors.noir,
+    borderColor: Colors.noir,
   },
   chipText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.gris,
+    fontSize: 14,
+    fontFamily: Fonts.medium,
+    color: Colors.grisTexte,
   },
   chipTextActive: {
     color: Colors.blanc,
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
@@ -331,14 +332,14 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Colors.grisClair,
   },
-  resetButtonText: { fontWeight: '700', fontSize: 15, color: Colors.noir },
+  resetButtonText: { fontFamily: Fonts.medium, fontSize: 16, color: Colors.noir },
   applyButton: {
     flex: 1.4,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.noir,
   },
-  applyButtonText: { fontWeight: '700', fontSize: 15, color: Colors.blanc },
+  applyButtonText: { fontFamily: Fonts.medium, fontSize: 16, color: Colors.blanc },
 });

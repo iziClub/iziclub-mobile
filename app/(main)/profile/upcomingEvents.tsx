@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // 💡 Import de ton service d'événements
 import { getParticipatingEvents } from '@/services/events.service';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 export default function UpcomingEventsScreen() {
   const insets = useSafeAreaInsets();
@@ -69,7 +70,7 @@ export default function UpcomingEventsScreen() {
           onPress={() => router.back()} 
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24} color={Colors.noir} />
+          <Icon name="arrow-back" size={24} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mes Participations</Text>
         <View style={{ width: 40 }} />
@@ -78,7 +79,7 @@ export default function UpcomingEventsScreen() {
       {loading ? (
         // 💡 Loader central pendant le chargement initial
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={Colors.bleu} />
+          <ActivityIndicator size="large" color={Colors.noir} />
           <Text style={styles.loadingText}>Chargement de vos sorties...</Text>
         </View>
       ) : (
@@ -117,7 +118,7 @@ export default function UpcomingEventsScreen() {
                   <Text style={styles.eventTitle} numberOfLines={2}>{eventDetails.title}</Text>
                   
                   <View style={styles.locationRow}>
-                    <Ionicons name="location-outline" size={14} color={Colors.bleu} />
+                    <Icon name="location-outline" size={14} color={Colors.bleu} />
                     {/* Concaténation propre de la rue et de la ville reçues de l'API */}
                     <Text style={styles.locationText} numberOfLines={1}>
                       {eventDetails.location?.street}, {eventDetails.location?.city}
@@ -129,7 +130,7 @@ export default function UpcomingEventsScreen() {
           }}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="calendar-outline" size={60} color={Colors.gris} />
+              <Icon name="calendar-outline" size={60} color={Colors.gris} />
               <Text style={styles.emptyText}>Vous ne participez à aucun événement</Text>
             </View>
           }
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
     height: 56,
     backgroundColor: Colors.blanc,
     borderBottomWidth: 1,
@@ -159,33 +160,29 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: Colors.fond,
   },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.noir },
+  headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   
   eventRow: {
     flexDirection: 'row',
-    marginBottom: 25,
+    marginBottom: 24,
     alignItems: 'flex-start',
   },
   dateBlock: {
     width: 60,
     alignItems: 'center',
-    paddingTop: 5,
+    paddingTop: 4,
   },
-  dateDay: { fontSize: 24, fontWeight: '800', color: Colors.noir },
-  dateMonth: { fontSize: 11, fontWeight: 'bold', color: Colors.rouge },
+  dateDay: { fontSize: 24, fontFamily: Fonts.titre, color: Colors.noir },
+  dateMonth: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.rouge },
   
   eventCard: {
     flex: 1,
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 16,
-    marginLeft: 10,
+    marginLeft: 12,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -194,19 +191,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   categoryTag: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontFamily: Fonts.medium,
     color: Colors.rouge,
-    backgroundColor: '#FCE8E9',
+    backgroundColor: Colors.rougeClair,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 999,
     textTransform: 'uppercase',
   },
-  timeText: { fontSize: 12, fontWeight: '600', color: Colors.gris },
-  eventTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.noir, marginBottom: 6 },
+  timeText: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.grisTexte },
+  eventTitle: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 8 },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  locationText: { fontSize: 13, color: Colors.gris, marginLeft: 4, flex: 1 },
+  locationText: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginLeft: 4, flex: 1 },
   
   ticketButton: {
     flexDirection: 'row',
@@ -217,14 +214,14 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   ticketButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: Colors.bleu,
+    fontSize: 14,
+    fontFamily: Fonts.medium,
+    color: Colors.noir,
     marginRight: 8,
   },
 
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: Colors.fond },
-  loadingText: { marginTop: 10, color: Colors.gris, fontSize: 14 },
+  loadingText: { marginTop: 12, color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular },
   emptyContainer: { marginTop: 100, alignItems: 'center' },
-  emptyText: { color: Colors.gris, marginTop: 10 },
+  emptyText: { color: Colors.grisTexte, marginTop: 12 },
 });

@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
     container: {
@@ -15,7 +16,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: Colors.bleuClair,
         alignSelf: 'flex-start',
-        paddingHorizontal: 10,
+        paddingHorizontal: 12,
         paddingVertical: 4,
         borderRadius: 999,
         gap: 4,
@@ -23,7 +24,7 @@ export const styles = StyleSheet.create({
     tagText: {
         fontSize: 12,
         color: Colors.bleu,
-        fontWeight: '600',
+        fontFamily: Fonts.medium,
     },
     headerSection: {
         paddingHorizontal: 20,
@@ -31,8 +32,8 @@ export const styles = StyleSheet.create({
         paddingBottom: 24,
     },
     title: {
-        fontSize: 26,
-        fontWeight: "800",
+        fontSize: 24,
+        fontFamily: Fonts.titre,
         color: Colors.noir,
         letterSpacing: -0.5,
         marginBottom: 8,
@@ -45,52 +46,42 @@ export const styles = StyleSheet.create({
     cityText: {
         fontSize: 16,
         color: Colors.bleu,
-        fontWeight: "600",
+        fontFamily: Fonts.medium,
     },
     card: {
         backgroundColor: Colors.blanc,
         marginHorizontal: 20,
         marginBottom: 16,
         padding: 20,
-        borderRadius: 20,
+        borderRadius: 16,
         borderWidth: 1,
         borderColor: Colors.grisClair,
-        shadowColor: Colors.noir,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
     },
     sectionTitle: {
         fontSize: 14,
-        fontWeight: "700",
-        color: Colors.gris,
+        fontFamily: Fonts.medium,
+        color: Colors.grisTexte,
         textTransform: "uppercase",
         letterSpacing: 1,
-        marginBottom: 10,
+        marginBottom: 12,
     },
     addressText: {
         fontSize: 16,
-        fontWeight: "600",
+        fontFamily: Fonts.medium,
         color: Colors.noir,
         marginBottom: 2,
     },
     subAddressText: {
-        fontSize: 15,
-        color: Colors.gris,
+        fontSize: 16, fontFamily: Fonts.regular,
+        color: Colors.grisTexte,
     },
     mapCard: {
         backgroundColor: Colors.blanc,
         marginHorizontal: 20,
-        borderRadius: 20,
+        borderRadius: 16,
         borderWidth: 1,
         borderColor: Colors.grisClair,
         overflow: "hidden",
-        shadowColor: Colors.noir,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
         marginBottom: 20,
     },
     mapContainer: {
@@ -104,15 +95,15 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: Colors.bleu,
-        paddingVertical: 14,
+        backgroundColor: Colors.noir,
+        paddingVertical: 16,
         margin: 16,
         borderRadius: 999,
     },
     navButtonText: {
         color: Colors.blanc,
         fontSize: 16,
-        fontWeight: "600",
+        fontFamily: Fonts.medium,
     },
     noticeContainer: {
         flexDirection: "row",
@@ -120,12 +111,12 @@ export const styles = StyleSheet.create({
         gap: 8,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 10,
+        marginTop: 12,
         marginBottom: 40,
     },
     noticeText: {
-        fontSize: 13,
-        color: Colors.gris,
+        fontSize: 14, fontFamily: Fonts.regular,
+        color: Colors.grisTexte,
         flex: 1,
         lineHeight: 18,
     },

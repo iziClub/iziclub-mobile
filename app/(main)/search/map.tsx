@@ -2,10 +2,11 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '@/context/LocationContext';
 import { useSearch } from '../../../components/search/useSearch';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 const DEFAULT_REGION: Region = {
   latitude: 48.692,
@@ -156,7 +157,7 @@ export default function MapScreen() {
           >
             <View style={styles.markerShadowContainer}>
               <View style={[styles.customMarkerVisual, { backgroundColor: Colors.bleu }]}>
-                <Ionicons name="people-circle-outline" size={25} color="white" />
+                <Icon name="people-circle-outline" size={25} color={Colors.blanc} />
               </View>
             </View>
 
@@ -167,7 +168,7 @@ export default function MapScreen() {
                   <View style={styles.tagBadgeClub}><Text style={styles.tagTextClub}>Club</Text></View>
                   <View style={styles.divider} />
                   <View style={styles.addressRow}>
-                    <Ionicons name="location" size={12} color={Colors.bleu} />
+                    <Icon name="location" size={12} color={Colors.bleu} />
                     <Text style={styles.addressText} numberOfLines={1}>
                       {club.city} {club.street ? `- ${club.street}` : ''}
                     </Text>
@@ -191,7 +192,7 @@ export default function MapScreen() {
           >
             <View style={styles.markerShadowContainer}>
               <View style={[styles.customMarkerVisual, { backgroundColor: Colors.rouge, borderRadius: 8 }]}>
-                <Ionicons name="medal-outline" size={25} color="white" />
+                <Icon name="medal-outline" size={25} color={Colors.blanc} />
               </View>
             </View>
 
@@ -202,7 +203,7 @@ export default function MapScreen() {
                   <View style={styles.tagBadgeEvent}><Text style={styles.tagTextEvent}>Événement</Text></View>
                   <View style={styles.divider} />
                   <View style={styles.addressRow}>
-                    <Ionicons name="location" size={12} color={Colors.rouge} />
+                    <Icon name="location" size={12} color={Colors.rouge} />
                     <Text style={styles.addressText} numberOfLines={1}>
                       {event.city} {event.street ? `- ${event.street}` : ''}
                     </Text>
@@ -219,7 +220,7 @@ export default function MapScreen() {
       {/* Indicateur pendant l'initialisation native de la carte */}
       {!mapReady && (
         <View style={styles.mapLoadingOverlay} pointerEvents="none">
-          <ActivityIndicator size="large" color={Colors.bleu} />
+          <ActivityIndicator size="large" color={Colors.noir} />
         </View>
       )}
 
@@ -233,10 +234,10 @@ export default function MapScreen() {
             activeOpacity={0.9}
             disabled={loading}
           >
-            <Ionicons
+            <Icon
               name={loading ? "hourglass-outline" : "refresh"}
               size={18}
-              color={Colors.bleu}
+              color={Colors.noir}
             />
             <Text style={styles.searchHereText}>
               {loading ? "Chargement..." : "Rechercher dans cette zone"}
@@ -254,7 +255,7 @@ export default function MapScreen() {
             onPress={() => toggleFilter('clubs')}
             activeOpacity={0.8}
           >
-            <Ionicons 
+            <Icon 
               name={showClubs ? "people-circle" : "people-circle-outline"} 
               size={16} 
               color={showClubs ? Colors.blanc : Colors.gris} 
@@ -272,7 +273,7 @@ export default function MapScreen() {
             onPress={() => toggleFilter('events')}
             activeOpacity={0.8}
           >
-            <Ionicons 
+            <Icon 
               name={showEvents ? "medal" : "medal-outline"} 
               size={16} 
               color={showEvents ? Colors.blanc : Colors.gris} 
@@ -290,7 +291,7 @@ export default function MapScreen() {
         onPress={handleRequestLocation}
         activeOpacity={0.8}
       >
-        <Ionicons name="locate-outline" size={22} color={Colors.bleu} />
+        <Icon name="locate-outline" size={22} color={Colors.noir} />
       </TouchableOpacity>
 
       {/* Bouton Retour Liste */}
@@ -299,7 +300,7 @@ export default function MapScreen() {
         onPress={() => router.back()}
         activeOpacity={0.8}
       >
-        <Ionicons name="list" size={24} color={Colors.noir} />
+        <Icon name="list" size={24} color={Colors.noir} />
         <Text style={styles.fabText}>Liste</Text>
       </TouchableOpacity>
     </View>
@@ -341,7 +342,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
-  searchHereText: { marginLeft: 8, color: Colors.bleu, fontWeight: '600', fontSize: 13 },
+  searchHereText: { marginLeft: 8, color: Colors.noir, fontFamily: Fonts.medium, fontSize: 14 },
 
   // Styles de la barre de filtres
   filterContainer: {
@@ -353,7 +354,7 @@ const styles = StyleSheet.create({
     shadowColor: Colors.noir,
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    gap: 6,
+    gap: 8,
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
@@ -363,26 +364,26 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 16,
     borderRadius: 999,
-    gap: 6,
+    gap: 8,
   },
   filterButtonClubActive: {
-    backgroundColor: Colors.bleu,
+    backgroundColor: Colors.noir,
   },
   filterButtonEventActive: {
-    backgroundColor: Colors.rouge,
+    backgroundColor: Colors.noir,
   },
   filterButtonInactive: {
     backgroundColor: 'transparent',
   },
   filterText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: Fonts.medium,
   },
   filterTextActive: {
     color: Colors.blanc,
   },
   filterTextInactive: {
-    color: Colors.gris,
+    color: Colors.grisTexte,
   },
 
   markerShadowContainer: {
@@ -400,7 +401,7 @@ const styles = StyleSheet.create({
   },
   customMarkerVisual: {
     padding: 0,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 2,
     borderColor: Colors.blanc,
     alignItems: 'center',
@@ -424,11 +425,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
-  clubTitle: { fontWeight: '700', fontSize: 14, color: Colors.noir, marginBottom: 4 },
-  divider: { height: 1, backgroundColor: Colors.grisClair, marginBottom: 8, marginTop: 6 },
+  clubTitle: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.noir, marginBottom: 4 },
+  divider: { height: 1, backgroundColor: Colors.grisClair, marginBottom: 8, marginTop: 8 },
   addressRow: { flexDirection: 'row', alignItems: 'center' },
-  addressText: { fontSize: 11, color: Colors.gris, marginLeft: 4, textTransform: 'capitalize', flex: 1 },
-  moreInfo: { fontSize: 11, fontWeight: '700', marginTop: 8, textAlign: 'right' },
+  addressText: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, marginLeft: 4, textTransform: 'capitalize', flex: 1 },
+  moreInfo: { fontSize: 12, fontFamily: Fonts.medium, marginTop: 8, textAlign: 'right' },
   
   tagBadgeClub: {
     alignSelf: 'flex-start',
@@ -439,13 +440,13 @@ const styles = StyleSheet.create({
   },
   tagBadgeEvent: {
     alignSelf: 'flex-start',
-    backgroundColor: '#FCE8E9',
+    backgroundColor: Colors.rougeClair,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 999,
   },
-  tagTextClub: { fontSize: 9, fontWeight: '700', color: Colors.bleu },
-  tagTextEvent: { fontSize: 9, fontWeight: '700', color: Colors.rouge },
+  tagTextClub: { fontSize: 12,fontFamily: Fonts.medium, color: Colors.noir },
+  tagTextEvent: { fontSize: 12,fontFamily: Fonts.medium, color: Colors.noir },
   
   arrow: {
     width: 0, height: 0, backgroundColor: 'transparent', borderStyle: 'solid',
@@ -476,7 +477,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.blanc,
     paddingVertical: 12,
-    paddingHorizontal: 25,
+    paddingHorizontal: 24,
     borderRadius: 999,
     elevation: 4,
     shadowColor: Colors.noir,
@@ -485,5 +486,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
-  fabText: { marginLeft: 8, fontWeight: '700', fontSize: 15, color: Colors.noir },
+  fabText: { marginLeft: 8, fontFamily: Fonts.medium, fontSize: 16, color: Colors.noir },
 });

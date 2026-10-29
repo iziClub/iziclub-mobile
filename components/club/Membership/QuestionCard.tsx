@@ -1,10 +1,11 @@
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 import { Question } from "./types";
 import { styles } from "./styles";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 type Props = {
   question: Question;
@@ -63,14 +64,14 @@ export default function QuestionCard({
           ]}
           onPress={onDocumentUpload}
         >
-          <Ionicons
+          <Icon
             name={isAnswered ? "checkmark-circle" : "cloud-upload-outline"}
             size={22}
             color={isAnswered ? Colors.vert : Colors.gris}
           />
 
           <View style={styles.uploadTextContainer}>
-            <Text style={[styles.uploadTitle, isAnswered && { color: Colors.vert, fontWeight: "600" }]}>
+            <Text style={[styles.uploadTitle, isAnswered && { color: Colors.vert, fontFamily: Fonts.medium }]}>
               {isAnswered ? value : "Sélectionner un fichier"}
             </Text>
 
@@ -97,10 +98,10 @@ export default function QuestionCard({
               // 💡 On renvoie le label
               onPress={() => onRadioChange(option.label)}
             >
-              <Ionicons
+              <Icon
                 name={selected ? "radio-button-on" : "radio-button-off"}
                 size={20}
-                color={selected ? Colors.bleu : Colors.gris}
+                color={selected ? Colors.noir : Colors.gris}
               />
 
               <Text
@@ -131,10 +132,10 @@ export default function QuestionCard({
               // 💡 On renvoie le label
               onPress={() => onCheckboxChange(option.label)}
             >
-              <Ionicons
+              <Icon
                 name={checked ? "checkbox" : "square-outline"}
                 size={20}
-                color={checked ? Colors.bleu : Colors.gris}
+                color={checked ? Colors.noir : Colors.gris}
               />
 
               <Text

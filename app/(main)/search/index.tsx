@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { View, TextInput, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
 // Tes imports
 import ClubsTab from "./ClubsTab";
@@ -9,6 +8,8 @@ import FilterBottomSheet from "../../../components/search/FilterModal";
 import { useSearch } from "../../../components/search/useSearch";
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 type SearchTab = "Clubs" | "Événements";
 
@@ -72,14 +73,14 @@ export default function SearchScreen() {
             value={query}
             onChangeText={setQuery}
             placeholderTextColor={Colors.gris}
-            style={{ flex: 1, fontSize: 16, color: Colors.noir }}
+            style={{ flex: 1, fontSize: 16, fontFamily: Fonts.regular, color: Colors.noir }}
           />
           {query.length > 0 ? (
             <TouchableOpacity onPress={() => setQuery("")}>
-               <Ionicons name="close-circle" size={20} color={Colors.gris} />
+               <Icon name="close-circle" size={20} color={Colors.gris} />
             </TouchableOpacity>
           ) : (
-            <Ionicons name="search" size={20} color={Colors.gris} />
+            <Icon name="search" size={20} color={Colors.gris} />
           )}
         </View>
       </View>
@@ -120,7 +121,7 @@ export default function SearchScreen() {
           style={styles.fabWhite} 
           onPress={() => setShowFilters(true)}
         >
-          <Ionicons name="options-outline" size={20} color={Colors.noir} />
+          <Icon name="options-outline" size={20} color={Colors.noir} />
           <Text style={styles.fabTextBlack}>Filtres</Text>
           {hasActiveFilters && <View style={styles.badge} />}
         </TouchableOpacity>
@@ -131,7 +132,7 @@ export default function SearchScreen() {
           onPress={() => router.push('/(main)/search/map')}
         >
           <Text style={styles.fabTextWhite}>Carte</Text>
-          <Ionicons name="map-outline" size={20} color={Colors.blanc} />
+          <Icon name="map-outline" size={20} color={Colors.blanc} />
         </TouchableOpacity>
       </View>
 
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   headerArea: { 
     paddingHorizontal: 20, 
     paddingTop: 20, 
-    paddingBottom: 15,
+    paddingBottom: 16,
     backgroundColor: Colors.fond,
   },
   tabBar: {
@@ -179,9 +180,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   tabLabel: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    color: Colors.gris,
+    fontFamily: Fonts.medium,
+    fontSize: 16,
+    color: Colors.grisTexte,
   },
   tabLabelActive: {
     color: Colors.noir,
@@ -192,12 +193,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2.5,
-    backgroundColor: Colors.bleu,
+    backgroundColor: Colors.noir,
   },
   searchBar: {
     flexDirection: 'row',
     backgroundColor: Colors.blanc,
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
     height: 48,
     borderRadius: 16,
     alignItems: 'center',
@@ -221,35 +222,25 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    elevation: 4,
-    shadowColor: Colors.noir,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
   },
   fabBlue: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bleu,
+    backgroundColor: Colors.noir,
     paddingVertical: 12,
     paddingHorizontal: 22,
     borderRadius: 999,
-    elevation: 4,
-    shadowColor: Colors.bleu,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
   },
   fabTextBlack: { 
     marginLeft: 8, 
-    fontWeight: 'bold', 
-    fontSize: 15,
+    fontFamily: Fonts.medium, 
+    fontSize: 16,
     color: Colors.noir,
   },
   fabTextWhite: { 
     marginRight: 8, 
-    fontWeight: 'bold', 
-    fontSize: 15, 
+    fontFamily: Fonts.medium, 
+    fontSize: 16, 
     color: Colors.blanc,
   },
   badge: {

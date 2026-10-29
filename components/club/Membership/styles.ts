@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
   container: {
@@ -22,41 +23,31 @@ export const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 6,
+    fontFamily: Fonts.titre,
+    marginBottom: 8,
     color: Colors.noir,
   },
 
   description: {
-    fontSize: 14,
-    color: Colors.gris,
+    fontSize: 14, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     lineHeight: 20,
     marginBottom: 8,
   },
 
   dateText: {
-    fontSize: 11,
-    color: Colors.gris,
+    fontSize: 12, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     fontStyle: "italic",
   },
 
   card: {
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-
-    shadowColor: Colors.noir,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
 
   cardHeader: {
@@ -67,14 +58,14 @@ export const styles = StyleSheet.create({
 
   cardTitle: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: Fonts.medium,
     marginLeft: 8,
     color: Colors.noir,
   },
 
   questionTitle: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 16,
+    fontFamily: Fonts.medium,
     color: Colors.noir,
     flex: 1,
     lineHeight: 20,
@@ -82,28 +73,28 @@ export const styles = StyleSheet.create({
 
   requiredStar: {
     color: Colors.rouge,
-    fontWeight: "bold",
+    fontFamily: Fonts.medium,
   },
 
   infoText: {
-    fontSize: 14,
+    fontSize: 14, fontFamily: Fonts.regular,
     color: Colors.noir,
     marginBottom: 4,
   },
 
   editProfile: {
-    marginTop: 10,
+    marginTop: 12,
   },
 
   editProfileText: {
     color: Colors.bleu,
     fontSize: 12,
-    fontWeight: "600",
+    fontFamily: Fonts.medium,
   },
 
   hintText: {
-    fontSize: 13,
-    color: Colors.gris,
+    fontSize: 14, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     marginBottom: 12,
     fontStyle: "italic",
     lineHeight: 18,
@@ -115,9 +106,9 @@ export const styles = StyleSheet.create({
     borderColor: Colors.grisClair,
     borderRadius: 12,
     padding: 12,
-    fontSize: 14,
+    fontSize: 14, fontFamily: Fonts.regular,
     color: Colors.noir,
-    marginTop: 6,
+    marginTop: 8,
   },
 
   uploadBox: {
@@ -127,8 +118,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.grisClair,
     borderStyle: "dashed",
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 12,
+    padding: 16,
     marginTop: 4,
   },
 
@@ -145,13 +136,13 @@ export const styles = StyleSheet.create({
 
   uploadTitle: {
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: Fonts.medium,
     color: Colors.noir,
   },
 
   uploadSubtitle: {
-    fontSize: 11,
-    color: Colors.gris,
+    fontSize: 12, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     marginTop: 2,
   },
 
@@ -159,28 +150,28 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "transparent",
-    marginBottom: 6,
+    marginBottom: 8,
   },
 
   optionRowSelected: {
     backgroundColor: Colors.bleuClair,
-    borderColor: Colors.bleu,
+    borderColor: Colors.noir,
   },
 
   optionLabel: {
-    marginLeft: 10,
-    fontSize: 14,
+    marginLeft: 12,
+    fontSize: 14, fontFamily: Fonts.regular,
     color: Colors.noir,
     flex: 1,
   },
 
   optionLabelSelected: {
-    fontWeight: "600",
-    color: Colors.bleu,
+    fontFamily: Fonts.medium,
+    color: Colors.noir,
   },
 
   submitButton: {
@@ -188,26 +179,26 @@ export const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 999,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 12,
   },
 
   submitButtonText: {
     color: Colors.blanc,
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: Fonts.medium,
   },
 
   lockTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: Fonts.titre,
     marginTop: 20,
     textAlign: "center",
     color: Colors.noir,
   },
 
   lockSubtitle: {
-    fontSize: 14,
-    color: Colors.gris,
+    fontSize: 14, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     textAlign: "center",
     marginTop: 8,
     marginBottom: 24,
@@ -222,6 +213,6 @@ export const styles = StyleSheet.create({
 
   loginButtonText: {
     color: Colors.blanc,
-    fontWeight: "bold",
+    fontFamily: Fonts.medium,
   },
 });

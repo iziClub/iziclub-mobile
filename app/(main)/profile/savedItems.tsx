@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, Image, ActivityIndicator, Dimensions } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import de tes services API
 import { getSavedClubs, unsaveClub, getClubById } from '@/services/clubs.service'; // Adapte le chemin d'accès
 import { getSavedEvents, unsaveEvent, getEventById } from '@/services/events.service';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 type TabType = 'events' | 'clubs';
 
@@ -133,7 +134,7 @@ useFocusEffect(
           <View>
             <Text style={styles.clubName} numberOfLines={1}>{title}</Text>
             <View style={styles.locationRow}>
-              <Ionicons name="location-sharp" size={14} color={Colors.bleu} />
+              <Icon name="location-sharp" size={14} color={Colors.bleu} />
               <Text style={styles.locationText} numberOfLines={1}>
                 {item.address?.city || item.profile?.address?.city || 'Localisation non précisée'}
               </Text>
@@ -146,7 +147,7 @@ useFocusEffect(
               onPress={() => handleUnsave(item.id, activeTab)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons name="bookmark" size={22} color={Colors.vert} />
+              <Icon name="bookmark" size={22} color={Colors.vert} />
             </TouchableOpacity>
           </View>
         </View>
@@ -158,12 +159,12 @@ useFocusEffect(
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <View style={styles.emptyIconWrapper}>
-        <Ionicons 
+        <Icon 
           name={activeTab === 'events' ? "calendar-outline" : "business-outline"} 
           size={46} 
           color={Colors.gris} 
         />
-        <Ionicons name="bookmark" size={20} color={Colors.vert} style={styles.emptyBookmarkBadge} />
+        <Icon name="bookmark" size={20} color={Colors.vert} style={styles.emptyBookmarkBadge} />
       </View>
       <Text style={styles.emptyTitle}>Aucun enregistrement</Text>
       <Text style={styles.emptySubtitle}>
@@ -185,7 +186,7 @@ useFocusEffect(
           onPress={() => router.back()} 
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={22} color={Colors.noir} />
+          <Icon name="arrow-back" size={22} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Enregistrés</Text>
         <View style={{ width: 40 }} />
@@ -197,7 +198,7 @@ useFocusEffect(
           style={[styles.tab, activeTab === 'events' && styles.activeTab]}
           onPress={() => setActiveTab('events')}
         >
-          <Ionicons name="bookmark-outline" size={15} color={activeTab === 'events' ? Colors.vert : Colors.gris} />
+          <Icon name="bookmark-outline" size={15} color={activeTab === 'events' ? Colors.vert : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Événements</Text>
         </TouchableOpacity>
 
@@ -205,7 +206,7 @@ useFocusEffect(
           style={[styles.tab, activeTab === 'clubs' && styles.activeTab]}
           onPress={() => setActiveTab('clubs')}
         >
-          <Ionicons name="business-outline" size={15} color={activeTab === 'clubs' ? Colors.vert : Colors.gris} />
+          <Icon name="business-outline" size={15} color={activeTab === 'clubs' ? Colors.vert : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'clubs' && styles.activeTabText]}>Clubs</Text>
         </TouchableOpacity>
       </View>
@@ -213,13 +214,13 @@ useFocusEffect(
       {/* CONTENU OU LOADER */}
       {loading ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color={Colors.bleu} />
+          <ActivityIndicator size="large" color={Colors.noir} />
         </View>
       ) : (
         <FlatList
           data={activeTab === 'events' ? events : clubs}
           keyExtractor={(item) => `save-${item.id}`}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
           renderItem={renderItem}
           ListEmptyComponent={renderEmptyState}
           showsVerticalScrollIndicator={false}
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
     height: 56,
     backgroundColor: Colors.blanc,
     borderBottomWidth: 1,
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: Colors.fond,
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
+  headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   
   // Segmented Tabs
   tabsContainer: {
@@ -267,50 +268,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 999,
-    gap: 6,
+    gap: 8,
   },
   activeTab: {
     backgroundColor: Colors.fond,
-    shadowColor: Colors.noir,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
-  tabText: { fontSize: 13, fontWeight: '600', color: Colors.gris },
+  tabText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },
   activeTabText: { color: Colors.vert },
 
   // Cartes horizontales intégrées
   clubCard: {
     flexDirection: 'row',
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
+    borderRadius: 16,
     marginBottom: 16,
     padding: 12,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
   },
   clubImage: {
     width: 85,
     height: 85,
-    borderRadius: 14,
+    borderRadius: 12,
     backgroundColor: Colors.fond,
   },
   clubInfo: {
     flex: 1,
-    marginLeft: 14,
+    marginLeft: 16,
     justifyContent: 'space-between',
     paddingVertical: 2,
   },
-  clubName: { fontSize: 16, fontWeight: '700', color: Colors.noir },
+  clubName: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  locationText: { fontSize: 13, color: Colors.gris, marginLeft: 4, flex: 1 },
+  locationText: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginLeft: 4, flex: 1 },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -342,13 +334,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 2,
   },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: Colors.noir, marginBottom: 6 },
-  emptySubtitle: { fontSize: 13, color: Colors.gris, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
+  emptyTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 8 },
+  emptySubtitle: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
   exploreBtn: {
     backgroundColor: Colors.noir,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 999,
   },
-  exploreBtnText: { color: Colors.blanc, fontWeight: 'bold', fontSize: 14 },
+  exploreBtnText: { color: Colors.blanc, fontFamily: Fonts.medium, fontSize: 14 },
 });

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Image,
   KeyboardAvoidingView,
@@ -13,12 +11,14 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { router } from "expo-router";
 import { Colors } from "@/constants/colors";
+import { Fonts, Spacing } from "@/constants/theme";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 export default function LoginScreen() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -54,41 +54,33 @@ export default function LoginScreen() {
         />
         <Text style={styles.title}>Connecte toi</Text>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Entre ton adresse email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
-        <Text style={styles.label}>Mot de passe</Text>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={[styles.input, { flex: 1, marginBottom: 0, borderWidth: 0 }]}
+        <View style={styles.form}>
+          <Input
+            label="Email"
+            placeholder="Entre ton adresse email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoComplete="email"
+          />
+          <Input
+            label="Mot de passe"
             placeholder="Ton mot de passe"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={!showPassword}
+            password
+            autoComplete="password"
           />
-          <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
-            style={styles.eyeButton}
-          >
-            <Text>{showPassword ? "🙈" : "👁️"}</Text>
-          </TouchableOpacity>
+          <Button
+            variant="lien"
+            label="Mot de passe oublié ?"
+            onPress={handleForgotPassword}
+            style={styles.forgotPassword}
+          />
+          <Button label="Connexion" size="l" fullWidth onPress={handleLogin} />
+          <Button variant="tertiaire" label="Pas encore de compte ? S'inscrire" onPress={handleCreateAccount} />
         </View>
-
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Connexion</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleCreateAccount}>
-          <Text style={[styles.forgotPassword, { textAlign: 'center', marginTop: 8 }]}>Pas encore de compte ? S'inscrire</Text>
-        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -98,7 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: Colors.blanc,
-    paddingBottom: 20,
+    paddingBottom: Spacing[5],
   },
   image: {
     width: "100%",
@@ -107,81 +99,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 20,
-    paddingLeft: 20,
+    lineHeight: 34,
+    letterSpacing: -1.28,
+    fontFamily: Fonts.titre,
+    marginBottom: Spacing[5],
+    paddingHorizontal: Spacing[5],
     color: Colors.noir,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "500",
-    alignSelf: "flex-start",
-    marginLeft: 20,
-    marginBottom: 8,
-    color: Colors.gris,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    padding: 12,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-    color: Colors.noir,
-    backgroundColor: Colors.blanc,
-  },
-  button: {
-    backgroundColor: Colors.noir,
-    padding: 16,
-    borderRadius: 999,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  buttonText: {
-    color: Colors.blanc,
-    fontWeight: "bold",
-    textAlign: "center",
-    fontSize: 16,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "90%",
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    paddingRight: 10,
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  eyeButton: {
-    paddingHorizontal: 8,
+  form: {
+    paddingHorizontal: Spacing[5],
+    gap: Spacing[4],
   },
   forgotPassword: {
-    color: Colors.bleu,
-    textAlign: "right",
-    marginBottom: 12,
-    textDecorationLine: "underline",
-    paddingRight: 20,
-  },
-  separatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 20,
-    width: "90%",
-    alignSelf: "center"
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.grisClair,
-  },
-  separatorText: {
-    marginHorizontal: 10,
-    fontSize: 14,
-    color: Colors.gris,
-    fontWeight: "500",
+    alignSelf: "flex-end",
   },
 });

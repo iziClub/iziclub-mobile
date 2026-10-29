@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { Event } from "@/types/event";
 import EmptyEvents from "./emptyEvent";
 import { EventSearchItem } from "../search/types";
+import { Fonts } from "@/constants/theme";
 
 export default function EventSection({events}: {events: any[]}) {
     const router = useRouter();
@@ -18,7 +19,7 @@ export default function EventSection({events}: {events: any[]}) {
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={<EmptyEvents />}
                 renderItem={({ item }) => (
-                    <View style={{ width: "49%", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}>
+                    <View style={{ width: "49%" }}>
                   <Card
                     title={item.name}
                     banner={item.coverImagePath ?? "https://via.placeholder.com/300x150"}
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
 
     sectionTitle: {
         fontSize: 20,
-        fontWeight: "600",
-        marginBottom: 10,
+        fontFamily: Fonts.titre,
+        marginBottom: 12,
     }
 });

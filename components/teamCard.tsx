@@ -2,6 +2,7 @@ import React from "react";
 import { Text, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 interface TeamCardProps {
     title: string;
@@ -48,12 +49,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 18,
-        fontWeight: "600",
-        color: "#fff",
+        fontFamily: Fonts.titre,
+        color: Colors.blanc,
     },
     subtitle: {
-        fontSize: 14,
-        color: "#fff",
+        fontSize: 14, fontFamily: Fonts.regular,
+        color: Colors.blanc,
         marginTop: 4,
         textAlign: "right",
     },

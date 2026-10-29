@@ -1,15 +1,18 @@
 import { View } from "react-native";
 import React from "react";
-import { Text, StyleSheet } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Text, StyleSheet, Image } from "react-native";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 export default function EmptyEvents() {
   return (
     <View style={styles.emptyContainer}>
-      <View style={styles.iconCircle}>
-        <Ionicons name="calendar-outline" size={40} color={Colors.bleu} />
-      </View>
+      <Image
+        source={require("@/assets/illustrations/tennis.png")}
+        style={styles.illustration}
+        resizeMode="contain"
+        accessibilityIgnoresInvertColors
+      />
       <Text style={styles.emptyTitle}>Aucun événement trouvé</Text>
     <Text style={styles.emptySubtitle}>
       Il n'y a rien ici pour le moment.
@@ -23,25 +26,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 40,
   },
-  iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Colors.bleuClair,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
+  illustration: {
+    width: 140,
+    height: 180,
+    marginBottom: 16,
   },
   emptyTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: Fonts.titre,
     color: Colors.noir,
     marginBottom: 8,
     textAlign: 'center',
   },
   emptySubtitle: {
-    fontSize: 14,
-    color: Colors.gris,
+    fontSize: 14, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     textAlign: 'center',
     lineHeight: 20,
   },

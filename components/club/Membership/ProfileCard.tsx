@@ -4,9 +4,9 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
 import { styles } from "./styles";
 import { Colors } from "@/constants/colors";
+import Icon from "@/components/ui/Icon";
 
 type Props = {
   user: any;
@@ -17,7 +17,7 @@ export default function ProfileCard({ user }: Props) {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
-        <MaterialIcons
+        <Icon
           name="person"
           size={20}
           color={Colors.noir}

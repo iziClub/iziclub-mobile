@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList, ImageBackground, ActivityIndicator, Dimensions } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -9,6 +8,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { getLikedClubs, unlikeClub, getClubById } from '@/services/clubs.service' // Adapte le chemin d'accès
 import { getLikedEvents, unlikeEvent, getEventById } from '@/services/events.service';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 const { width } = Dimensions.get('window');
 
@@ -171,7 +172,7 @@ export default function LikedItemsScreen() {
               activeOpacity={0.7}
               onPress={() => handleUnlike(item.id, activeTab)}
             >
-              <Ionicons name="heart" size={20} color={Colors.rouge} />
+              <Icon name="heart" size={20} color={Colors.rouge} />
             </TouchableOpacity>
             
             <View>
@@ -180,17 +181,17 @@ export default function LikedItemsScreen() {
               <View style={styles.infoRow}>
                 {isEvent ? (
                   <>
-                    <Ionicons name="calendar-outline" size={13} color="#EAEAEA" />
+                    <Icon name="calendar-outline" size={13} color={Colors.grisClair} />
                     <Text style={styles.infoText}>{formatDate(item.eventDate) || 'À venir'}</Text>
                   </>
                 ) : (
                   <>
-                    <Ionicons name="trophy-outline" size={13} color="#EAEAEA" />
+                    <Icon name="trophy-outline" size={13} color={Colors.grisClair} />
                     <Text style={styles.infoText}>{item.type || 'Club Sportif'}</Text>
                   </>
                 )}
                 
-                <Ionicons name="location-outline" size={13} color="#EAEAEA" style={{ marginLeft: 12 }} />
+                <Icon name="location-outline" size={13} color={Colors.grisClair} style={{ marginLeft: 12 }} />
                 <Text style={styles.infoText} numberOfLines={1}>{item.address?.city || item.profile?.address?.city || 'Localisation non précisée'}</Text>
               </View>
             </View>
@@ -204,12 +205,12 @@ export default function LikedItemsScreen() {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <View style={styles.emptyIconWrapper}>
-        <Ionicons 
+        <Icon 
           name={activeTab === 'events' ? "calendar-outline" : "shield-outline"} 
           size={50} 
           color={Colors.gris} 
         />
-        <Ionicons name="heart" size={22} color={Colors.rouge} style={styles.emptyHeartBadge} />
+        <Icon name="heart" size={22} color={Colors.rouge} style={styles.emptyHeartBadge} />
       </View>
       <Text style={styles.emptyTitle}>Rien pour le moment</Text>
       <Text style={styles.emptySubtitle}>
@@ -231,7 +232,7 @@ export default function LikedItemsScreen() {
       {/* HEADER BAR */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={22} color={Colors.noir} />
+          <Icon name="arrow-back" size={22} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mes Favoris</Text>
         <View style={{ width: 40 }} /> 
@@ -243,7 +244,7 @@ export default function LikedItemsScreen() {
           style={[styles.tab, activeTab === 'events' && styles.activeTab]}
           onPress={() => setActiveTab('events')}
         >
-          <Ionicons name="flash" size={16} color={activeTab === 'events' ? Colors.bleu : Colors.gris} />
+          <Icon name="flash" size={16} color={activeTab === 'events' ? Colors.noir : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Événements</Text>
         </TouchableOpacity>
 
@@ -251,7 +252,7 @@ export default function LikedItemsScreen() {
           style={[styles.tab, activeTab === 'clubs' && styles.activeTab]}
           onPress={() => setActiveTab('clubs')}
         >
-          <Ionicons name="people" size={16} color={activeTab === 'clubs' ? Colors.bleu : Colors.gris} />
+          <Icon name="people" size={16} color={activeTab === 'clubs' ? Colors.noir : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'clubs' && styles.activeTabText]}>Clubs</Text>
         </TouchableOpacity>
       </View>
@@ -259,7 +260,7 @@ export default function LikedItemsScreen() {
       {/* LIST OR LOADER */}
       {loading ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color={Colors.bleu} />
+          <ActivityIndicator size="large" color={Colors.noir} />
         </View>
       ) : (
         <FlatList
@@ -295,14 +296,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: Colors.fond,
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
+  headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   
   // Onglets de navigation (Tabs)
   tabsContainer: {
     flexDirection: 'row',
     backgroundColor: Colors.blanc,
     marginHorizontal: 16,
-    marginVertical: 14,
+    marginVertical: 16,
     padding: 4,
     borderRadius: 999,
     borderWidth: 1,
@@ -313,33 +314,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 999,
-    gap: 6,
+    gap: 8,
   },
   activeTab: {
     backgroundColor: Colors.fond,
-    shadowColor: Colors.noir,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
-  tabText: { fontSize: 13, fontWeight: '600', color: Colors.gris },
-  activeTabText: { color: Colors.bleu },
+  tabText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },
+  activeTabText: { color: Colors.noir },
 
   // Listes & Cartes
-  listContent: { paddingHorizontal: 16, paddingBottom: 30, paddingTop: 4 },
+  listContent: { paddingHorizontal: 16, paddingBottom: 32, paddingTop: 4 },
   card: {
     height: 190,
     marginBottom: 16,
     borderRadius: 20,
     backgroundColor: Colors.blanc,
-    shadowColor: Colors.noir,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
     borderWidth: 1,
     borderColor: Colors.grisClair,
     overflow: 'hidden',
@@ -349,21 +340,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     justifyContent: 'space-between',
-    borderRadius: 20,
+    borderRadius: 16,
   },
   heartButton: {
     alignSelf: 'flex-end',
     backgroundColor: Colors.blanc,
     padding: 9,
     borderRadius: 999,
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
-  cardTitle: { color: 'white', fontSize: 19, fontWeight: '700', marginBottom: 2 },
+  cardTitle: { color: Colors.blanc, fontSize: 20, fontFamily: Fonts.titre, marginBottom: 2 },
   infoRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  infoText: { color: '#EAEAEA', fontSize: 12, marginLeft: 4, fontWeight: '500' },
+  infoText: { color: Colors.grisClair, fontSize: 12, marginLeft: 4, fontFamily: Fonts.medium },
   
   // Chargement
   loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
@@ -395,13 +382,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 2,
   },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: Colors.noir, marginBottom: 6 },
-  emptySubtitle: { fontSize: 13, color: Colors.gris, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
+  emptyTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 8 },
+  emptySubtitle: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
   exploreBtn: {
     backgroundColor: Colors.noir,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 999,
   },
-  exploreBtnText: { color: Colors.blanc, fontWeight: 'bold', fontSize: 14 }
+  exploreBtnText: { color: Colors.blanc, fontFamily: Fonts.medium, fontSize: 14 }
 });

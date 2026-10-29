@@ -12,6 +12,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -91,24 +92,24 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontFamily: Fonts.titre,
+    marginBottom: 12,
     paddingLeft: 20,
     color: Colors.noir,
   },
   subtitle: {
-    fontSize: 14,
-    color: Colors.gris,
+    fontSize: 14, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     marginBottom: 20,
     paddingHorizontal: 20,
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
+    fontFamily: Fonts.medium,
     alignSelf: "flex-start",
     marginLeft: 20,
     marginBottom: 8,
-    color: Colors.gris,
+    color: Colors.grisTexte,
   },
   input: {
     borderWidth: 1,
@@ -122,15 +123,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.blanc,
   },
   button: {
-    padding: 16,
-    borderRadius: 999,
+    minHeight: 52,
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    borderRadius: 12,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
   },
   buttonText: {
     color: Colors.blanc,
-    fontWeight: "bold",
+    fontFamily: Fonts.medium,
     textAlign: "center",
     fontSize: 16,
   },

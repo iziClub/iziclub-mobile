@@ -1,9 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Platform, Alert } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { Club } from "@/types/club";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 const safeTrim = (value?: string | null) => (value || "").trim();
 
@@ -117,7 +118,7 @@ export default function ContactSection({ club }: { club: Club }) {
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Adresse</Text>
           <TouchableOpacity onPress={openMaps} style={styles.linkRow}>
-            <FontAwesome name="map-marker" size={16} color={Colors.bleu} />
+            <Icon name="map-marker" size={16} color={Colors.bleu} />
             <Text style={styles.linkText}>{fullAddress}</Text>
           </TouchableOpacity>
         </View>
@@ -125,7 +126,7 @@ export default function ContactSection({ club }: { club: Club }) {
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Telephone</Text>
           <TouchableOpacity onPress={callPhone} style={styles.linkRow}>
-            <FontAwesome name="phone" size={16} color={Colors.bleu} />
+            <Icon name="phone" size={16} color={Colors.bleu} />
             <Text style={styles.linkText}>{phoneNumber}</Text>
           </TouchableOpacity>
         </View>
@@ -133,7 +134,7 @@ export default function ContactSection({ club }: { club: Club }) {
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Email</Text>
           <TouchableOpacity onPress={sendEmail} style={styles.linkRow}>
-            <FontAwesome name="envelope" size={16} color={Colors.bleu} />
+            <Icon name="envelope" size={16} color={Colors.bleu} />
             <Text style={styles.linkText}>{emailAddress}</Text>
           </TouchableOpacity>
         </View>
@@ -149,7 +150,7 @@ export default function ContactSection({ club }: { club: Club }) {
             onPress={() => openExternalUrl(instagramUrl)}
             disabled={!instagramUrl}
           >
-            <FontAwesome name="instagram" size={18} color="#fff" />
+            <Icon name="instagram" size={18} color={Colors.blanc} />
             <Text style={styles.socialText}>{instagramUrl ? "Instagram" : "non renseigne"}</Text>
           </TouchableOpacity>
 
@@ -158,7 +159,7 @@ export default function ContactSection({ club }: { club: Club }) {
             onPress={() => openExternalUrl(facebookUrl)}
             disabled={!facebookUrl}
           >
-            <FontAwesome name="facebook" size={18} color="#fff" />
+            <Icon name="facebook" size={18} color={Colors.blanc} />
             <Text style={styles.socialText}>{facebookUrl ? "Facebook" : "non renseigne"}</Text>
           </TouchableOpacity>
         </View>
@@ -169,7 +170,7 @@ export default function ContactSection({ club }: { club: Club }) {
             onPress={() => openExternalUrl(linkedinUrl)}
             disabled={!linkedinUrl}
           >
-            <FontAwesome name="linkedin" size={18} color="#fff" />
+            <Icon name="linkedin" size={18} color={Colors.blanc} />
             <Text style={styles.socialText}>{linkedinUrl ? "LinkedIn" : "non renseigne"}</Text>
           </TouchableOpacity>
 
@@ -178,7 +179,7 @@ export default function ContactSection({ club }: { club: Club }) {
             onPress={() => openExternalUrl(tiktokUrl)}
             disabled={!tiktokUrl}
           >
-            <FontAwesome name="music" size={18} color="#fff" />
+            <Icon name="music" size={18} color={Colors.blanc} />
             <Text style={styles.socialText}>{tiktokUrl ? "TikTok" : "non renseigne"}</Text>
           </TouchableOpacity>
         </View>
@@ -190,32 +191,27 @@ export default function ContactSection({ club }: { club: Club }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingTop: 12,
     paddingBottom: 24,
     backgroundColor: Colors.fond,
   },
   card: {
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
-    padding: 18,
+    borderRadius: 16,
+    padding: 20,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    shadowColor: Colors.noir,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
   },
   title: {
     fontSize: 20,
-    fontWeight: "800",
+    fontFamily: Fonts.titre,
     color: Colors.noir,
   },
   subtitle: {
-    fontSize: 14,
-    color: Colors.gris,
+    fontSize: 14, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     marginTop: 4,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   statsRow: {
     flexDirection: "row",
@@ -225,21 +221,21 @@ const styles = StyleSheet.create({
   statPill: {
     flex: 1,
     backgroundColor: Colors.bleuClair,
-    borderRadius: 14,
-    paddingVertical: 10,
+    borderRadius: 12,
+    paddingVertical: 12,
     paddingHorizontal: 8,
     alignItems: "center",
   },
   statValue: {
     fontSize: 14,
-    fontWeight: "800",
+    fontFamily: Fonts.medium,
     color: Colors.bleu,
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: 12,
     color: Colors.bleu,
     marginTop: 2,
-    fontWeight: "600",
+    fontFamily: Fonts.medium,
   },
   infoBlock: {
     borderTopWidth: 1,
@@ -249,8 +245,8 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 12,
-    fontWeight: "700",
-    color: Colors.gris,
+    fontFamily: Fonts.medium,
+    color: Colors.grisTexte,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     marginBottom: 8,
@@ -262,18 +258,18 @@ const styles = StyleSheet.create({
   },
   linkText: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 16, fontFamily: Fonts.regular,
     color: Colors.bleu,
     textDecorationLine: "underline",
   },
   infoText: {
-    fontSize: 15,
+    fontSize: 16, fontFamily: Fonts.regular,
     lineHeight: 22,
     color: Colors.noir,
   },
   socialRow: {
     flexDirection: "row",
-    gap: 10,
+    gap: 12,
     marginTop: 16,
   },
   socialButton: {
@@ -286,21 +282,21 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   instagramButton: {
-    backgroundColor: "#E1306C",
+    backgroundColor: Colors.noir,
   },
   facebookButton: {
-    backgroundColor: "#1877F2",
+    backgroundColor: Colors.noir,
   },
   linkedinButton: {
-    backgroundColor: "#0A66C2",
+    backgroundColor: Colors.noir,
   },
   tiktokButton: {
-    backgroundColor: "#111827",
+    backgroundColor: Colors.noir,
   },
   socialText: {
-    color: "#fff",
+    color: Colors.blanc,
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: Fonts.medium,
   },
   socialButtonDisabled: {
     opacity: 0.5,

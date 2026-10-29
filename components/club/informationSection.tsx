@@ -5,6 +5,7 @@ import TeamCard from "../teamCard";
 import { Club } from "@/types/club";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 
 interface Props {
     club: Club;
@@ -74,7 +75,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                         contentContainerStyle={{ gap: 12, paddingRight: 16, marginBottom: 24 }}
                     >
                         {club.events.map((event) => (
-                            <View key={event.id} style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 }}>
+                            <View key={event.id} >
                             <Card
                                 title={event.name}
                                 banner={event.coverImagePath ?? "https://via.placeholder.com/300x150"}
@@ -157,19 +158,19 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        fontWeight: "700",
+        fontFamily: Fonts.titre,
         marginBottom: 4,
         color: Colors.noir,
     },
     titleNoBanner: {
-        fontSize: 28,
-        fontWeight: "800",
+        fontSize: 32,
+        fontFamily: Fonts.titre,
         letterSpacing: -0.5,
         color: Colors.noir,
     },
     subtitle: {
-        fontSize: 16,
-        color: Colors.gris,
+        fontSize: 16, fontFamily: Fonts.regular,
+        color: Colors.grisTexte,
         fontStyle: "italic",
         marginBottom: 8,
     },
@@ -182,19 +183,19 @@ const styles = StyleSheet.create({
     seeMore: {
         fontSize: 14,
         color: Colors.bleu,
-        fontWeight: "600",
+        fontFamily: Fonts.medium,
     },
     description: {
-        fontSize: 15,
+        fontSize: 16, fontFamily: Fonts.regular,
         color: Colors.noir,
         lineHeight: 22,
         marginTop: 4,
     },
     bigTitle: {
         fontSize: 20,
-        fontWeight: "700",
+        fontFamily: Fonts.titre,
         color: Colors.noir,
-        marginBottom: 14,
+        marginBottom: 16,
     },
     teamContainer: {
         flexDirection: "row",

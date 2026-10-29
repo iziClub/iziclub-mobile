@@ -8,10 +8,11 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { EngagementItem, useEngagement } from "./useEngagement";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 // ─────────────────────────────────────────────────────────
 // Micro-animation : scale bounce sur press
@@ -45,8 +46,8 @@ function useScaleBounce() {
 type ActionButtonProps = {
   active: boolean;
   onPress: () => void;
-  activeIcon: keyof typeof Ionicons.glyphMap;
-  inactiveIcon: keyof typeof Ionicons.glyphMap;
+  activeIcon: string;
+  inactiveIcon: string;
   activeColor: string;
   label: string;
   disabled?: boolean;
@@ -77,13 +78,13 @@ function ActionButton({
       style={styles.iconButton}
     >
       <Animated.View style={{ transform: [{ scale }] }}>
-        <Ionicons
+        <Icon
           name={active ? activeIcon : inactiveIcon}
           size={24}
           color={active ? activeColor : Colors.noir}
         />
       </Animated.View>
-      <Text style={[styles.iconButtonLabel, active && { color: activeColor, fontWeight: "700" }]}>
+      <Text style={[styles.iconButtonLabel, active && { color: activeColor, fontFamily: Fonts.medium }]}>
         {label}
       </Text>
     </TouchableOpacity>
@@ -201,7 +202,7 @@ export default function EngagementBar({
           onPress={handleSavePress}
           activeIcon="bookmark"
           inactiveIcon="bookmark-outline"
-          activeColor={Colors.bleu}
+          activeColor={Colors.noir}
           label="Enregistrer"
         />
 
@@ -260,18 +261,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    gap: 5,
+    gap: 4,
     paddingVertical: 4,
   },
   iconButtonLabel: {
-    fontSize: 11,
-    color: Colors.gris,
-    fontWeight: "500",
+    fontSize: 12,
+    color: Colors.grisTexte,
+    fontFamily: Fonts.medium,
     textAlign: "center",
   },
   statusRow: {
     flexDirection: "row",
-    gap: 6,
+    gap: 8,
     justifyContent: "center",
     marginTop: 2,
     flexWrap: "wrap",
@@ -279,13 +280,13 @@ const styles = StyleSheet.create({
   statusBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 3,
+    gap: 4,
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 12,
   },
   statusBadgeText: {
-    fontSize: 10,
-    fontWeight: "600",
+    fontSize: 12,
+    fontFamily: Fonts.medium,
   },
 });

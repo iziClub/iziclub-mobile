@@ -11,7 +11,6 @@ import {
   Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/context/AuthContext';
@@ -22,6 +21,8 @@ import { getCurrentUser } from '@/services/auth';
 import { useFocusEffect } from 'expo-router';
 import { getNotifications } from '@/services/notifications.service';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -129,7 +130,7 @@ export default function Home() {
   style={styles.profileBadge} 
   onPress={() => router.push("/notifications")}
 >
-  <Ionicons name="notifications-outline" size={24} color="black" />
+  <Icon name="notifications-outline" size={24} color={Colors.noir} />
   {/* Pastille rouge de notification non lue */}
   {notificationsCount > 0 && <View style={styles.notificationDot} />}
 </TouchableOpacity>
@@ -142,9 +143,9 @@ export default function Home() {
           style={styles.searchSection}
         >
           <View style={styles.searchBar}>
-            <Ionicons name="search" size={20} color={Colors.gris} style={{ marginRight: 10 }} />
+            <Icon name="search" size={20} color={Colors.gris} style={{ marginRight: 12 }} />
             <Text style={{ color: Colors.gris, flex: 1 }}>Rechercher un club, un sport...</Text>
-            <Ionicons name="options-outline" size={20} color={Colors.bleu} />
+            <Icon name="options-outline" size={20} color={Colors.noir} />
           </View>
         </TouchableOpacity>
 
@@ -175,7 +176,7 @@ export default function Home() {
           pagingEnabled
           decelerationRate="fast"
           showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={{ paddingLeft: 20, paddingRight: 10, marginTop: 15 }}
+          contentContainerStyle={{ paddingLeft: 20, paddingRight: 12, marginTop: 16 }}
           onScroll={({ nativeEvent }) => {
             const x = nativeEvent.contentOffset.x;
             const idx = Math.round(x / (CARD_WIDTH + 15));
@@ -185,15 +186,15 @@ export default function Home() {
         >
           {loadingHome ? (
             Array.from({ length: 2 }).map((_, index) => (
-              <View key={index} style={{ width: CARD_WIDTH, height: 140, borderRadius: 18, marginRight: 15, backgroundColor: Colors.grisClair }} />
+              <View key={index} style={{ width: CARD_WIDTH, height: 140, borderRadius: 16, marginRight: 16, backgroundColor: Colors.grisClair }} />
             ))
           ) : (
             featuredEvents.map((event: any) => (
-              <TouchableOpacity key={event.id} activeOpacity={0.9} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 15 }}>
+              <TouchableOpacity key={event.id} activeOpacity={0.9} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 16 }}>
                 <ImageBackground 
                   source={{ uri: event.coverImagePath || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                   style={styles.eventCardImage}
-                  imageStyle={{ borderRadius: 18 }}
+                  imageStyle={{ borderRadius: 16 }}
                 >
                   <LinearGradient
                     colors={['transparent', 'rgba(0,0,0,0.85)']}
@@ -232,7 +233,7 @@ export default function Home() {
             <Text style={styles.mapBannerSub}>Trouve les clubs autour de toi</Text>
           </View>
           <View style={styles.mapBannerCircle}>
-            <Ionicons name="map" size={24} color="white" />
+            <Icon name="map" size={24} color={Colors.blanc} />
           </View>
         </TouchableOpacity>
 
@@ -247,7 +248,7 @@ export default function Home() {
         params: { q: cat.name }
       })}>
               <View style={styles.categoryIcon}>
-                <Ionicons name={cat.icon as any} size={24} color={Colors.bleu} />
+                <Icon name={cat.icon as any} size={24} color={Colors.bleu} />
               </View>
               <Text style={styles.categoryName}>{cat.name}</Text>
             </TouchableOpacity>
@@ -268,7 +269,7 @@ export default function Home() {
               {Array.from({ length: 4 }).map((_, index) => (
                 <View key={index} style={styles.clubGridItem}>
                   <View style={[styles.clubImage, { backgroundColor: Colors.grisClair }]} />
-                  <View style={{ height: 14, width: '70%', marginTop: 10, borderRadius: 8, backgroundColor: Colors.grisClair }} />
+                  <View style={{ height: 14, width: '70%', marginTop: 12, borderRadius: 8, backgroundColor: Colors.grisClair }} />
                   <View style={{ height: 12, width: '45%', marginTop: 8, borderRadius: 8, backgroundColor: Colors.grisClair }} />
                 </View>
               ))}
@@ -285,7 +286,7 @@ export default function Home() {
                   <View style={styles.clubInfo}>
                     <Text style={styles.clubName}>{club.name}</Text>
                     <View style={styles.locationRow}>
-                      <Ionicons name="location-sharp" size={14} color={Colors.bleu} />
+                      <Icon name="location-sharp" size={14} color={Colors.bleu} />
                       <Text style={styles.clubLocation}>{club.city ?? club.location ?? ''}</Text>
                     </View>
                   </View>
@@ -317,8 +318,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 0,
   },
-  greeting: { fontSize: 14, color: Colors.gris },
-  userName: { fontSize: 20, fontWeight: 'bold', color: Colors.noir },
+  greeting: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte },
+  userName: { fontSize: 20, fontFamily: Fonts.titre, color: Colors.noir },
   profileBadge: {
     width: 42,
     height: 42,
@@ -335,7 +336,7 @@ const styles = StyleSheet.create({
     right: 12,
     width: 9,
     height: 9,
-    borderRadius: 4.5,
+    borderRadius: 8.5,
     backgroundColor: Colors.rouge,
     borderWidth: 1.5,
     borderColor: Colors.blanc,
@@ -355,22 +356,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginTop: 25,
+    marginTop: 24,
   },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.noir },
-  seeAll: { color: Colors.bleu, fontWeight: '600', fontSize: 13 },
+  sectionTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
+  seeAll: { color: Colors.bleu, fontFamily: Fonts.medium, fontSize: 14 },
   
   // --- STYLES ÉVÉNEMENTS ---
   eventCardImage: {
     width: 260,
     height: 140,
-    marginRight: 15,
-    borderRadius: 18,
+    marginRight: 16,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   eventGradient: {
     flex: 1,
-    padding: 15,
+    padding: 16,
     justifyContent: 'flex-end',
   },
   eventBadge: {
@@ -384,22 +385,22 @@ const styles = StyleSheet.create({
   },
   eventBadgeText: { 
     color: Colors.blanc, 
-    fontSize: 10, 
-    fontWeight: 'bold' 
+    fontSize: 12, 
+    fontFamily: Fonts.medium 
   },
   eventContent: {
     // Conteneur pour aligner le texte
   },
   eventDate: { 
     color: 'rgba(255,255,255,0.9)', 
-    fontSize: 11, 
+    fontSize: 12, 
     marginBottom: 2,
-    fontWeight: '600'
+    fontFamily: Fonts.medium
   },
   eventTitle: { 
-    color: 'white', 
+    color: Colors.blanc, 
     fontSize: 16, 
-    fontWeight: 'bold',
+    fontFamily: Fonts.medium,
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
@@ -408,15 +409,15 @@ const styles = StyleSheet.create({
   // --- BANNIÈRE MAP ---
   mapBanner: {
     margin: 20,
-    backgroundColor: Colors.bleu,
-    borderRadius: 20,
-    padding: 18,
+    backgroundColor: Colors.noir,
+    borderRadius: 16,
+    padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
   },
   mapBannerContent: { flex: 1 },
-  mapBannerTitle: { color: Colors.blanc, fontSize: 17, fontWeight: 'bold' },
-  mapBannerSub: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
+  mapBannerTitle: { color: Colors.blanc, fontSize: 18, fontFamily: Fonts.titre },
+  mapBannerSub: { color: 'rgba(255,255,255,0.85)', fontSize: 12, fontFamily: Fonts.regular, marginTop: 2 },
   mapBannerCircle: {
     width: 48,
     height: 48,
@@ -427,8 +428,8 @@ const styles = StyleSheet.create({
   },
 
   // --- CATÉGORIES & CLUBS ---
-  categoriesScroll: { paddingLeft: 20, marginTop: 15 },
-  categoryCard: { marginRight: 18, alignItems: 'center' },
+  categoriesScroll: { paddingLeft: 20, marginTop: 16 },
+  categoryCard: { marginRight: 20, alignItems: 'center' },
   categoryIcon: {
     width: 56,
     height: 56,
@@ -438,40 +439,40 @@ const styles = StyleSheet.create({
     borderColor: Colors.grisClair,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  categoryName: { fontSize: 12, fontWeight: '600', color: Colors.noir },
-  recomendedContainer: { paddingHorizontal: 20, marginTop: 15, paddingBottom: 30 },
+  categoryName: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.noir },
+  recomendedContainer: { paddingHorizontal: 20, marginTop: 16, paddingBottom: 32 },
   clubCard: {
     backgroundColor: Colors.blanc,
-    borderRadius: 18,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.grisClair,
     overflow: 'hidden',
   },
   clubInfo: { padding: 12 },
-  clubName: { fontSize: 15, fontWeight: 'bold', color: Colors.noir },
+  clubName: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  clubLocation: { fontSize: 12, color: Colors.gris, marginLeft: 4 },
+  clubLocation: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, marginLeft: 4 },
   // --- NEW STYLES ---
   loginBanner: {
     marginHorizontal: 20,
     backgroundColor: Colors.bleuClair,
-    padding: 14,
+    padding: 16,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    marginTop: 14,
+    marginTop: 16,
   },
-  loginBannerTitle: { color: Colors.noir, fontWeight: '600', marginBottom: 10 },
+  loginBannerTitle: { color: Colors.noir, fontFamily: Fonts.medium, marginBottom: 12 },
   loginBannerActions: { flexDirection: 'row', gap: 8 },
   loginBtn: { backgroundColor: Colors.noir, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 999 },
-  loginBtnText: { color: Colors.blanc, fontWeight: '700' },
+  loginBtnText: { color: Colors.blanc, fontFamily: Fonts.medium },
   registerBtn: { borderColor: Colors.noir, borderWidth: 1.5, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 999, backgroundColor: Colors.blanc },
-  registerBtnText: { color: Colors.noir, fontWeight: '700' },
-  carouselDots: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 10 },
+  registerBtnText: { color: Colors.noir, fontFamily: Fonts.medium },
+  carouselDots: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 12 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.grisClair, marginHorizontal: 4 },
-  activeDot: { backgroundColor: Colors.bleu },
+  activeDot: { backgroundColor: Colors.noir },
   clubGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
   clubGridItem: { width: '48%', backgroundColor: Colors.blanc, borderRadius: 16, borderWidth: 1, borderColor: Colors.grisClair, overflow: 'hidden' },
 });

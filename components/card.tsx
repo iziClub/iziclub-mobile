@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, Pressable, ScrollView, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 interface CardProps {
   title: string;
@@ -57,7 +58,7 @@ export default function Card({
         {address && (
           <View>
             <View style={{ flexDirection: "row", alignItems: "flex-start", marginTop: 4 }}>
-              <Icon name="map-marker" size={14} color={Colors.bleu} style={{ marginTop: 6 }} />
+              <Icon name="map-marker" size={14} color={Colors.bleu} style={{ marginTop: 8 }} />
 
               <View style={{ minHeight: 40, marginLeft: 4, flex: 1 }}>
                 <Text style={styles.address} numberOfLines={2}>
@@ -77,20 +78,20 @@ export default function Card({
       </TouchableOpacity>
 
       {/* Tags (outside Pressable so they can scroll) */}
-      <View style={{ paddingHorizontal: 10, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>
         <View style={{ marginTop: 8 }}>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             nestedScrollEnabled={true}
-            contentContainerStyle={{ paddingRight: 10 }}
+            contentContainerStyle={{ paddingRight: 12 }}
           >
             {/* Tag type (club/event) */}
             <View style={[styles.tag, type === "club" ? styles.clubTag : styles.eventTag]}>
               <Icon
                 name={type === "club" ? "account-group" : "calendar"}
                 size={14}
-                color="#fff"
+                color={Colors.blanc}
                 style={{ marginRight: 4 }}
               />
               <Text style={styles.tagText}>{type === "club" ? "Club" : "Événement"}</Text>
@@ -112,20 +113,15 @@ export default function Card({
 
 const styles = StyleSheet.create({
   cardShadow: {
-    borderRadius: 20,
-    marginBottom: 14,
+    borderRadius: 16,
+    marginBottom: 16,
     backgroundColor: Colors.blanc,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    shadowColor: Colors.noir,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 3,
   },
   card: {
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
+    borderRadius: 16,
     overflow: "hidden",
   },
 
@@ -165,25 +161,25 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    paddingTop: 25,
+    paddingTop: 24,
     paddingHorizontal: 12,
     paddingBottom: 12,
   },
 
   title: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: Fonts.medium,
     color: Colors.noir,
   },
   address: {
     marginTop: 4,
-    color: Colors.gris,
-    fontSize: 13,
+    color: Colors.grisTexte,
+    fontSize: 14, fontFamily: Fonts.regular,
   },
   tag: {
     marginTop: 8,
     backgroundColor: Colors.fond,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 999,
     alignSelf: "flex-start",
@@ -193,38 +189,38 @@ const styles = StyleSheet.create({
   },
   clubTag: {
     marginTop: 8,
-    backgroundColor: Colors.bleu,
-    paddingHorizontal: 10,
+    backgroundColor: Colors.bleuClair,
+    paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 999,
     alignSelf: "flex-start",
   },
   eventTag: {
     marginTop: 8,
-    backgroundColor: Colors.rouge,
-    paddingHorizontal: 10,
+    backgroundColor: Colors.rougeClair,
+    paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 999,
     alignSelf: "flex-start",
   },
   tagText: {
-    color: Colors.blanc,
+    color: Colors.noir,
     fontSize: 12,
-    fontWeight: "600",
+    fontFamily: Fonts.medium,
   },
   extraTag: {
     marginTop: 8,
     backgroundColor: Colors.fond,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 999,
     alignSelf: "flex-start",
-    marginLeft: 6,
+    marginLeft: 8,
   },
   extraTagText: {
     fontSize: 12,
     color: Colors.noir,
-    fontWeight: "600",
+    fontFamily: Fonts.medium,
   },
 
   headerRow: {

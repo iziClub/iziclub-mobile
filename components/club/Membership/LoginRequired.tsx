@@ -4,17 +4,17 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { styles } from "./styles";
 import { Colors } from "@/constants/colors";
+import Icon from "@/components/ui/Icon";
 
 export default function LoginRequired() {
   const router = useRouter();
 
   return (
     <View style={styles.centeredContainer}>
-      <Ionicons
+      <Icon
         name="lock-closed"
         size={64}
         color={Colors.gris}

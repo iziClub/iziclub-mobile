@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMemberClubs } from '@/services/clubs.service';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 export default function MyClubsScreen() {
   const insets = useSafeAreaInsets();
@@ -43,7 +44,7 @@ export default function MyClubsScreen() {
           <Text style={styles.clubTitle} numberOfLines={1}>{item.name}</Text>
           <Text style={styles.clubSubtitle} numberOfLines={2}>{item.profile?.description || 'Club sportif affilié'}</Text>
           <View style={styles.clubMeta}>
-            <Ionicons name="location-outline" size={14} color={Colors.bleu} />
+            <Icon name="location-outline" size={14} color={Colors.bleu} />
             <Text style={styles.clubMetaText} numberOfLines={1}>
               {item.profile?.address?.city || 'Ville inconnue'}
             </Text>
@@ -57,7 +58,7 @@ export default function MyClubsScreen() {
     <View style={[styles.container]}> 
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={22} color={Colors.noir} />
+          <Icon name="arrow-back" size={22} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mes clubs</Text>
         <View style={{ width: 40 }} />
@@ -65,7 +66,7 @@ export default function MyClubsScreen() {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.bleu} />
+          <ActivityIndicator size="large" color={Colors.noir} />
           <Text style={styles.loadingText}>Chargement de vos clubs affiliés...</Text>
         </View>
       ) : (
@@ -77,7 +78,7 @@ export default function MyClubsScreen() {
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Ionicons name="people-outline" size={56} color={Colors.gris} />
+              <Icon name="people-outline" size={56} color={Colors.gris} />
               <Text style={styles.emptyTitle}>Aucun club affilié</Text>
               <Text style={styles.emptySubtitle}>Rejoins un club pour le retrouver ici et suivre tes informations membres.</Text>
               <TouchableOpacity style={styles.exploreButton} onPress={() => router.push('/search')}>
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.grisClair,
     backgroundColor: Colors.blanc,
@@ -111,21 +112,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: Colors.fond,
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
+  headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
-  loadingText: { marginTop: 12, color: Colors.gris, fontSize: 14 },
+  loadingText: { marginTop: 12, color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular },
   clubCard: {
     flexDirection: 'row',
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
+    borderRadius: 16,
     overflow: 'hidden',
     marginBottom: 16,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 2,
   },
   clubImage: {
     width: 100,
@@ -133,27 +130,27 @@ const styles = StyleSheet.create({
   },
   clubContent: {
     flex: 1,
-    padding: 14,
+    padding: 16,
     justifyContent: 'space-between',
   },
-  clubTitle: { fontSize: 16, fontWeight: '700', color: Colors.noir },
-  clubSubtitle: { fontSize: 13, color: Colors.gris, marginTop: 6 },
+  clubTitle: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
+  clubSubtitle: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginTop: 8 },
   clubMeta: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-    gap: 6,
+    marginTop: 12,
+    gap: 8,
   },
-  clubMetaText: { fontSize: 12, color: Colors.gris, flex: 1 },
+  clubMetaText: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, flex: 1 },
   emptyState: { padding: 24, alignItems: 'center' },
-  emptyTitle: { marginTop: 16, fontSize: 18, fontWeight: '700', color: Colors.noir },
-  emptySubtitle: { marginTop: 8, color: Colors.gris, fontSize: 14, textAlign: 'center' },
+  emptyTitle: { marginTop: 16, fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
+  emptySubtitle: { marginTop: 8, color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular, textAlign: 'center' },
   exploreButton: {
-    marginTop: 18,
+    marginTop: 20,
     backgroundColor: Colors.noir,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 999,
   },
-  exploreButtonText: { color: Colors.blanc, fontSize: 14, fontWeight: '700' },
+  exploreButtonText: { color: Colors.blanc, fontSize: 14, fontFamily: Fonts.medium },
 });

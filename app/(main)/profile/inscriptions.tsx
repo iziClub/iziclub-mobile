@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAllSubmissions } from '@/services/forms.service';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 export type InscriptionStatus = 'approved' | 'rejected' | 'needs_more_info' | 'submitted' | 'draft';
 // Type pour notre filtre de sélection ('all' inclus pour tout afficher)
@@ -79,8 +80,8 @@ export default function InscriptionsListScreen() {
   const getStatusStyle = (status: InscriptionStatus) => {
     switch (status) {
       case 'approved': return { bg: Colors.vertClair, text: Colors.vert, icon: 'checkmark-circle' };
-      case 'rejected': return { bg: '#FCE8E9', text: Colors.rouge, icon: 'close-circle' };
-      case 'needs_more_info': return { bg: '#FFF3E0', text: '#D97706', icon: 'alert-circle' };
+      case 'rejected': return { bg: Colors.rougeClair, text: Colors.rouge, icon: 'close-circle' };
+      case 'needs_more_info': return { bg: Colors.grisClair, text: Colors.noir, icon: 'alert-circle' };
       case 'submitted': return { bg: Colors.bleuClair, text: Colors.bleu, icon: 'time' };
       case 'draft': return { bg: Colors.grisClair, text: Colors.noir, icon: 'document-text' };
       default: return { bg: Colors.bleuClair, text: Colors.bleu, icon: 'time' };
@@ -92,7 +93,7 @@ export default function InscriptionsListScreen() {
       {/* HEADER BAR */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={Colors.noir} />
+          <Icon name="arrow-back" size={24} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mes inscriptions</Text>
         <View style={{ width: 40 }} />
@@ -127,7 +128,7 @@ export default function InscriptionsListScreen() {
 
       {loading ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={Colors.bleu} />
+          <ActivityIndicator size="large" color={Colors.noir} />
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
@@ -152,18 +153,18 @@ export default function InscriptionsListScreen() {
                 })}
               >
                 <View style={styles.cardHeader}>
-                  <View style={{ flex: 1, marginRight: 10 }}>
+                  <View style={{ flex: 1, marginRight: 12 }}>
                     <Text style={styles.clubName}>{item.clubName}</Text>
-                    <Text style={{ color: '#888', fontSize: 12, marginTop: 2 }}>{item.formName}</Text>
+                    <Text style={{ color: Colors.grisTexte, fontSize: 12, fontFamily: Fonts.regular, marginTop: 2 }}>{item.formName}</Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={18} color="#CCC" />
+                  <Icon name="chevron-forward" size={18} color={Colors.gris} />
                 </View>
                 
                 <Text style={styles.dateText}>Demande envoyée le {formatDate(item.submittedAt)} à {formatTime(item.submittedAt)}</Text>
 
                 <View style={styles.footerRow}>
                   <View style={[styles.statusBadge, { backgroundColor: ui.bg }]}>
-                    <Ionicons name={ui.icon as any} size={14} color={ui.text} style={{ marginRight: 6 }} />
+                    <Icon name={ui.icon as any} size={14} color={ui.text} style={{ marginRight: 8 }} />
                     <Text style={[styles.statusText, { color: ui.text }]}>{getStatusLabel(item.status)}</Text>
                   </View>
                   
@@ -177,7 +178,7 @@ export default function InscriptionsListScreen() {
 
           {filteredInscriptions.length === 0 && (
             <View style={styles.emptyContainer}>
-              <Ionicons name="document-text-outline" size={48} color="#CCC" />
+              <Icon name="document-text-outline" size={48} color={Colors.gris} />
               <Text style={styles.emptyText}>Aucune inscription dans cette catégorie.</Text>
             </View>
           )}
@@ -191,26 +192,26 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.fond },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, backgroundColor: Colors.blanc, borderBottomWidth: 1, borderBottomColor: Colors.grisClair },
   backButton: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
+  headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   
   // 💡 Nouveaux styles pour les Filtres
   filterWrapper: { borderBottomWidth: 1, borderBottomColor: Colors.grisClair, paddingVertical: 12, backgroundColor: Colors.fond },
   filterScrollContainer: { paddingHorizontal: 20, gap: 8 },
   filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair },
-  filterChipActive: { backgroundColor: Colors.bleu, borderColor: Colors.bleu },
-  filterText: { fontSize: 14, fontWeight: '500', color: Colors.gris },
-  filterTextActive: { color: Colors.blanc, fontWeight: '600' },
+  filterChipActive: { backgroundColor: Colors.noir, borderColor: Colors.noir },
+  filterText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },
+  filterTextActive: { color: Colors.blanc, fontFamily: Fonts.medium },
 
   scrollContainer: { padding: 20 },
-  card: { backgroundColor: Colors.blanc, borderRadius: 20, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  clubName: { fontSize: 16, fontWeight: '600', color: Colors.noir },
-  dateText: { fontSize: 13, color: Colors.gris, marginBottom: 14 },
+  card: { backgroundColor: Colors.blanc, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  clubName: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
+  dateText: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginBottom: 16 },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  statusBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
-  statusText: { fontSize: 12, fontWeight: '600' },
-  actionRequiredText: { fontSize: 12, fontWeight: '700', color: Colors.rouge },
+  statusBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999 },
+  statusText: { fontSize: 12, fontFamily: Fonts.medium },
+  actionRequiredText: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.rouge },
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
   emptyContainer: { alignItems: 'center', marginTop: 80 },
-  emptyText: { color: Colors.gris, marginTop: 10, fontSize: 14, textAlign: 'center' }
+  emptyText: { color: Colors.grisTexte, marginTop: 12, fontSize: 14, fontFamily: Fonts.regular, textAlign: 'center' }
 });

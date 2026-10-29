@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
 import { Club } from "@/types/club";
 import { Picture } from "@/types/picture";
+import { Fonts } from "@/constants/theme";
 
 interface Props {
     club: Club;
@@ -31,8 +32,8 @@ const styles = StyleSheet.create({
 
     sectionTitle: {
         fontSize: 20,
-        fontWeight: "600",
-        marginBottom: 10,
+        fontFamily: Fonts.titre,
+        marginBottom: 12,
     },
     gallery: {
         flexDirection: "row",

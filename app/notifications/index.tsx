@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNotifications, markNotificationAsRead } from '@/services/notifications.service';
 import { getClubById } from '@/services/clubs.service';
 import { Message } from '@/types/notification';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 export default function InboxScreen() {
   const router = useRouter();
@@ -90,7 +91,7 @@ export default function InboxScreen() {
       {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={Colors.noir} />
+          <Icon name="arrow-back" size={24} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Boîte de réception</Text>
         <View style={{ width: 40 }} />
@@ -100,13 +101,13 @@ export default function InboxScreen() {
       {loading ? (
         // 1. Écran de chargement
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={Colors.bleu} />
+          <ActivityIndicator size="large" color={Colors.noir} />
         </View>
       ) : notifications.length === 0 ? (
         // 2. Écran liste vide (Empty State)
         <View style={styles.centerContainer}>
           <View style={styles.emptyIconContainer}>
-            <Ionicons name="mail-open-outline" size={48} color={Colors.gris} />
+            <Icon name="mail-open-outline" size={48} color={Colors.gris} />
           </View>
           <Text style={styles.emptyTitle}>Tout est propre !</Text>
           <Text style={styles.emptySubtitle}>
@@ -146,7 +147,7 @@ export default function InboxScreen() {
 
               <View style={styles.msgFooter}>
                 <View style={[styles.audienceBadge, msg.isUrgent && styles.urgentBadge]}>
-                  <Ionicons 
+                  <Icon 
                     name={msg.isUrgent ? "alert-circle" : "people-outline"} 
                     size={12} 
                     color={msg.isUrgent ? Colors.rouge : Colors.gris} 
@@ -169,32 +170,32 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.fond },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: Colors.grisClair, backgroundColor: Colors.blanc },
   backButton: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
+  headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   listContainer: { padding: 20 },
   
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, backgroundColor: Colors.fond },
   emptyIconContainer: { width: 90, height: 90, borderRadius: 45, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir, marginBottom: 8, textAlign: 'center' },
-  emptySubtitle: { fontSize: 14, color: Colors.gris, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
-  refreshButton: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 999, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair },
-  refreshButtonText: { fontSize: 14, fontWeight: '600', color: Colors.noir },
+  emptyTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 8, textAlign: 'center' },
+  emptySubtitle: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+  refreshButton: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 999, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair },
+  refreshButtonText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir },
 
   // Cartes de messages
-  msgCard: { backgroundColor: Colors.blanc, borderRadius: 20, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
+  msgCard: { backgroundColor: Colors.blanc, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
   msgCardUnread: { backgroundColor: Colors.blanc, borderColor: Colors.bleu, borderWidth: 1.5 },
-  msgHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
-  clubRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  clubName: { fontSize: 13, fontWeight: '600', color: Colors.gris },
-  unreadBadge: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.bleu },
-  msgDate: { fontSize: 11, color: Colors.gris },
-  msgSubject: { fontSize: 15, fontWeight: '600', color: Colors.noir, marginBottom: 6 },
-  textBold: { fontWeight: '700', color: Colors.noir },
-  msgPreview: { fontSize: 13, color: Colors.gris, lineHeight: 18, marginBottom: 12 },
+  msgHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  clubRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  clubName: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },
+  unreadBadge: { width: 8, height: 8, borderRadius: 8, backgroundColor: Colors.bleu },
+  msgDate: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte },
+  msgSubject: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 8 },
+  textBold: { fontFamily: Fonts.medium, color: Colors.noir },
+  msgPreview: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, lineHeight: 18, marginBottom: 12 },
   msgFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   
   // Badges d'audience
-  audienceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.fond, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
-  audienceText: { fontSize: 11, fontWeight: '500', color: Colors.gris },
-  urgentBadge: { backgroundColor: '#FCE8E9' },
-  urgentText: { color: Colors.rouge, fontWeight: '700' },
+  audienceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.fond, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999 },
+  audienceText: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.grisTexte },
+  urgentBadge: { backgroundColor: Colors.rougeClair },
+  urgentText: { color: Colors.rouge, fontFamily: Fonts.medium },
 });

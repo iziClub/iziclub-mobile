@@ -12,12 +12,12 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import * as Clipboard from "expo-clipboard";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 // ─────────────────────────────────────────────
 // Types
@@ -299,32 +299,32 @@ const SOCIAL_OPTIONS: SocialOption[] = [
     key: "instagram",
     label: "Instagram",
     sublabel: "Image + texte",
-    icon: <FontAwesome name="instagram" size={26} color="#fff" />,
-    color: "#E1306C",
+    icon: <Icon name="instagram" size={26} color={Colors.blanc} />,
+    color: Colors.noir,
     onPress: (item) => shareWithImage(item, "instagram"),
   },
   {
     key: "facebook",
     label: "Facebook",
     sublabel: "Image + texte",
-    icon: <FontAwesome name="facebook" size={26} color="#fff" />,
-    color: "#1877F2",
+    icon: <Icon name="facebook" size={26} color={Colors.blanc} />,
+    color: Colors.noir,
     onPress: (item) => shareWithImage(item, "facebook"),
   },
   {
     key: "linkedin",
     label: "LinkedIn",
     sublabel: "Message pro",
-    icon: <FontAwesome name="linkedin" size={26} color="#fff" />,
-    color: "#0A66C2",
+    icon: <Icon name="linkedin" size={26} color={Colors.blanc} />,
+    color: Colors.noir,
     onPress: shareToLinkedIn,
   },
   {
     key: "other",
     label: "Autre",
     sublabel: "Partage natif",
-    icon: <Ionicons name="share-social-outline" size={26} color="#fff" />,
-    color: "#444",
+    icon: <Icon name="share-social-outline" size={26} color={Colors.blanc} />,
+    color: Colors.noirSurvol,
     onPress: shareNative,
   },
 ];
@@ -371,10 +371,10 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
             />
           ) : (
             <View style={[styles.previewImage, styles.previewPlaceholder]}>
-              <Ionicons
+              <Icon
                 name={item.type === "club" ? "shield-outline" : "calendar-outline"}
                 size={24}
-                color="#999"
+                color={Colors.grisTexte}
               />
             </View>
           )}
@@ -400,7 +400,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
             onPress={onClose}
             hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
           >
-            <Ionicons name="close" size={22} color={Colors.noir} />
+            <Icon name="close" size={22} color={Colors.noir} />
           </TouchableOpacity>
         </View>
 
@@ -428,7 +428,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
             >
               <View style={[styles.socialIcon, { backgroundColor: opt.color }]}>
                 {loading === opt.key ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color={Colors.blanc} />
                 ) : (
                   opt.icon
                 )}
@@ -441,7 +441,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
 
         {/* Info presse-papiers */}
         <View style={styles.infoBox}>
-          <Ionicons name="information-circle-outline" size={16} color={Colors.bleu} />
+          <Icon name="information-circle-outline" size={16} color={Colors.bleu} />
           <Text style={styles.infoText}>
             Le message sera copié dans ton presse-papiers pour que tu puisses le coller facilement.
           </Text>
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grisClair,
     borderRadius: 2,
     alignSelf: "center",
-    marginBottom: 18,
+    marginBottom: 20,
   },
   // ── Preview ──
   preview: {
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   previewImage: {
     width: 64,
     height: 64,
-    borderRadius: 14,
+    borderRadius: 12,
     backgroundColor: Colors.fond,
     flexShrink: 0,
   },
@@ -504,72 +504,72 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   previewType: {
-    fontSize: 10,
-    fontWeight: "700",
+    fontSize: 12,
+    fontFamily: Fonts.medium,
     color: Colors.bleu,
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   previewName: {
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 16,
+    fontFamily: Fonts.medium,
     color: Colors.noir,
     lineHeight: 20,
   },
   previewMeta: {
-    fontSize: 12,
-    color: Colors.gris,
+    fontSize: 12, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     marginTop: 2,
   },
   divider: {
     height: 1,
     backgroundColor: Colors.grisClair,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   // ── Hashtags ──
   hashtagsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
-    marginBottom: 18,
+    gap: 8,
+    marginBottom: 20,
   },
   hashtagPill: {
     backgroundColor: Colors.bleuClair,
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 4,
     borderRadius: 999,
-    borderWidth: 1,
-    borderColor: Colors.bleu,
+    borderWidth: 1.5,
+    borderColor: Colors.noir,
   },
   hashtagText: {
     fontSize: 12,
-    color: Colors.bleu,
-    fontWeight: "600",
+    color: Colors.noir,
+    fontFamily: Fonts.medium,
   },
   // ── Social ──
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "700",
-    color: Colors.gris,
+    fontFamily: Fonts.medium,
+    color: Colors.grisTexte,
     textTransform: "uppercase",
     letterSpacing: 1,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   socialRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 18,
+    marginBottom: 20,
     paddingHorizontal: 4,
   },
   socialItem: {
     alignItems: "center",
-    gap: 6,
+    gap: 8,
     flex: 1,
   },
   socialIcon: {
     width: 58,
     height: 58,
-    borderRadius: 20,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: Colors.noir,
@@ -580,27 +580,27 @@ const styles = StyleSheet.create({
   },
   socialLabel: {
     fontSize: 12,
-    fontWeight: "700",
+    fontFamily: Fonts.medium,
     color: Colors.noir,
   },
   socialSub: {
-    fontSize: 10,
-    color: Colors.gris,
-    fontWeight: "500",
+    fontSize: 12,
+    color: Colors.grisTexte,
+    fontFamily: Fonts.medium,
   },
   // ── Info box ──
   infoBox: {
     flexDirection: "row",
     alignItems: "flex-start",
     backgroundColor: Colors.bleuClair,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 12,
     gap: 8,
   },
   infoText: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 12, fontFamily: Fonts.regular,
     color: Colors.noir,
     lineHeight: 17,
   },

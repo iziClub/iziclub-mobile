@@ -11,7 +11,6 @@ import {
   Linking,
   Share,
 } from "react-native";
-import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useRouter, useGlobalSearchParams } from "expo-router";
 import * as Calendar from "expo-calendar/legacy";
 import { Event } from "@/types/event";
@@ -24,6 +23,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getSportById } from "@/services/sports.service";
 import { styles } from "./_styles";
 import { Colors } from "@/constants/colors";
+import Icon from "@/components/ui/Icon";
 
 // -------------------
 // Calendrier
@@ -239,13 +239,13 @@ export default function EventDetailScreen() {
         <View style={{ height: 260, backgroundColor: Colors.grisClair }} />
         <View style={{ padding: 20 }}>
           <View style={{ height: 24, width: '70%', borderRadius: 12, backgroundColor: Colors.grisClair, marginBottom: 16 }} />
-          <View style={{ height: 16, width: '40%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 20 }} />
-          <View style={{ height: 12, width: '95%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 10 }} />
-          <View style={{ height: 12, width: '90%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 10 }} />
-          <View style={{ height: 12, width: '85%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 24 }} />
+          <View style={{ height: 16, width: '40%', borderRadius: 12, backgroundColor: Colors.grisClair, marginBottom: 20 }} />
+          <View style={{ height: 12, width: '95%', borderRadius: 12, backgroundColor: Colors.grisClair, marginBottom: 12 }} />
+          <View style={{ height: 12, width: '90%', borderRadius: 12, backgroundColor: Colors.grisClair, marginBottom: 12 }} />
+          <View style={{ height: 12, width: '85%', borderRadius: 12, backgroundColor: Colors.grisClair, marginBottom: 24 }} />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: Colors.grisClair }} />
-            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: Colors.grisClair }} />
+            <View style={{ height: 44, width: '48%', borderRadius: 12, backgroundColor: Colors.grisClair }} />
+            <View style={{ height: 44, width: '48%', borderRadius: 12, backgroundColor: Colors.grisClair }} />
           </View>
         </View>
       </View>
@@ -269,7 +269,7 @@ export default function EventDetailScreen() {
           }}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={20} color={Colors.noir} />
+          <Icon name="arrow-back" size={20} color={Colors.noir} />
         </TouchableOpacity>
       </View>
 
@@ -327,7 +327,7 @@ export default function EventDetailScreen() {
       <View style={styles.infoBlock}>
         {/* DATE */}
         <View style={styles.infoRow}>
-          <Ionicons name="time-outline" size={22} color={Colors.bleu} />
+          <Icon name="time-outline" size={22} color={Colors.bleu} />
           <Text style={{ ...styles.infoText, flex: 0 }}>
             Le {formatEventDate(event.eventDate)}
           </Text>
@@ -339,7 +339,7 @@ export default function EventDetailScreen() {
             style={styles.calendarButton}
             onPress={() => confirmAddToCalendar(event)}
           >
-            <Ionicons name="calendar-outline" size={20} color="white" />
+            <Icon name="calendar-outline" size={20} color={Colors.blanc} />
             <Text style={styles.calendarButtonText}>Ajouter</Text>
           </TouchableOpacity>
 
@@ -348,8 +348,8 @@ export default function EventDetailScreen() {
 
         {event.address.city && event.address.street ? (
           <>
-            <View style={[styles.infoRow, { marginBottom: 10 }]}>
-              <Ionicons name="location-outline" size={22} color={Colors.bleu} />
+            <View style={[styles.infoRow, { marginBottom: 12 }]}>
+              <Icon name="location-outline" size={22} color={Colors.bleu} />
               <Text style={styles.infoText}>
                 {event.address.street}, {event.address.city}
               </Text>
@@ -379,15 +379,15 @@ export default function EventDetailScreen() {
                 style={styles.navOverlayButton}
                 onPress={() => openNavigation(event.address.street, event.address.city)}
               >
-                <Ionicons name="navigate" size={18} color="white" />
+                <Icon name="navigate" size={18} color={Colors.blanc} />
                 <Text style={styles.navOverlayText}>Y aller</Text>
               </TouchableOpacity>
             </View>
           </>
         ) : (
           <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={22} color={Colors.bleu} />
-            <Text style={{ ...styles.infoText, fontStyle: "italic", color: Colors.gris }}>
+            <Icon name="location-outline" size={22} color={Colors.bleu} />
+            <Text style={{ ...styles.infoText, fontStyle: "italic", color: Colors.grisTexte }}>
               Adresse non communiquée
             </Text>
           </View>
@@ -395,12 +395,12 @@ export default function EventDetailScreen() {
 
         {/* PRIX */}
         <View style={styles.infoRow}>
-          <FontAwesome name="eur" size={22} color={Colors.bleu} />
+          <Icon name="eur" size={22} color={Colors.bleu} />
           <Text style={styles.infoText}>{event.price ?? "Non précisé"}</Text>
         </View>
 
         <View style={styles.infoRow}>
-          <Ionicons name="fitness-outline" size={22} color={Colors.bleu} />
+          <Icon name="fitness-outline" size={22} color={Colors.bleu} />
           <Text style={styles.infoText}>{resolvedSportName || "Sport non précisé"}</Text>
         </View>
       </View>
@@ -414,7 +414,7 @@ export default function EventDetailScreen() {
         isLoggedIn={isLoggedIn}
       />
       <TouchableOpacity style={[styles.calendarButton, {
-        backgroundColor: Colors.bleu, justifyContent: "center", marginHorizontal: 16,
+        backgroundColor: Colors.noir, justifyContent: "center", marginHorizontal: 16,
         marginTop: 20,
         paddingVertical: 16,
         paddingHorizontal: 12,
@@ -439,7 +439,7 @@ export default function EventDetailScreen() {
           }
         }}
       >
-        <Ionicons name="share-social-outline" size={20} color="white" />
+        <Icon name="share-social-outline" size={20} color={Colors.blanc} />
         <Text style={styles.calendarButtonText}>Partager</Text>
       </TouchableOpacity>
     </ScrollView>

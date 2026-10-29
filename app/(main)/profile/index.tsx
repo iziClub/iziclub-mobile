@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable, Alert } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
@@ -18,6 +17,8 @@ import { getLikedClubs, getSavedClubs, getMemberClubs } from '@/services/clubs.s
 import { getAllSubmissions } from '@/services/forms.service';
 import { getNotifications } from '@/services/notifications.service';
 import { Colors } from '@/constants/colors';
+import { Fonts } from "@/constants/theme";
+import Icon from "@/components/ui/Icon";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -203,13 +204,13 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <LinearGradient
-          colors={[Colors.noir, '#2A252A']}
+          colors={[Colors.noir, Colors.noirSurvol]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.guestHero}
         >
           <View style={styles.guestIconCircle}>
-            <Ionicons name="person" size={48} color={Colors.bleu} />
+            <Icon name="person" size={48} color={Colors.bleu} />
           </View>
           <Text style={styles.guestTitle}>Rejoins l'aventure !</Text>
           <Text style={styles.guestSubtitle}>
@@ -221,10 +222,10 @@ export default function ProfileScreen() {
           {guestFeatures.map((feature) => (
             <View key={feature.label} style={styles.guestFeatureRow}>
               <View style={[styles.guestFeatureIcon, { backgroundColor: `${feature.color}1A` }]}>
-                <Ionicons name={feature.icon as any} size={20} color={feature.color} />
+                <Icon name={feature.icon as any} size={20} color={feature.color} />
               </View>
               <Text style={styles.guestFeatureLabel}>{feature.label}</Text>
-              <Ionicons name="lock-closed" size={16} color={Colors.gris} />
+              <Icon name="lock-closed" size={16} color={Colors.gris} />
             </View>
           ))}
         </View>
@@ -277,7 +278,7 @@ export default function ProfileScreen() {
             {savedCategories.map((cat) => (
               <TouchableOpacity key={cat.id} style={styles.gridCard} onPress={() => router.push({ pathname: cat.path })}>
                 <View style={[styles.iconCircle, { backgroundColor: cat.color + '15' }]}>
-                  <Ionicons name={cat.icon as any} size={22} color={cat.color} />
+                  <Icon name={cat.icon as any} size={22} color={cat.color} />
                 </View>
                 <Text style={styles.gridCardTitle}>{cat.title}</Text>
 
@@ -301,7 +302,7 @@ export default function ProfileScreen() {
           >
             <View style={styles.inscriptionsLeft}>
               <View style={[styles.iconCircle, { backgroundColor: Colors.bleuClair, marginBottom: 0 }]}>
-                <Ionicons name="document-text-outline" size={22} color={Colors.bleu} />
+                <Icon name="document-text-outline" size={22} color={Colors.bleu} />
               </View>
               <View style={styles.inscriptionsTextContainer}>
                 <Text style={styles.inscriptionsCardTitle}>Suivre mes dossiers</Text>
@@ -310,7 +311,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.badgeAlert}>
               <Text style={styles.badgeAlertText}>{stats.dossiersCount}</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.gris} style={{ marginLeft: 4 }} />
+              <Icon name="chevron-forward" size={16} color={Colors.gris} style={{ marginLeft: 4 }} />
             </View>
           </TouchableOpacity>
         </View>
@@ -320,7 +321,7 @@ export default function ProfileScreen() {
           <Text style={styles.navHeader}>Compte & Sécurité</Text>
           <TouchableOpacity onPress={logout} style={styles.logoutButton}>
             <View style={styles.navButtonContent}>
-              <Ionicons name="log-out-outline" size={20} color={Colors.rouge} />
+              <Icon name="log-out-outline" size={20} color={Colors.rouge} />
               <Text style={[styles.navButtonText, { color: Colors.rouge }]}>Déconnexion</Text>
             </View>
           </TouchableOpacity>
@@ -334,23 +335,23 @@ export default function ProfileScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{selectedDoc?.title}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Ionicons name="close" size={24} color={Colors.noir} />
+                <Icon name="close" size={24} color={Colors.noir} />
               </TouchableOpacity>
             </View>
             {selectedDoc?.type === 'qr' ? (
               <View style={styles.qrContainer}>
-                <Ionicons name="qr-code" size={200} color={Colors.noir} />
+                <Icon name="qr-code" size={200} color={Colors.noir} />
                 <Text style={styles.qrInstructions}>Présentez ce code à l'accueil du club</Text>
               </View>
             ) : (
               <View style={styles.docPlaceholder}>
-                <Ionicons name="document-text" size={80} color={Colors.bleu} />
+                <Icon name="document-text" size={80} color={Colors.bleu} />
                 <Text style={styles.docInfo}>Certificat n°88291-TC</Text>
                 <Text style={styles.docDate}>Valide jusqu'au 01/01/2027</Text>
               </View>
             )}
             <TouchableOpacity style={styles.downloadButton}>
-              <Ionicons name="download-outline" size={20} color={Colors.blanc} />
+              <Icon name="download-outline" size={20} color={Colors.blanc} />
               <Text style={styles.downloadText}>Télécharger le PDF</Text>
             </TouchableOpacity>
           </View>
@@ -372,13 +373,13 @@ export default function ProfileScreen() {
           <View style={styles.uploadOptionsRow}>
             <TouchableOpacity style={styles.uploadOption} onPress={takePhoto}>
               <View style={[styles.optionIconCircle, { backgroundColor: Colors.vertClair }]}>
-                <Ionicons name="camera" size={30} color={Colors.vert} />
+                <Icon name="camera" size={30} color={Colors.vert} />
               </View>
               <Text style={styles.optionText}>Prendre une photo</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.uploadOption} onPress={pickDocument}>
               <View style={[styles.optionIconCircle, { backgroundColor: Colors.bleuClair }]}>
-                <Ionicons name="document" size={30} color={Colors.bleu} />
+                <Icon name="document" size={30} color={Colors.bleu} />
               </View>
               <Text style={styles.optionText}>Fichier PDF</Text>
             </TouchableOpacity>
@@ -396,17 +397,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
+    borderRadius: 16,
     padding: 16,
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
   inscriptionsLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   inscriptionsTextContainer: { marginLeft: 12, flex: 1 },
-  inscriptionsCardTitle: { fontSize: 15, fontWeight: '600', color: Colors.noir },
-  inscriptionsCardSubtitle: { fontSize: 12, color: Colors.gris, marginTop: 2 },
+  inscriptionsCardTitle: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
+  inscriptionsCardSubtitle: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, marginTop: 2 },
   badgeAlert: { flexDirection: 'row', alignItems: 'center' },
-  badgeAlertText: { backgroundColor: Colors.rouge, color: Colors.blanc, fontSize: 11, fontWeight: 'bold', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, overflow: 'hidden' },
+  badgeAlertText: { backgroundColor: Colors.rouge, color: Colors.blanc, fontSize: 12, fontFamily: Fonts.medium, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, overflow: 'hidden' },
   header: {
     alignItems: 'center',
     paddingVertical: 16,
@@ -424,8 +425,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.blanc,
     marginBottom: 12,
   },
-  userName: { fontSize: 22, fontWeight: 'bold', color: Colors.noir },
-  userLevel: { fontSize: 13, color: Colors.gris, marginTop: 2 },
+  userName: { fontSize: 24, fontFamily: Fonts.titre, color: Colors.noir },
+  userLevel: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginTop: 2 },
   statsContainer: {
     flexDirection: 'row',
     marginTop: 20,
@@ -433,16 +434,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   statItem: { alignItems: 'center' },
-  statNumber: { fontSize: 18, fontWeight: 'bold', color: Colors.noir },
-  statLabel: { fontSize: 11, color: Colors.gris, textTransform: 'uppercase' },
+  statNumber: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
+  statLabel: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, textTransform: 'uppercase' },
   statDivider: { width: 1, height: 20, backgroundColor: Colors.grisClair },
 
-  section: { paddingHorizontal: 20, marginTop: 25 },
+  section: { paddingHorizontal: 20, marginTop: 24 },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: Fonts.medium,
     color: Colors.noir,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   gridContainer: {
     flexDirection: 'row',
@@ -453,16 +454,12 @@ const styles = StyleSheet.create({
     width: '48%',
     backgroundColor: Colors.blanc,
     padding: 16,
-    borderRadius: 20,
-    marginBottom: 15,
+    borderRadius: 16,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: Colors.grisClair,
     alignItems: 'center',
     position: 'relative',
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.04,
-    shadowRadius: 10,
-    elevation: 2,
   },
   gridBadge: {
     position: 'absolute',
@@ -470,7 +467,7 @@ const styles = StyleSheet.create({
     right: 12,
     backgroundColor: Colors.rouge,
     borderRadius: 999,
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
     paddingVertical: 2,
     minWidth: 18,
     justifyContent: 'center',
@@ -478,8 +475,8 @@ const styles = StyleSheet.create({
   },
   gridBadgeText: {
     color: Colors.blanc,
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontFamily: Fonts.medium,
   },
   iconCircle: {
     width: 45,
@@ -487,14 +484,14 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  gridCardTitle: { fontSize: 13, fontWeight: '600', textAlign: 'center', color: Colors.noir },
+  gridCardTitle: { fontSize: 14, fontFamily: Fonts.medium, textAlign: 'center', color: Colors.noir },
 
-  navigationMenu: { marginTop: 30, paddingHorizontal: 20 },
-  navHeader: { fontSize: 11, fontWeight: '700', color: Colors.gris, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 },
+  navigationMenu: { marginTop: 32, paddingHorizontal: 20 },
+  navHeader: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.grisTexte, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 },
   navButtonContent: { flexDirection: 'row', alignItems: 'center' },
-  navButtonText: { marginLeft: 12, fontWeight: '500', color: Colors.noir },
+  navButtonText: { marginLeft: 12, fontFamily: Fonts.medium, color: Colors.noir },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(22, 19, 22, 0.6)',
@@ -516,40 +513,40 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: 'center',
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.noir },
+  modalTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   qrContainer: { alignItems: 'center', padding: 20 },
-  qrInstructions: { marginTop: 15, color: Colors.gris, fontSize: 14 },
-  docPlaceholder: { alignItems: 'center', padding: 30 },
-  docInfo: { marginTop: 15, fontSize: 16, fontWeight: '600', color: Colors.noir },
-  docDate: { color: Colors.gris, fontSize: 13, marginTop: 5 },
+  qrInstructions: { marginTop: 16, color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular },
+  docPlaceholder: { alignItems: 'center', padding: 32 },
+  docInfo: { marginTop: 16, fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
+  docDate: { color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular, marginTop: 4 },
   downloadButton: {
     flexDirection: 'row',
-    backgroundColor: Colors.bleu,
-    paddingVertical: 14,
-    paddingHorizontal: 25,
+    backgroundColor: Colors.noir,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
     borderRadius: 999,
     marginTop: 20,
     alignItems: 'center',
   },
-  downloadText: { color: Colors.blanc, fontWeight: 'bold', marginLeft: 10 },
+  downloadText: { color: Colors.blanc, fontFamily: Fonts.medium, marginLeft: 12 },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 16,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.bleuClair,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderRadius: 999,
   },
   addButtonText: {
     color: Colors.bleu,
-    fontWeight: 'bold',
-    fontSize: 13,
+    fontFamily: Fonts.medium,
+    fontSize: 14,
     marginLeft: 4,
   },
   sheetContent: {
@@ -558,13 +555,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.blanc,
   },
-  uploadTitle: { fontSize: 20, fontWeight: 'bold', color: Colors.noir },
+  uploadTitle: { fontSize: 20, fontFamily: Fonts.titre, color: Colors.noir },
   uploadSubtitle: {
-    fontSize: 14,
-    color: Colors.gris,
+    fontSize: 14, fontFamily: Fonts.regular,
+    color: Colors.grisTexte,
     textAlign: 'center',
     marginTop: 8,
-    marginBottom: 30,
+    marginBottom: 32,
     paddingHorizontal: 20
   },
   uploadOptionsRow: {
@@ -579,9 +576,9 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  optionText: { fontSize: 14, fontWeight: '600', color: Colors.noir },
+  optionText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir },
   docContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -589,8 +586,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-    marginBottom: 10,
-    paddingRight: 10,
+    marginBottom: 12,
+    paddingRight: 12,
   },
   docRow: {
     flex: 1,
@@ -602,19 +599,19 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 14,
     color: Colors.noir,
-    fontWeight: '500',
+    fontFamily: Fonts.medium,
     flex: 1
   },
   deleteIconButton: {
-    padding: 10,
+    padding: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   guestHero: {
     alignItems: 'center',
-    paddingTop: 30,
+    paddingTop: 32,
     paddingBottom: 40,
-    paddingHorizontal: 30,
+    paddingHorizontal: 32,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
   },
@@ -627,27 +624,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  guestTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.blanc, marginBottom: 8, textAlign: 'center' },
-  guestSubtitle: { fontSize: 15, color: Colors.grisClair, textAlign: 'center', lineHeight: 21 },
+  guestTitle: { fontSize: 24, fontFamily: Fonts.titre, color: Colors.blanc, marginBottom: 8, textAlign: 'center' },
+  guestSubtitle: { fontSize: 16, fontFamily: Fonts.regular, color: Colors.grisClair, textAlign: 'center', lineHeight: 21 },
   guestFeatureList: {
     marginTop: -20,
     marginHorizontal: 20,
     backgroundColor: Colors.blanc,
-    borderRadius: 20,
+    borderRadius: 16,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    elevation: 4,
-    shadowColor: Colors.noir,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
   guestFeatureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.grisClair,
     gap: 12,
@@ -659,11 +651,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  guestFeatureLabel: { flex: 1, fontSize: 14, color: Colors.noir, fontWeight: '500' },
-  guestActions: { paddingHorizontal: 30, marginTop: 28 },
-  loginButton: { backgroundColor: Colors.noir, width: '100%', padding: 18, borderRadius: 999, alignItems: 'center', marginBottom: 12 },
-  loginButtonText: { color: Colors.blanc, fontWeight: 'bold', fontSize: 16 },
-  registerButton: { backgroundColor: Colors.blanc, borderWidth: 1.5, borderColor: Colors.noir, width: '100%', padding: 18, borderRadius: 999, alignItems: 'center' },
-  registerButtonText: { color: Colors.noir, fontWeight: 'bold', fontSize: 16 },
-  logoutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15, marginTop: 10 },
+  guestFeatureLabel: { flex: 1, fontSize: 14, color: Colors.noir, fontFamily: Fonts.medium },
+  guestActions: { paddingHorizontal: 32, marginTop: 28 },
+  loginButton: { backgroundColor: Colors.noir, width: '100%', padding: 20, borderRadius: 999, alignItems: 'center', marginBottom: 12 },
+  loginButtonText: { color: Colors.blanc, fontFamily: Fonts.medium, fontSize: 16 },
+  registerButton: { backgroundColor: Colors.blanc, borderWidth: 1.5, borderColor: Colors.noir, width: '100%', padding: 20, borderRadius: 999, alignItems: 'center' },
+  registerButtonText: { color: Colors.noir, fontFamily: Fonts.medium, fontSize: 16 },
+  logoutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, marginTop: 12 },
 });

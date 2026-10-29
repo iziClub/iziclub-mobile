@@ -5,6 +5,12 @@ import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ActivityIndicator, View } from "react-native";
 import { Colors } from "@/constants/colors";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { BricolageGrotesque_700Bold } from "@expo-google-fonts/bricolage-grotesque";
+import { Geist_400Regular, Geist_500Medium } from "@expo-google-fonts/geist";
+
+SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
   const { user, isLoading } = useAuth();
@@ -31,7 +37,7 @@ function RootLayoutNav() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond }}>
-        <ActivityIndicator size="large" color={Colors.bleu} />
+        <ActivityIndicator size="large" color={Colors.noir} />
       </View>
     );
   }
@@ -41,6 +47,18 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    BricolageGrotesque_700Bold,
+    Geist_400Regular,
+    Geist_500Medium,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) SplashScreen.hideAsync();
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) return null;
+
   return (
     <AuthProvider>
       <LocationProvider>
