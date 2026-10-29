@@ -23,6 +23,7 @@ import EngagementBar from "@/components/EngagementBar";
 import { useAuth } from "@/context/AuthContext";
 import { getSportById } from "@/services/sports.service";
 import { styles } from "./_styles";
+import { Colors } from "@/constants/colors";
 
 // -------------------
 // Calendrier
@@ -234,17 +235,17 @@ export default function EventDetailScreen() {
 
   if (!event) {
     return (
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <View style={{ height: 260, backgroundColor: '#E5E7EB' }} />
+      <View style={{ flex: 1, backgroundColor: Colors.fond }}>
+        <View style={{ height: 260, backgroundColor: Colors.grisClair }} />
         <View style={{ padding: 20 }}>
-          <View style={{ height: 24, width: '70%', borderRadius: 12, backgroundColor: '#E5E7EB', marginBottom: 16 }} />
-          <View style={{ height: 16, width: '40%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 20 }} />
-          <View style={{ height: 12, width: '95%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
-          <View style={{ height: 12, width: '90%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
-          <View style={{ height: 12, width: '85%', borderRadius: 10, backgroundColor: '#E5E7EB', marginBottom: 24 }} />
+          <View style={{ height: 24, width: '70%', borderRadius: 12, backgroundColor: Colors.grisClair, marginBottom: 16 }} />
+          <View style={{ height: 16, width: '40%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 20 }} />
+          <View style={{ height: 12, width: '95%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 10 }} />
+          <View style={{ height: 12, width: '90%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 10 }} />
+          <View style={{ height: 12, width: '85%', borderRadius: 10, backgroundColor: Colors.grisClair, marginBottom: 24 }} />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: '#E5E7EB' }} />
-            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: '#E5E7EB' }} />
+            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: Colors.grisClair }} />
+            <View style={{ height: 44, width: '48%', borderRadius: 14, backgroundColor: Colors.grisClair }} />
           </View>
         </View>
       </View>
@@ -268,7 +269,7 @@ export default function EventDetailScreen() {
           }}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={20} color="#0E011A" />
+          <Ionicons name="arrow-back" size={20} color={Colors.noir} />
         </TouchableOpacity>
       </View>
 
@@ -326,7 +327,7 @@ export default function EventDetailScreen() {
       <View style={styles.infoBlock}>
         {/* DATE */}
         <View style={styles.infoRow}>
-          <Ionicons name="time-outline" size={22} color="#0E011A" />
+          <Ionicons name="time-outline" size={22} color={Colors.bleu} />
           <Text style={{ ...styles.infoText, flex: 0 }}>
             Le {formatEventDate(event.eventDate)}
           </Text>
@@ -348,7 +349,7 @@ export default function EventDetailScreen() {
         {event.address.city && event.address.street ? (
           <>
             <View style={[styles.infoRow, { marginBottom: 10 }]}>
-              <Ionicons name="location-outline" size={22} color="#0E011A" />
+              <Ionicons name="location-outline" size={22} color={Colors.bleu} />
               <Text style={styles.infoText}>
                 {event.address.street}, {event.address.city}
               </Text>
@@ -365,12 +366,12 @@ export default function EventDetailScreen() {
                 onMapReady={() => setIsMapReady(true)}
                 onPress={() => openNavigation(event.address.street, event.address.city)}
               >
-                <Marker coordinate={region} pinColor="#1C52D2" />
+                <Marker coordinate={region} pinColor={Colors.rouge} />
               </MapView>
 
               {!isMapReady && (
                 <View style={styles.mapLoadingOverlay} pointerEvents="none">
-                  <ActivityIndicator size="small" color="#1C52D2" />
+                  <ActivityIndicator size="small" color={Colors.rouge} />
                 </View>
               )}
 
@@ -385,8 +386,8 @@ export default function EventDetailScreen() {
           </>
         ) : (
           <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={22} color="#0E011A" />
-            <Text style={{ ...styles.infoText, fontStyle: "italic", color: "#666" }}>
+            <Ionicons name="location-outline" size={22} color={Colors.bleu} />
+            <Text style={{ ...styles.infoText, fontStyle: "italic", color: Colors.gris }}>
               Adresse non communiquée
             </Text>
           </View>
@@ -394,18 +395,18 @@ export default function EventDetailScreen() {
 
         {/* PRIX */}
         <View style={styles.infoRow}>
-          <FontAwesome name="eur" size={22} color="#0E011A" />
+          <FontAwesome name="eur" size={22} color={Colors.bleu} />
           <Text style={styles.infoText}>{event.price ?? "Non précisé"}</Text>
         </View>
 
         <View style={styles.infoRow}>
-          <Ionicons name="fitness-outline" size={22} color="#0E011A" />
+          <Ionicons name="fitness-outline" size={22} color={Colors.bleu} />
           <Text style={styles.infoText}>{resolvedSportName || "Sport non précisé"}</Text>
         </View>
       </View>
 
       <EngagementBar
-        item={{ id: event.id, kind: "event", name: event.name, imageUrl: event.banner_url }}
+        item={{ id: event.id, kind: "event", name: event.name, imageUrl: event.banner_url || undefined }}
         initialLiked={isLoggedIn ? (event.status?.isLiked ?? false) : false}
         initialSaved={isLoggedIn ? (event.status?.isSaved ?? false) : false}
         initialParticipating={isLoggedIn ? (event.status?.isParticipating ?? false) : false}
@@ -413,11 +414,11 @@ export default function EventDetailScreen() {
         isLoggedIn={isLoggedIn}
       />
       <TouchableOpacity style={[styles.calendarButton, {
-        backgroundColor: "#28a745", justifyContent: "center", marginHorizontal: 16,
+        backgroundColor: Colors.bleu, justifyContent: "center", marginHorizontal: 16,
         marginTop: 20,
         paddingVertical: 16,
         paddingHorizontal: 12,
-        borderRadius: 12
+        borderRadius: 999
       }]}
         onPress={async () => {
           const tags = ["iziclub", "sport", event.type?.toLowerCase() || "event", event.address.city?.toLowerCase().replace(/\s+/g, "")]
@@ -431,7 +432,7 @@ export default function EventDetailScreen() {
             await Share.share({
               title: `Regarde cet événement : ${event.name}`,
               message: shareText,
-              url: event.coverImagePath,
+              url: event.coverImagePath || undefined,
             });
           } catch (error) {
             console.error("Erreur partage natif :", error);

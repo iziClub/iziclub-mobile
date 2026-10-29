@@ -6,7 +6,7 @@ import { Event } from "@/types/event";
 import EmptyEvents from "./emptyEvent";
 import { EventSearchItem } from "../search/types";
 
-export default function EventSection({events}: {events: EventSearchItem[]}) {
+export default function EventSection({events}: {events: any[]}) {
     const router = useRouter();
     console.info("Events reçus dans EventSection:", events);
     return (<View style={styles.sectionContainer}>
@@ -22,7 +22,7 @@ export default function EventSection({events}: {events: EventSearchItem[]}) {
                   <Card
                     title={item.name}
                     banner={item.coverImagePath ?? "https://via.placeholder.com/300x150"}
-                    address={`${item.street}, ${item.city}`}
+                    address={`${item.address?.street || item.street || ''}, ${item.address?.city || item.city || ''}`}
                     distanceInKm={item.distanceInKm}
                     tags={[item.type]}
                     type="event"

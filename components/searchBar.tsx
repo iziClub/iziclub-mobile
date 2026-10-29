@@ -1,5 +1,6 @@
 import React from "react";
 import { TextInput, View } from "react-native";
+import { Colors } from "@/constants/colors";
 
 interface SearchbarProps {
   value: string;
@@ -13,11 +14,14 @@ export default function Searchbar({ value, onChangeText }: SearchbarProps) {
         placeholder="Rechercher un club..."
         value={value}
         onChangeText={onChangeText}
-        placeholderTextColor={"#818181ff"}
+        placeholderTextColor={Colors.gris}
         style={{
-          backgroundColor: "#f1f1f1",
+          backgroundColor: Colors.blanc,
           padding: 12,
-          borderRadius: 8,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: Colors.grisClair,
+          color: Colors.noir,
         }}
       />
     </View>

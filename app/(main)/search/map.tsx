@@ -5,6 +5,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocation } from '@/context/LocationContext';
 import { useSearch } from '../../../components/search/useSearch';
+import { Colors } from '@/constants/colors';
 
 const DEFAULT_REGION: Region = {
   latitude: 48.692,
@@ -154,7 +155,7 @@ export default function MapScreen() {
             }}
           >
             <View style={styles.markerShadowContainer}>
-              <View style={[styles.customMarkerVisual, { backgroundColor: '#4A78FF' }]}>
+              <View style={[styles.customMarkerVisual, { backgroundColor: Colors.bleu }]}>
                 <Ionicons name="people-circle-outline" size={25} color="white" />
               </View>
             </View>
@@ -163,15 +164,15 @@ export default function MapScreen() {
               <View style={styles.calloutWrapper}>
                 <View style={styles.calloutCard}>
                   <Text style={styles.clubTitle} numberOfLines={1}>{club.name}</Text>
-                  <View style={styles.tagBadgeClub}><Text style={styles.tagText}>Club</Text></View>
+                  <View style={styles.tagBadgeClub}><Text style={styles.tagTextClub}>Club</Text></View>
                   <View style={styles.divider} />
                   <View style={styles.addressRow}>
-                    <Ionicons name="location" size={12} color="#4A78FF" />
+                    <Ionicons name="location" size={12} color={Colors.bleu} />
                     <Text style={styles.addressText} numberOfLines={1}>
                       {club.city} {club.street ? `- ${club.street}` : ''}
                     </Text>
                   </View>
-                  <Text style={[styles.moreInfo, { color: '#4A78FF' }]}>Voir la fiche →</Text>
+                  <Text style={[styles.moreInfo, { color: Colors.bleu }]}>Voir la fiche →</Text>
                 </View>
                 <View style={styles.arrow} />
               </View>
@@ -189,7 +190,7 @@ export default function MapScreen() {
             }}
           >
             <View style={styles.markerShadowContainer}>
-              <View style={[styles.customMarkerVisual, { backgroundColor: '#FF6B6B', borderRadius: 8 }]}>
+              <View style={[styles.customMarkerVisual, { backgroundColor: Colors.rouge, borderRadius: 8 }]}>
                 <Ionicons name="medal-outline" size={25} color="white" />
               </View>
             </View>
@@ -198,15 +199,15 @@ export default function MapScreen() {
               <View style={styles.calloutWrapper}>
                 <View style={styles.calloutCard}>
                   <Text style={styles.clubTitle} numberOfLines={1}>{event.name}</Text>
-                  <View style={styles.tagBadgeEvent}><Text style={styles.tagText}>Événement</Text></View>
+                  <View style={styles.tagBadgeEvent}><Text style={styles.tagTextEvent}>Événement</Text></View>
                   <View style={styles.divider} />
                   <View style={styles.addressRow}>
-                    <Ionicons name="location" size={12} color="#FF6B6B" />
+                    <Ionicons name="location" size={12} color={Colors.rouge} />
                     <Text style={styles.addressText} numberOfLines={1}>
                       {event.city} {event.street ? `- ${event.street}` : ''}
                     </Text>
                   </View>
-                  <Text style={[styles.moreInfo, { color: '#FF6B6B' }]}>Voir l'événement →</Text>
+                  <Text style={[styles.moreInfo, { color: Colors.rouge }]}>Voir l'événement →</Text>
                 </View>
                 <View style={styles.arrow} />
               </View>
@@ -218,7 +219,7 @@ export default function MapScreen() {
       {/* Indicateur pendant l'initialisation native de la carte */}
       {!mapReady && (
         <View style={styles.mapLoadingOverlay} pointerEvents="none">
-          <ActivityIndicator size="large" color="#4A78FF" />
+          <ActivityIndicator size="large" color={Colors.bleu} />
         </View>
       )}
 
@@ -235,7 +236,7 @@ export default function MapScreen() {
             <Ionicons
               name={loading ? "hourglass-outline" : "refresh"}
               size={18}
-              color="#4A78FF"
+              color={Colors.bleu}
             />
             <Text style={styles.searchHereText}>
               {loading ? "Chargement..." : "Rechercher dans cette zone"}
@@ -256,7 +257,7 @@ export default function MapScreen() {
             <Ionicons 
               name={showClubs ? "people-circle" : "people-circle-outline"} 
               size={16} 
-              color={showClubs ? "white" : "#8E8E93"} 
+              color={showClubs ? Colors.blanc : Colors.gris} 
             />
             <Text style={[styles.filterText, showClubs ? styles.filterTextActive : styles.filterTextInactive]}>
               Clubs
@@ -274,7 +275,7 @@ export default function MapScreen() {
             <Ionicons 
               name={showEvents ? "medal" : "medal-outline"} 
               size={16} 
-              color={showEvents ? "white" : "#8E8E93"} 
+              color={showEvents ? Colors.blanc : Colors.gris} 
             />
             <Text style={[styles.filterText, showEvents ? styles.filterTextActive : styles.filterTextInactive]}>
               Événements
@@ -289,7 +290,7 @@ export default function MapScreen() {
         onPress={handleRequestLocation}
         activeOpacity={0.8}
       >
-        <Ionicons name="locate-outline" size={22} color="#4A78FF" />
+        <Ionicons name="locate-outline" size={22} color={Colors.bleu} />
       </TouchableOpacity>
 
       {/* Bouton Retour Liste */}
@@ -298,7 +299,7 @@ export default function MapScreen() {
         onPress={() => router.back()}
         activeOpacity={0.8}
       >
-        <Ionicons name="list" size={24} color="black" />
+        <Ionicons name="list" size={24} color={Colors.noir} />
         <Text style={styles.fabText}>Liste</Text>
       </TouchableOpacity>
     </View>
@@ -306,14 +307,14 @@ export default function MapScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#E5E7EB' },
+  container: { flex: 1, backgroundColor: Colors.fond },
   map: { ...StyleSheet.absoluteFill },
 
   mapLoadingOverlay: {
     ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.fond,
   },
 
   // Nouveau conteneur pour empiler proprement les éléments du haut sans chevauchement
@@ -323,48 +324,52 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    gap: 12, // Crée un espace propre entre le bouton refresh et les filtres
+    gap: 12,
   },
 
   searchHereBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     paddingVertical: 11,
     paddingHorizontal: 20,
-    borderRadius: 25,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
+    borderRadius: 999,
+    elevation: 4,
+    shadowColor: Colors.noir,
+    shadowOpacity: 0.1,
     shadowRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
-  searchHereText: { marginLeft: 8, color: '#4A78FF', fontWeight: '600', fontSize: 13 },
+  searchHereText: { marginLeft: 8, color: Colors.bleu, fontWeight: '600', fontSize: 13 },
 
   // Styles de la barre de filtres
   filterContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: Colors.blanc,
     padding: 4,
-    borderRadius: 20,
+    borderRadius: 999,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: Colors.noir,
     shadowOpacity: 0.1,
     shadowRadius: 4,
     gap: 6,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 16,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    borderRadius: 999,
     gap: 6,
   },
   filterButtonClubActive: {
-    backgroundColor: '#4A78FF',
+    backgroundColor: Colors.bleu,
   },
   filterButtonEventActive: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: Colors.rouge,
   },
   filterButtonInactive: {
     backgroundColor: 'transparent',
@@ -374,10 +379,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   filterTextActive: {
-    color: 'white',
+    color: Colors.blanc,
   },
   filterTextInactive: {
-    color: '#8E8E93',
+    color: Colors.gris,
   },
 
   markerShadowContainer: {
@@ -387,7 +392,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -397,7 +402,7 @@ const styles = StyleSheet.create({
     padding: 0,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: 'white',
+    borderColor: Colors.blanc,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -408,41 +413,44 @@ const styles = StyleSheet.create({
     width: 190,
   },
   calloutCard: {
-    backgroundColor: 'white',
-    borderRadius: 14,
+    backgroundColor: Colors.blanc,
+    borderRadius: 16,
     padding: 12,
     width: '100%',
-    shadowColor: "#000",
+    shadowColor: Colors.noir,
     shadowOpacity: 0.12,
     shadowRadius: 6,
     elevation: 4,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
-  clubTitle: { fontWeight: '700', fontSize: 14, color: '#1C1C1E', marginBottom: 4 },
-  divider: { height: 1, backgroundColor: '#F2F2F7', marginBottom: 8, marginTop: 6 },
+  clubTitle: { fontWeight: '700', fontSize: 14, color: Colors.noir, marginBottom: 4 },
+  divider: { height: 1, backgroundColor: Colors.grisClair, marginBottom: 8, marginTop: 6 },
   addressRow: { flexDirection: 'row', alignItems: 'center' },
-  addressText: { fontSize: 11, color: '#8E8E93', marginLeft: 4, textTransform: 'capitalize', flex: 1 },
+  addressText: { fontSize: 11, color: Colors.gris, marginLeft: 4, textTransform: 'capitalize', flex: 1 },
   moreInfo: { fontSize: 11, fontWeight: '700', marginTop: 8, textAlign: 'right' },
   
   tagBadgeClub: {
     alignSelf: 'flex-start',
-    backgroundColor: '#E8EFFF',
-    paddingHorizontal: 6,
+    backgroundColor: Colors.bleuClair,
+    paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: 999,
   },
   tagBadgeEvent: {
     alignSelf: 'flex-start',
-    backgroundColor: '#FFEBEB',
-    paddingHorizontal: 6,
+    backgroundColor: '#FCE8E9',
+    paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: 999,
   },
-  tagText: { fontSize: 9, fontWeight: '700', color: '#3A3A3C' },
+  tagTextClub: { fontSize: 9, fontWeight: '700', color: Colors.bleu },
+  tagTextEvent: { fontSize: 9, fontWeight: '700', color: Colors.rouge },
   
   arrow: {
     width: 0, height: 0, backgroundColor: 'transparent', borderStyle: 'solid',
     borderLeftWidth: 8, borderRightWidth: 8, borderTopWidth: 9,
-    borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: 'white',
+    borderLeftColor: 'transparent', borderRightColor: 'transparent', borderTopColor: Colors.blanc,
     marginTop: -1,
   },
 
@@ -450,13 +458,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 95,
     right: 20,
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     padding: 12,
     borderRadius: 999,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
+    elevation: 4,
+    shadowColor: Colors.noir,
+    shadowOpacity: 0.12,
     shadowRadius: 6,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   fabList: {
     position: 'absolute',
@@ -464,14 +474,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     paddingVertical: 12,
     paddingHorizontal: 25,
-    borderRadius: 30,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
+    borderRadius: 999,
+    elevation: 4,
+    shadowColor: Colors.noir,
+    shadowOpacity: 0.12,
     shadowRadius: 6,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
-  fabText: { marginLeft: 8, fontWeight: '700', fontSize: 15 },
+  fabText: { marginLeft: 8, fontWeight: '700', fontSize: 15, color: Colors.noir },
 });

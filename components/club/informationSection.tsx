@@ -4,6 +4,7 @@ import Card from "../card";
 import TeamCard from "../teamCard";
 import { Club } from "@/types/club";
 import { useRouter } from "expo-router";
+import { Colors } from "@/constants/colors";
 
 interface Props {
     club: Club;
@@ -26,7 +27,7 @@ const getCategorySubtitle = (gender: string | null, minAge: number | null, maxAg
 };
 
 export default function InformationSection({ club, onSeeMore }: Props) {
-    const defaultColors = ["#D42E2F", "#D85D12", "#F9BC12", "#007AFF", "#28A745", "#6F42C1"];
+    const defaultColors = [Colors.vert, Colors.bleu, Colors.rouge, Colors.vertClair, Colors.bleuClair];
     const router = useRouter();
     
     // On vérifie si la bannière existe
@@ -142,16 +143,15 @@ const styles = StyleSheet.create({
     banner: {
         width: "100%",
         height: 180,
-        borderRadius: 12,
+        borderRadius: 16,
         marginBottom: 16,
     },
     infoBlock: {
         marginBottom: 24,
     },
-    // Nouveau style si pas de bannière : ajoute une légère bordure basse discrète pour structurer
     infoBlockNoBanner: {
         borderBottomWidth: 1,
-        borderBottomColor: "#F0F0F0",
+        borderBottomColor: Colors.grisClair,
         paddingBottom: 20,
         marginBottom: 28,
     },
@@ -159,17 +159,17 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "700",
         marginBottom: 4,
-        color: "#1A1A1A",
+        color: Colors.noir,
     },
-    // Si pas de bannière, on grossit un poil le titre pour marquer l'identité visuelle du club
     titleNoBanner: {
         fontSize: 28,
         fontWeight: "800",
         letterSpacing: -0.5,
+        color: Colors.noir,
     },
     subtitle: {
         fontSize: 16,
-        color: "#666",
+        color: Colors.gris,
         fontStyle: "italic",
         marginBottom: 8,
     },
@@ -181,19 +181,19 @@ const styles = StyleSheet.create({
     },
     seeMore: {
         fontSize: 14,
-        color: "#007AFF",
+        color: Colors.bleu,
         fontWeight: "600",
     },
     description: {
         fontSize: 15,
-        color: "#4A4A4A",
-        lineHeight: 22, // Améliore la lisibilité du texte
+        color: Colors.noir,
+        lineHeight: 22,
         marginTop: 4,
     },
     bigTitle: {
         fontSize: 20,
         fontWeight: "700",
-        color: "#1A1A1A",
+        color: Colors.noir,
         marginBottom: 14,
     },
     teamContainer: {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     photo: {
         width: "49%",
         height: 150,
-        borderRadius: 12,
+        borderRadius: 16,
         marginBottom: 12,
     },
 });

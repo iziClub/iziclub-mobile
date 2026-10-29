@@ -8,6 +8,7 @@ import EventsTab from "./EventsTabs";
 import FilterBottomSheet from "../../../components/search/FilterModal";
 import { useSearch } from "../../../components/search/useSearch";
 import { useLocalSearchParams } from 'expo-router';
+import { Colors } from "@/constants/colors";
 
 type SearchTab = "Clubs" | "Événements";
 
@@ -61,7 +62,7 @@ export default function SearchScreen() {
   const hasActiveFilters = radius !== 30 || !!sportQuery.trim() || useRadius || !!eventType;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <View style={{ flex: 1, backgroundColor: Colors.fond }}>
       
       {/* HEADER DE RECHERCHE */}
       <View style={styles.headerArea}>
@@ -70,15 +71,15 @@ export default function SearchScreen() {
             placeholder="Rechercher"
             value={query}
             onChangeText={setQuery}
-            placeholderTextColor="#999"
-            style={{ flex: 1, fontSize: 16 }}
+            placeholderTextColor={Colors.gris}
+            style={{ flex: 1, fontSize: 16, color: Colors.noir }}
           />
           {query.length > 0 ? (
             <TouchableOpacity onPress={() => setQuery("")}>
-               <Ionicons name="close-circle" size={20} color="#CCC" />
+               <Ionicons name="close-circle" size={20} color={Colors.gris} />
             </TouchableOpacity>
           ) : (
-            <Ionicons name="search" size={20} color="#999" />
+            <Ionicons name="search" size={20} color={Colors.gris} />
           )}
         </View>
       </View>
@@ -119,7 +120,7 @@ export default function SearchScreen() {
           style={styles.fabWhite} 
           onPress={() => setShowFilters(true)}
         >
-          <Ionicons name="options-outline" size={20} color="black" />
+          <Ionicons name="options-outline" size={20} color={Colors.noir} />
           <Text style={styles.fabTextBlack}>Filtres</Text>
           {hasActiveFilters && <View style={styles.badge} />}
         </TouchableOpacity>
@@ -130,7 +131,7 @@ export default function SearchScreen() {
           onPress={() => router.push('/(main)/search/map')}
         >
           <Text style={styles.fabTextWhite}>Carte</Text>
-          <Ionicons name="map-outline" size={20} color="white" />
+          <Ionicons name="map-outline" size={20} color={Colors.blanc} />
         </TouchableOpacity>
       </View>
 
@@ -163,12 +164,14 @@ const styles = StyleSheet.create({
   headerArea: { 
     paddingHorizontal: 20, 
     paddingTop: 20, 
-    paddingBottom: 15 
+    paddingBottom: 15,
+    backgroundColor: Colors.fond,
   },
   tabBar: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#EEE',
+    borderBottomColor: Colors.grisClair,
+    backgroundColor: Colors.fond,
   },
   tabItem: {
     flex: 1,
@@ -178,83 +181,86 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontWeight: 'bold',
     fontSize: 15,
-    color: '#999',
+    color: Colors.gris,
   },
   tabLabelActive: {
-    color: 'black',
+    color: Colors.noir,
   },
   tabIndicator: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 2,
-    backgroundColor: 'black',
+    height: 2.5,
+    backgroundColor: Colors.bleu,
   },
   searchBar: {
     flexDirection: 'row',
-    backgroundColor: '#F3F3F3',
+    backgroundColor: Colors.blanc,
     paddingHorizontal: 15,
     height: 48,
-    borderRadius: 15,
-    alignItems: 'center'
+    borderRadius: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   fabContainer: {
     position: 'absolute',
-    bottom: 30, // Un peu plus haut que le bord
+    bottom: 30,
     flexDirection: 'row',
     alignSelf: 'center',
     gap: 12,
-    zIndex: 0, // Pour être sûr qu'il passe au dessus des listes
+    zIndex: 0,
   },
   fabWhite: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     paddingVertical: 12,
     paddingHorizontal: 22,
-    borderRadius: 30,
-    // Ombre pour Android
-    elevation: 8,
-    // Ombre pour iOS
-    shadowColor: '#000',
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
+    elevation: 4,
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   fabBlue: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4A78FF',
+    backgroundColor: Colors.bleu,
     paddingVertical: 12,
     paddingHorizontal: 22,
-    borderRadius: 30,
-    elevation: 8,
-    shadowColor: '#4A78FF',
+    borderRadius: 999,
+    elevation: 4,
+    shadowColor: Colors.bleu,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
   },
   fabTextBlack: { 
     marginLeft: 8, 
     fontWeight: 'bold', 
-    fontSize: 16 
+    fontSize: 15,
+    color: Colors.noir,
   },
   fabTextWhite: { 
     marginRight: 8, 
     fontWeight: 'bold', 
-    fontSize: 16, 
-    color: 'white' 
+    fontSize: 15, 
+    color: Colors.blanc,
   },
   badge: {
     position: 'absolute',
     top: -2,
     right: -2,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: '#FF4B4B',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.rouge,
     borderWidth: 2,
-    borderColor: 'white'
+    borderColor: Colors.blanc,
   }
 });

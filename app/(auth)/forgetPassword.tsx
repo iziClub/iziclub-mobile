@@ -11,6 +11,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { Colors } from "@/constants/colors";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -57,7 +58,7 @@ export default function ForgotPassword() {
         <TouchableOpacity
           style={[
             styles.button,
-            { backgroundColor: isValidEmail(email) ? "#0E011A" : "#ccc" },
+            { backgroundColor: isValidEmail(email) ? Colors.noir : Colors.grisClair },
           ]}
           disabled={!isValidEmail(email)}
           onPress={handleResetPassword}
@@ -80,7 +81,7 @@ export default function ForgotPassword() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.blanc,
     paddingBottom: 20,
   },
   image: {
@@ -93,10 +94,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     paddingLeft: 20,
+    color: Colors.noir,
   },
   subtitle: {
     fontSize: 14,
-    color: "#999",
+    color: Colors.gris,
     marginBottom: 20,
     paddingHorizontal: 20,
   },
@@ -106,34 +108,37 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 20,
     marginBottom: 8,
+    color: Colors.gris,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderColor: Colors.grisClair,
+    borderRadius: 12,
     padding: 12,
     width: "90%",
     marginBottom: 20,
     alignSelf: "center",
+    color: Colors.noir,
+    backgroundColor: Colors.blanc,
   },
   button: {
-    padding: 20,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 999,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
   },
   buttonText: {
-    color: "white",
+    color: Colors.blanc,
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 16,
   },
   forgotPassword: {
-    color: "#B8B4B1",
-    textAlign: "right",
+    color: Colors.bleu,
+    textAlign: "center",
+    marginTop: 8,
     marginBottom: 12,
     textDecorationLine: "underline",
-    paddingRight: 20,
   },
 });

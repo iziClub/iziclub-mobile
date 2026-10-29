@@ -16,6 +16,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { registerUser } from "../../services/auth";
+import { Colors } from "@/constants/colors";
 
 export default function PasswordCreationScreen() {
   const { login } = useAuth();
@@ -127,11 +128,11 @@ export default function PasswordCreationScreen() {
               <View key={idx} style={styles.ruleItem}>
                 <Checkbox
                   value={valid}
-                  color={valid ? "#2E7D32" : undefined}
+                  color={valid ? Colors.vert : undefined}
                   style={{ marginRight: 10, width: 18, height: 18 }}
                   disabled
                 />
-                <Text style={{ color: valid ? "#2E7D32" : "#999", fontSize: 14 }}>
+                <Text style={{ color: valid ? Colors.vert : Colors.gris, fontSize: 14 }}>
                   {rule.label}
                 </Text>
               </View>
@@ -142,13 +143,13 @@ export default function PasswordCreationScreen() {
         <TouchableOpacity
           style={[
             styles.button,
-            { backgroundColor: allValid && !isSubmitting ? "#0E011A" : "#ccc" },
+            { backgroundColor: allValid && !isSubmitting ? Colors.noir : Colors.grisClair },
           ]}
           disabled={!allValid || isSubmitting}
           onPress={handleRegister}
         >
           {isSubmitting ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={Colors.blanc} />
           ) : (
             <Text style={styles.buttonText}>Créer un compte</Text>
           )}
@@ -165,7 +166,7 @@ export default function PasswordCreationScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.blanc,
     paddingBottom: 40,
   },
   image: {
@@ -178,6 +179,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     paddingLeft: 20,
+    color: Colors.noir,
   },
   label: {
     fontSize: 16,
@@ -185,23 +187,26 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 20,
     marginBottom: 8,
+    color: Colors.gris,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderColor: Colors.grisClair,
+    borderRadius: 12,
     padding: 12,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
+    color: Colors.noir,
+    backgroundColor: Colors.blanc,
   },
   rulesContainer: {
     width: "90%",
     alignSelf: "center",
     marginBottom: 30,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: Colors.fond,
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 12,
   },
   ruleItem: {
     flexDirection: "row",
@@ -209,17 +214,17 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   button: {
-    backgroundColor: "#0E011A",
-    padding: 20,
-    borderRadius: 8,
+    backgroundColor: Colors.noir,
+    padding: 16,
+    borderRadius: 999,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
-    height: 60,
+    height: 56,
     justifyContent: "center"
   },
   buttonText: {
-    color: "white",
+    color: Colors.blanc,
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 16,
@@ -229,8 +234,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "90%",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderColor: Colors.grisClair,
+    borderRadius: 12,
     paddingRight: 10,
     marginBottom: 20,
     alignSelf: "center",
@@ -239,7 +244,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   forgotPassword: {
-    color: "#B8B4B1",
+    color: Colors.bleu,
     textAlign: "center",
     marginTop: 10,
     marginBottom: 12,
@@ -255,7 +260,7 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: "#eee",
+    backgroundColor: Colors.grisClair,
   },
   separatorText: {
     marginHorizontal: 10,

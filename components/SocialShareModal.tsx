@@ -17,6 +17,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import * as Clipboard from "expo-clipboard";
+import { Colors } from "@/constants/colors";
 
 // ─────────────────────────────────────────────
 // Types
@@ -399,7 +400,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
             onPress={onClose}
             hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
           >
-            <Ionicons name="close" size={22} color="#555" />
+            <Ionicons name="close" size={22} color={Colors.noir} />
           </TouchableOpacity>
         </View>
 
@@ -440,7 +441,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
 
         {/* Info presse-papiers */}
         <View style={styles.infoBox}>
-          <Ionicons name="information-circle-outline" size={16} color="#1C52D2" />
+          <Ionicons name="information-circle-outline" size={16} color={Colors.bleu} />
           <Text style={styles.infoText}>
             Le message sera copié dans ton presse-papiers pour que tu puisses le coller facilement.
           </Text>
@@ -458,15 +459,15 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(22,19,22,0.5)",
   },
   sheet: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 26,
-    borderTopRightRadius: 26,
+    backgroundColor: Colors.blanc,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     paddingHorizontal: 20,
     paddingTop: 12,
-    shadowColor: "#000",
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -475,7 +476,7 @@ const styles = StyleSheet.create({
   handle: {
     width: 38,
     height: 4,
-    backgroundColor: "#DDD",
+    backgroundColor: Colors.grisClair,
     borderRadius: 2,
     alignSelf: "center",
     marginBottom: 18,
@@ -490,8 +491,8 @@ const styles = StyleSheet.create({
   previewImage: {
     width: 64,
     height: 64,
-    borderRadius: 12,
-    backgroundColor: "#F0F0F0",
+    borderRadius: 14,
+    backgroundColor: Colors.fond,
     flexShrink: 0,
   },
   previewPlaceholder: {
@@ -505,24 +506,24 @@ const styles = StyleSheet.create({
   previewType: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#1C52D2",
+    color: Colors.bleu,
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   previewName: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#0E011A",
+    color: Colors.noir,
     lineHeight: 20,
   },
   previewMeta: {
     fontSize: 12,
-    color: "#777",
+    color: Colors.gris,
     marginTop: 2,
   },
   divider: {
     height: 1,
-    backgroundColor: "#F0F0F0",
+    backgroundColor: Colors.grisClair,
     marginBottom: 14,
   },
   // ── Hashtags ──
@@ -533,23 +534,23 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   hashtagPill: {
-    backgroundColor: "#F0F4FF",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+    backgroundColor: Colors.bleuClair,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#D6E0FF",
+    borderColor: Colors.bleu,
   },
   hashtagText: {
     fontSize: 12,
-    color: "#1C52D2",
+    color: Colors.bleu,
     fontWeight: "600",
   },
   // ── Social ──
   sectionTitle: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#AAA",
+    color: Colors.gris,
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 14,
@@ -568,10 +569,10 @@ const styles = StyleSheet.create({
   socialIcon: {
     width: 58,
     height: 58,
-    borderRadius: 18,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.18,
     shadowRadius: 5,
@@ -580,19 +581,19 @@ const styles = StyleSheet.create({
   socialLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#222",
+    color: Colors.noir,
   },
   socialSub: {
     fontSize: 10,
-    color: "#999",
+    color: Colors.gris,
     fontWeight: "500",
   },
   // ── Info box ──
   infoBox: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: "#F0F4FF",
-    borderRadius: 10,
+    backgroundColor: Colors.bleuClair,
+    borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 8,
@@ -600,7 +601,7 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 12,
-    color: "#444",
+    color: Colors.noir,
     lineHeight: 17,
   },
 });

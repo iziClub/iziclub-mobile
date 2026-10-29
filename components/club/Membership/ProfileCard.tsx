@@ -6,6 +6,7 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { styles } from "./styles";
+import { Colors } from "@/constants/colors";
 
 type Props = {
   user: any;
@@ -19,7 +20,7 @@ export default function ProfileCard({ user }: Props) {
         <MaterialIcons
           name="person"
           size={20}
-          color="#0E011A"
+          color={Colors.noir}
         />
         <Text style={styles.cardTitle}>
           Tes informations (Profil)

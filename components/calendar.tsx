@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { Calendar, CalendarEvent } from "react-native-big-calendar";
+import { Colors } from "@/constants/colors";
 
 const { width } = Dimensions.get("window");
 
@@ -16,7 +17,7 @@ const DAYS_MAP: Record<string, number> = {
 };
 
 // Couleurs par défaut au cas où la catégorie n'a pas de couleur définie
-const DEFAULT_COLORS = ["#D42E2F", "#D85D12", "#F9BC12", "#007AFF", "#28A745", "#6F42C1"];
+const DEFAULT_COLORS = [Colors.vert, Colors.bleu, Colors.rouge, Colors.vertClair, Colors.bleuClair];
 
 interface Session {
     id: string;
@@ -121,13 +122,13 @@ export default function ClubCalendar({ sessions }: Props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#FFF",
+        backgroundColor: Colors.fond,
     },
     title: {
         fontSize: 22,
         fontWeight: "700",
         paddingHorizontal: 16,
         paddingVertical: 16,
-        color: "#1C1C1E",
+        color: Colors.noir,
     },
 });

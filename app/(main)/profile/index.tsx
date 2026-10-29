@@ -17,6 +17,7 @@ import { getLikedEvents, getParticipatingEvents } from '@/services/events.servic
 import { getLikedClubs, getSavedClubs, getMemberClubs } from '@/services/clubs.service';
 import { getAllSubmissions } from '@/services/forms.service';
 import { getNotifications } from '@/services/notifications.service';
+import { Colors } from '@/constants/colors';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -156,7 +157,7 @@ export default function ProfileScreen() {
   };
 
   // Grille incluant désormais la boîte de réception à la place idéale
-  type SavedCategoryPath = "/notifications" | "/profile/likedItems" | "/profile/savedItems" | "/profile/myClubs" | "/profile/upcomingEvents";
+  type SavedCategoryPath = "/notifications" | "/(main)/profile/likedItems" | "/(main)/profile/savedItems" | "/(main)/profile/myClubs" | "/(main)/profile/upcomingEvents";
   type SavedCategory = {
     id: string;
     title: string;
@@ -171,28 +172,28 @@ export default function ProfileScreen() {
       id: 'messages',
       title: 'Boîte de réception',
       icon: 'mail-unread',
-      color: '#FFB900',
+      color: Colors.bleu,
       path: "/notifications",
-      badge: stats.notificationsCount // 💡 Badge dynamique basé sur le nombre de notifications non lues
+      badge: stats.notificationsCount
     },
     {
       id: '1',
       title: 'Elements likés',
       icon: 'heart',
-      color: '#FF5A5F',
-      path: "/profile/likedItems"
+      color: Colors.rouge,
+      path: "/(main)/profile/likedItems"
     },
-    { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: '#4A78FF', path: "/profile/savedItems" },
-    { id: '4', title: 'Mes clubs', icon: 'people', color: '#0CA789', path: "/profile/myClubs", badge: stats.affiliatedClubsCount > 0 ? stats.affiliatedClubsCount : undefined },
-    { id: '3', title: 'Mes participations', icon: 'calendar', color: '#6D5AD3', path: "/profile/upcomingEvents" },
+    { id: '2', title: 'Clubs enregistrés', icon: 'bookmark', color: Colors.vert, path: "/(main)/profile/savedItems" },
+    { id: '4', title: 'Mes clubs', icon: 'people', color: Colors.bleu, path: "/(main)/profile/myClubs", badge: stats.affiliatedClubsCount > 0 ? stats.affiliatedClubsCount : undefined },
+    { id: '3', title: 'Mes participations', icon: 'calendar', color: Colors.rouge, path: "/(main)/profile/upcomingEvents" },
   ];
   // --- GUEST VIEW ---
   if (!user) {
     const guestFeatures = [
-      { icon: 'heart', color: '#FF5A5F', label: 'Retrouve tes clubs et événements favoris' },
-      { icon: 'bookmark', color: '#4A78FF', label: 'Enregistre les clubs qui t’intéressent' },
-      { icon: 'document-text', color: '#0CA789', label: 'Gère tes dossiers d’adhésion et tes pass' },
-      { icon: 'notifications', color: '#6D5AD3', label: 'Reçois les notifications de tes clubs' },
+      { icon: 'heart', color: Colors.rouge, label: 'Retrouve tes clubs et événements favoris' },
+      { icon: 'bookmark', color: Colors.vert, label: 'Enregistre les clubs qui t’intéressent' },
+      { icon: 'document-text', color: Colors.bleu, label: 'Gère tes dossiers d’adhésion et tes pass' },
+      { icon: 'notifications', color: Colors.rouge, label: 'Reçois les notifications de tes clubs' },
     ] as const;
 
     return (
@@ -202,13 +203,13 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <LinearGradient
-          colors={['#0E011A', '#241547']}
+          colors={[Colors.noir, '#2A252A']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.guestHero}
         >
           <View style={styles.guestIconCircle}>
-            <Ionicons name="person" size={48} color="#4A78FF" />
+            <Ionicons name="person" size={48} color={Colors.bleu} />
           </View>
           <Text style={styles.guestTitle}>Rejoins l'aventure !</Text>
           <Text style={styles.guestSubtitle}>
@@ -223,7 +224,7 @@ export default function ProfileScreen() {
                 <Ionicons name={feature.icon as any} size={20} color={feature.color} />
               </View>
               <Text style={styles.guestFeatureLabel}>{feature.label}</Text>
-              <Ionicons name="lock-closed" size={16} color="#C7C7CC" />
+              <Ionicons name="lock-closed" size={16} color={Colors.gris} />
             </View>
           ))}
         </View>
@@ -299,8 +300,8 @@ export default function ProfileScreen() {
             onPress={() => router.push("/profile/inscriptions")}
           >
             <View style={styles.inscriptionsLeft}>
-              <View style={[styles.iconCircle, { backgroundColor: '#4A78FF15', marginBottom: 0 }]}>
-                <Ionicons name="document-text-outline" size={22} color="#4A78FF" />
+              <View style={[styles.iconCircle, { backgroundColor: Colors.bleuClair, marginBottom: 0 }]}>
+                <Ionicons name="document-text-outline" size={22} color={Colors.bleu} />
               </View>
               <View style={styles.inscriptionsTextContainer}>
                 <Text style={styles.inscriptionsCardTitle}>Suivre mes dossiers</Text>
@@ -309,46 +310,18 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.badgeAlert}>
               <Text style={styles.badgeAlertText}>{stats.dossiersCount}</Text>
-              <Ionicons name="chevron-forward" size={16} color="#BBB" style={{ marginLeft: 4 }} />
+              <Ionicons name="chevron-forward" size={16} color={Colors.gris} style={{ marginLeft: 4 }} />
             </View>
           </TouchableOpacity>
         </View>
-
-        {/* 4. DOCUMENTS */}
-        {/* <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>Mes documents</Text>
-            <TouchableOpacity style={styles.addButton} onPress={() => bottomSheetRef.current?.expand()}>
-              <Ionicons name="add-circle" size={20} color="#4A78FF" />
-              <Text style={styles.addButtonText}>Ajouter</Text>
-            </TouchableOpacity>
-          </View>
-          
-          {myDocuments.map((doc) => (
-            <View key={doc.id} style={styles.docContainer}>
-              <TouchableOpacity style={styles.docRow} onPress={() => openDoc(doc.title, doc.type)}>
-                <Ionicons 
-                  name={doc.type === 'qr' ? "qr-code-outline" : "document-attach-outline"} 
-                  size={22} 
-                  color={doc.type === 'qr' ? "#444" : "#4A78FF"} 
-                />
-                <Text style={styles.docText} numberOfLines={1}>{doc.title}</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={() => deleteDocument(doc.id)} style={styles.deleteIconButton}>
-                <Ionicons name="trash-outline" size={18} color="#FF5A5F" />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View> */}
 
         {/* 5. DÉCONNEXION */}
         <View style={styles.navigationMenu}>
           <Text style={styles.navHeader}>Compte & Sécurité</Text>
           <TouchableOpacity onPress={logout} style={styles.logoutButton}>
             <View style={styles.navButtonContent}>
-              <Ionicons name="log-out-outline" size={20} color="#FF5A5F" />
-              <Text style={[styles.navButtonText, { color: '#FF5A5F' }]}>Déconnexion</Text>
+              <Ionicons name="log-out-outline" size={20} color={Colors.rouge} />
+              <Text style={[styles.navButtonText, { color: Colors.rouge }]}>Déconnexion</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -361,23 +334,23 @@ export default function ProfileScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{selectedDoc?.title}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#333" />
+                <Ionicons name="close" size={24} color={Colors.noir} />
               </TouchableOpacity>
             </View>
             {selectedDoc?.type === 'qr' ? (
               <View style={styles.qrContainer}>
-                <Ionicons name="qr-code" size={200} color="black" />
+                <Ionicons name="qr-code" size={200} color={Colors.noir} />
                 <Text style={styles.qrInstructions}>Présentez ce code à l'accueil du club</Text>
               </View>
             ) : (
               <View style={styles.docPlaceholder}>
-                <Ionicons name="document-text" size={80} color="#4A78FF" />
+                <Ionicons name="document-text" size={80} color={Colors.bleu} />
                 <Text style={styles.docInfo}>Certificat n°88291-TC</Text>
                 <Text style={styles.docDate}>Valide jusqu'au 01/01/2027</Text>
               </View>
             )}
             <TouchableOpacity style={styles.downloadButton}>
-              <Ionicons name="download-outline" size={20} color="white" />
+              <Ionicons name="download-outline" size={20} color={Colors.blanc} />
               <Text style={styles.downloadText}>Télécharger le PDF</Text>
             </TouchableOpacity>
           </View>
@@ -391,21 +364,21 @@ export default function ProfileScreen() {
         snapPoints={snapPoints}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
-        handleIndicatorStyle={{ backgroundColor: '#EEE', width: 40 }}
+        handleIndicatorStyle={{ backgroundColor: Colors.grisClair, width: 40 }}
       >
         <BottomSheetView style={styles.sheetContent}>
           <Text style={styles.uploadTitle}>Ajouter un document</Text>
           <Text style={styles.uploadSubtitle}>Choisissez une méthode pour importer votre justificatif.</Text>
           <View style={styles.uploadOptionsRow}>
             <TouchableOpacity style={styles.uploadOption} onPress={takePhoto}>
-              <View style={[styles.optionIconCircle, { backgroundColor: '#E8F5E9' }]}>
-                <Ionicons name="camera" size={30} color="#4CAF50" />
+              <View style={[styles.optionIconCircle, { backgroundColor: Colors.vertClair }]}>
+                <Ionicons name="camera" size={30} color={Colors.vert} />
               </View>
               <Text style={styles.optionText}>Prendre une photo</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.uploadOption} onPress={pickDocument}>
-              <View style={[styles.optionIconCircle, { backgroundColor: '#E3F2FD' }]}>
-                <Ionicons name="document" size={30} color="#2196F3" />
+              <View style={[styles.optionIconCircle, { backgroundColor: Colors.bleuClair }]}>
+                <Ionicons name="document" size={30} color={Colors.bleu} />
               </View>
               <Text style={styles.optionText}>Fichier PDF</Text>
             </TouchableOpacity>
@@ -417,40 +390,42 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
+  container: { flex: 1, backgroundColor: Colors.fond },
   inscriptionsCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.blanc,
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: Colors.grisClair,
   },
   inscriptionsLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   inscriptionsTextContainer: { marginLeft: 12, flex: 1 },
-  inscriptionsCardTitle: { fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
-  inscriptionsCardSubtitle: { fontSize: 12, color: '#777', marginTop: 2 },
+  inscriptionsCardTitle: { fontSize: 15, fontWeight: '600', color: Colors.noir },
+  inscriptionsCardSubtitle: { fontSize: 12, color: Colors.gris, marginTop: 2 },
   badgeAlert: { flexDirection: 'row', alignItems: 'center' },
-  badgeAlertText: { backgroundColor: '#FF5A5F', color: 'white', fontSize: 11, fontWeight: 'bold', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10, overflow: 'hidden' },
+  badgeAlertText: { backgroundColor: Colors.rouge, color: Colors.blanc, fontSize: 11, fontWeight: 'bold', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, overflow: 'hidden' },
   header: {
     alignItems: 'center',
-    paddingVertical: 4,
-    backgroundColor: '#ffffff',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    paddingVertical: 16,
+    backgroundColor: Colors.blanc,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   avatar: {
     width: 90,
     height: 90,
     borderRadius: 45,
     borderWidth: 3,
-    borderColor: 'white',
+    borderColor: Colors.blanc,
     marginBottom: 12,
   },
-  userName: { fontSize: 22, fontWeight: 'bold', color: '#1A1A1A' },
-  userLevel: { fontSize: 13, color: '#888', marginTop: 2 },
+  userName: { fontSize: 22, fontWeight: 'bold', color: Colors.noir },
+  userLevel: { fontSize: 13, color: Colors.gris, marginTop: 2 },
   statsContainer: {
     flexDirection: 'row',
     marginTop: 20,
@@ -458,15 +433,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   statItem: { alignItems: 'center' },
-  statNumber: { fontSize: 18, fontWeight: 'bold', color: '#1A1A1A' },
-  statLabel: { fontSize: 11, color: '#999', textTransform: 'uppercase' },
-  statDivider: { width: 1, height: 20, backgroundColor: '#DDD' },
+  statNumber: { fontSize: 18, fontWeight: 'bold', color: Colors.noir },
+  statLabel: { fontSize: 11, color: Colors.gris, textTransform: 'uppercase' },
+  statDivider: { width: 1, height: 20, backgroundColor: Colors.grisClair },
 
   section: { paddingHorizontal: 20, marginTop: 25 },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1A1A1A',
+    color: Colors.noir,
     marginBottom: 14,
   },
   gridContainer: {
@@ -476,16 +451,16 @@ const styles = StyleSheet.create({
   },
   gridCard: {
     width: '48%',
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     padding: 16,
     borderRadius: 20,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: Colors.grisClair,
     alignItems: 'center',
-    position: 'relative', // Nécessaire pour placer le badge rouge
-    shadowColor: '#000',
-    shadowOpacity: 0.02,
+    position: 'relative',
+    shadowColor: Colors.noir,
+    shadowOpacity: 0.04,
     shadowRadius: 10,
     elevation: 2,
   },
@@ -493,8 +468,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: '#FF5A5F',
-    borderRadius: 10,
+    backgroundColor: Colors.rouge,
+    borderRadius: 999,
     paddingHorizontal: 6,
     paddingVertical: 2,
     minWidth: 18,
@@ -502,7 +477,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   gridBadgeText: {
-    color: 'white',
+    color: Colors.blanc,
     fontSize: 10,
     fontWeight: 'bold',
   },
@@ -514,23 +489,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  gridCardTitle: { fontSize: 13, fontWeight: '600', textAlign: 'center', color: '#444' },
+  gridCardTitle: { fontSize: 13, fontWeight: '600', textAlign: 'center', color: Colors.noir },
 
   navigationMenu: { marginTop: 30, paddingHorizontal: 20 },
-  navHeader: { fontSize: 11, fontWeight: '700', color: '#BBB', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 },
+  navHeader: { fontSize: 11, fontWeight: '700', color: Colors.gris, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 },
   navButtonContent: { flexDirection: 'row', alignItems: 'center' },
-  navButtonText: { marginLeft: 12, fontWeight: '500', color: '#444' },
+  navButtonText: { marginLeft: 12, fontWeight: '500', color: Colors.noir },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(22, 19, 22, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   modalContent: {
     width: '100%',
-    backgroundColor: 'white',
-    borderRadius: 25,
+    backgroundColor: Colors.blanc,
+    borderRadius: 24,
     padding: 20,
     alignItems: 'center',
   },
@@ -541,22 +516,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: 'center',
   },
-  modalTitle: { fontSize: 18, fontWeight: 'bold' },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.noir },
   qrContainer: { alignItems: 'center', padding: 20 },
-  qrInstructions: { marginTop: 15, color: '#666', fontSize: 14 },
+  qrInstructions: { marginTop: 15, color: Colors.gris, fontSize: 14 },
   docPlaceholder: { alignItems: 'center', padding: 30 },
-  docInfo: { marginTop: 15, fontSize: 16, fontWeight: '600' },
-  docDate: { color: '#888', fontSize: 13, marginTop: 5 },
+  docInfo: { marginTop: 15, fontSize: 16, fontWeight: '600', color: Colors.noir },
+  docDate: { color: Colors.gris, fontSize: 13, marginTop: 5 },
   downloadButton: {
     flexDirection: 'row',
-    backgroundColor: '#4A78FF',
-    paddingVertical: 12,
+    backgroundColor: Colors.bleu,
+    paddingVertical: 14,
     paddingHorizontal: 25,
-    borderRadius: 12,
+    borderRadius: 999,
     marginTop: 20,
     alignItems: 'center',
   },
-  downloadText: { color: 'white', fontWeight: 'bold', marginLeft: 10 },
+  downloadText: { color: Colors.blanc, fontWeight: 'bold', marginLeft: 10 },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -566,13 +541,13 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#Eef2ff',
+    backgroundColor: Colors.bleuClair,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 999,
   },
   addButtonText: {
-    color: '#4A78FF',
+    color: Colors.bleu,
     fontWeight: 'bold',
     fontSize: 13,
     marginLeft: 4,
@@ -581,11 +556,12 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     flex: 1,
+    backgroundColor: Colors.blanc,
   },
-  uploadTitle: { fontSize: 20, fontWeight: 'bold', color: '#1A1A1A' },
+  uploadTitle: { fontSize: 20, fontWeight: 'bold', color: Colors.noir },
   uploadSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: Colors.gris,
     textAlign: 'center',
     marginTop: 8,
     marginBottom: 30,
@@ -605,12 +581,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  optionText: { fontSize: 14, fontWeight: '600', color: '#333' },
+  optionText: { fontSize: 14, fontWeight: '600', color: Colors.noir },
   docContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 15,
+    backgroundColor: Colors.blanc,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
     marginBottom: 10,
     paddingRight: 10,
   },
@@ -623,7 +601,7 @@ const styles = StyleSheet.create({
   docText: {
     marginLeft: 12,
     fontSize: 14,
-    color: '#444',
+    color: Colors.noir,
     fontWeight: '500',
     flex: 1
   },
@@ -644,32 +622,34 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    backgroundColor: Colors.blanc,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
   },
-  guestTitle: { fontSize: 24, fontWeight: 'bold', color: 'white', marginBottom: 8, textAlign: 'center' },
-  guestSubtitle: { fontSize: 15, color: 'rgba(255,255,255,0.75)', textAlign: 'center', lineHeight: 21 },
+  guestTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.blanc, marginBottom: 8, textAlign: 'center' },
+  guestSubtitle: { fontSize: 15, color: Colors.grisClair, textAlign: 'center', lineHeight: 21 },
   guestFeatureList: {
     marginTop: -20,
     marginHorizontal: 20,
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   guestFeatureRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F2',
+    borderBottomColor: Colors.grisClair,
     gap: 12,
   },
   guestFeatureIcon: {
@@ -679,11 +659,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  guestFeatureLabel: { flex: 1, fontSize: 14, color: '#333', fontWeight: '500' },
+  guestFeatureLabel: { flex: 1, fontSize: 14, color: Colors.noir, fontWeight: '500' },
   guestActions: { paddingHorizontal: 30, marginTop: 28 },
-  loginButton: { backgroundColor: '#0E011A', width: '100%', padding: 18, borderRadius: 15, alignItems: 'center', marginBottom: 12 },
-  loginButtonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  registerButton: { backgroundColor: '#F0F4FF', width: '100%', padding: 18, borderRadius: 15, alignItems: 'center' },
-  registerButtonText: { color: '#4A78FF', fontWeight: 'bold', fontSize: 16 },
+  loginButton: { backgroundColor: Colors.noir, width: '100%', padding: 18, borderRadius: 999, alignItems: 'center', marginBottom: 12 },
+  loginButtonText: { color: Colors.blanc, fontWeight: 'bold', fontSize: 16 },
+  registerButton: { backgroundColor: Colors.blanc, borderWidth: 1.5, borderColor: Colors.noir, width: '100%', padding: 18, borderRadius: 999, alignItems: 'center' },
+  registerButtonText: { color: Colors.noir, fontWeight: 'bold', fontSize: 16 },
   logoutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15, marginTop: 10 },
 });

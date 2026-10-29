@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Message } from '@/types/notification';
 import { getNotificationById, markNotificationAsRead } from '@/services/notifications.service';
 import { getClubById } from '@/services/clubs.service';
+import { Colors } from '@/constants/colors';
 // On réutilise le même type (Idéalement à exporter depuis un fichier types.ts)
 
 // Mock data (Copie conforme de ton index pour la démo)
@@ -132,9 +133,9 @@ export default function MessageDetailScreen() {
   if (!message && !loading) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}>
-        <Text>Message introuvable</Text>
+        <Text style={{ color: Colors.noir }}>Message introuvable</Text>
         <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 10 }}>
-          <Text style={{ color: '#4A78FF' }}>Retour</Text>
+          <Text style={{ color: Colors.bleu }}>Retour</Text>
         </TouchableOpacity>
       </View>
     );
@@ -143,7 +144,7 @@ export default function MessageDetailScreen() {
   if (!message) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}>
-        <Text>Chargement du message...</Text>
+        <Text style={{ color: Colors.gris }}>Chargement du message...</Text>
       </View>
     );
   }
@@ -153,7 +154,7 @@ export default function MessageDetailScreen() {
       {/* HEADER ENTIÈREMENT PERSONNALISÉ */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
+          <Ionicons name="arrow-back" size={24} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>{message.clubName}</Text>
         <View style={{ width: 40 }} />
@@ -166,7 +167,7 @@ export default function MessageDetailScreen() {
           <Ionicons 
             name={message.isUrgent ? "alert-circle" : "people-outline"} 
             size={12} 
-            color={message.isUrgent ? "#E63946" : "#666"} 
+            color={message.isUrgent ? Colors.rouge : Colors.gris} 
             style={{ marginRight: 4 }} 
           />
           <Text style={[styles.audienceText, message.isUrgent && styles.urgentText]}>
@@ -184,17 +185,17 @@ export default function MessageDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: Colors.fond },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: Colors.grisClair, backgroundColor: Colors.blanc },
   backButton: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#1A1A1A', maxWidth: '70%' },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.noir, maxWidth: '70%' },
   content: { padding: 24 },
-  date: { fontSize: 12, color: '#999', marginBottom: 6 },
-  divider: { height: 1, backgroundColor: '#F0F0F0', width: '100%', marginVertical: 16 },
-  subject: { fontSize: 20, fontWeight: '800', color: '#1A1A1A', marginBottom: 16, lineHeight: 26 },
-  bodyText: { fontSize: 15, color: '#333', lineHeight: 24, paddingBottom: 40 },
-  audienceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F0F0', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, alignSelf: 'flex-start' },
-  audienceText: { fontSize: 11, fontWeight: '500', color: '#555' },
-  urgentBadge: { backgroundColor: '#FFF0F0' },
-  urgentText: { color: '#E63946', fontWeight: '700' },
+  date: { fontSize: 12, color: Colors.gris, marginBottom: 6 },
+  divider: { height: 1, backgroundColor: Colors.grisClair, width: '100%', marginVertical: 16 },
+  subject: { fontSize: 20, fontWeight: '800', color: Colors.noir, marginBottom: 16, lineHeight: 26 },
+  bodyText: { fontSize: 15, color: Colors.noir, lineHeight: 24, paddingBottom: 40 },
+  audienceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.blanc, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, alignSelf: 'flex-start', borderWidth: 1, borderColor: Colors.grisClair },
+  audienceText: { fontSize: 11, fontWeight: '500', color: Colors.gris },
+  urgentBadge: { backgroundColor: '#FCE8E9', borderColor: Colors.rouge },
+  urgentText: { color: Colors.rouge, fontWeight: '700' },
 });

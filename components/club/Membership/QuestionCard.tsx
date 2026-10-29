@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { Question } from "./types";
 import { styles } from "./styles";
+import { Colors } from "@/constants/colors";
 
 type Props = {
   question: Question;
@@ -49,7 +50,7 @@ export default function QuestionCard({
           value={value || ""}
           onChangeText={onTextChange}
           placeholder="Écris ta réponse ici..."
-          placeholderTextColor="#A3A3A3"
+          placeholderTextColor={Colors.gris}
         />
       )}
 
@@ -65,11 +66,11 @@ export default function QuestionCard({
           <Ionicons
             name={isAnswered ? "checkmark-circle" : "cloud-upload-outline"}
             size={22}
-            color={isAnswered ? "#10B981" : "#737373"}
+            color={isAnswered ? Colors.vert : Colors.gris}
           />
 
           <View style={styles.uploadTextContainer}>
-            <Text style={[styles.uploadTitle, isAnswered && { color: "#10B981", fontWeight: "600" }]}>
+            <Text style={[styles.uploadTitle, isAnswered && { color: Colors.vert, fontWeight: "600" }]}>
               {isAnswered ? value : "Sélectionner un fichier"}
             </Text>
 
@@ -99,7 +100,7 @@ export default function QuestionCard({
               <Ionicons
                 name={selected ? "radio-button-on" : "radio-button-off"}
                 size={20}
-                color={selected ? "#3B82F6" : "#A3A3A3"}
+                color={selected ? Colors.bleu : Colors.gris}
               />
 
               <Text
@@ -133,7 +134,7 @@ export default function QuestionCard({
               <Ionicons
                 name={checked ? "checkbox" : "square-outline"}
                 size={20}
-                color={checked ? "#3B82F6" : "#A3A3A3"}
+                color={checked ? Colors.bleu : Colors.gris}
               />
 
               <Text

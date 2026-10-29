@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAllSubmissions } from '@/services/forms.service';
+import { Colors } from '@/constants/colors';
 
 export type InscriptionStatus = 'approved' | 'rejected' | 'needs_more_info' | 'submitted' | 'draft';
 // Type pour notre filtre de sélection ('all' inclus pour tout afficher)
@@ -77,12 +78,12 @@ export default function InscriptionsListScreen() {
 
   const getStatusStyle = (status: InscriptionStatus) => {
     switch (status) {
-      case 'approved': return { bg: '#E8F5E9', text: '#2E7D32', icon: 'checkmark-circle' };
-      case 'rejected': return { bg: '#FFEBEE', text: '#C62828', icon: 'close-circle' };
-      case 'needs_more_info': return { bg: '#FFF3E0', text: '#EF6C00', icon: 'alert-circle' };
-      case 'submitted': return { bg: '#E3F2FD', text: '#1565C0', icon: 'time' };
-      case 'draft': return { bg: '#F3E5F5', text: '#6A1B9A', icon: 'document-text' };
-      default: return { bg: '#E8EAF6', text: '#3F51B5', icon: 'time' };
+      case 'approved': return { bg: Colors.vertClair, text: Colors.vert, icon: 'checkmark-circle' };
+      case 'rejected': return { bg: '#FCE8E9', text: Colors.rouge, icon: 'close-circle' };
+      case 'needs_more_info': return { bg: '#FFF3E0', text: '#D97706', icon: 'alert-circle' };
+      case 'submitted': return { bg: Colors.bleuClair, text: Colors.bleu, icon: 'time' };
+      case 'draft': return { bg: Colors.grisClair, text: Colors.noir, icon: 'document-text' };
+      default: return { bg: Colors.bleuClair, text: Colors.bleu, icon: 'time' };
     }
   };
 
@@ -90,8 +91,8 @@ export default function InscriptionsListScreen() {
     <View style={[styles.container]}>
       {/* HEADER BAR */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.replace("/profile")}>
-          <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mes inscriptions</Text>
         <View style={{ width: 40 }} />
@@ -126,7 +127,7 @@ export default function InscriptionsListScreen() {
 
       {loading ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#4A78FF" />
+          <ActivityIndicator size="large" color={Colors.bleu} />
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
@@ -187,29 +188,29 @@ export default function InscriptionsListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56 },
+  container: { flex: 1, backgroundColor: Colors.fond },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, backgroundColor: Colors.blanc, borderBottomWidth: 1, borderBottomColor: Colors.grisClair },
   backButton: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#1A1A1A' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
   
   // 💡 Nouveaux styles pour les Filtres
-  filterWrapper: { borderBottomWidth: 1, borderBottomColor: '#F5F5F5', paddingBottom: 12 },
+  filterWrapper: { borderBottomWidth: 1, borderBottomColor: Colors.grisClair, paddingVertical: 12, backgroundColor: Colors.fond },
   filterScrollContainer: { paddingHorizontal: 20, gap: 8 },
-  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#EAEAEA' },
-  filterChipActive: { backgroundColor: '#4A78FF', borderColor: '#4A78FF' },
-  filterText: { fontSize: 14, fontWeight: '500', color: '#666' },
-  filterTextActive: { color: '#FFF', fontWeight: '600' },
+  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair },
+  filterChipActive: { backgroundColor: Colors.bleu, borderColor: Colors.bleu },
+  filterText: { fontSize: 14, fontWeight: '500', color: Colors.gris },
+  filterTextActive: { color: Colors.blanc, fontWeight: '600' },
 
   scrollContainer: { padding: 20 },
-  card: { backgroundColor: '#FFF', borderRadius: 18, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#F0F0F0', shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 8, elevation: 1 },
+  card: { backgroundColor: Colors.blanc, borderRadius: 20, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 8, elevation: 2 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  clubName: { fontSize: 16, fontWeight: '600', color: '#1A1A1A' },
-  dateText: { fontSize: 13, color: '#888', marginBottom: 14 },
+  clubName: { fontSize: 16, fontWeight: '600', color: Colors.noir },
+  dateText: { fontSize: 13, color: Colors.gris, marginBottom: 14 },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  statusBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 },
+  statusBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   statusText: { fontSize: 12, fontWeight: '600' },
-  actionRequiredText: { fontSize: 12, fontWeight: '700', color: '#EF6C00' },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  actionRequiredText: { fontSize: 12, fontWeight: '700', color: Colors.rouge },
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
   emptyContainer: { alignItems: 'center', marginTop: 80 },
-  emptyText: { color: '#999', marginTop: 10, fontSize: 14, textAlign: 'center' }
+  emptyText: { color: Colors.gris, marginTop: 10, fontSize: 14, textAlign: 'center' }
 });

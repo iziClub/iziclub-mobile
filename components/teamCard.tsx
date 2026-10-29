@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Colors } from "@/constants/colors";
 
 interface TeamCardProps {
     title: string;
@@ -20,7 +21,7 @@ function lightenColor(hex: string, amount = 0.25) {
 
 export default function TeamCard({
     title,
-    color = "#0000FF",
+    color = Colors.bleu,
     subtitle,
 }: TeamCardProps) {
     const lighterColor = lightenColor(color, 0.3);
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     card: {
         width: 150,
         padding: 16,
-        borderRadius: 8,
+        borderRadius: 16,
         marginBottom: 12,
     },
     title: {

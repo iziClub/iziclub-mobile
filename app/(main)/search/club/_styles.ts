@@ -1,9 +1,10 @@
 import { StyleSheet } from "react-native";
+import { Colors } from "@/constants/colors";
 
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F9FAFB", // Fond légèrement grisé pour faire ressortir les cartes blanches
+        backgroundColor: Colors.fond,
     },
     badgeContainer: {
         paddingHorizontal: 20,
@@ -12,17 +13,17 @@ export const styles = StyleSheet.create({
     tag: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#E5E7EB',
+        backgroundColor: Colors.bleuClair,
         alignSelf: 'flex-start',
         paddingHorizontal: 10,
         paddingVertical: 4,
-        borderRadius: 12,
+        borderRadius: 999,
         gap: 4,
     },
     tagText: {
         fontSize: 12,
-        color: '#6B7280',
-        fontWeight: '500',
+        color: Colors.bleu,
+        fontWeight: '600',
     },
     headerSection: {
         paddingHorizontal: 20,
@@ -32,7 +33,7 @@ export const styles = StyleSheet.create({
     title: {
         fontSize: 26,
         fontWeight: "800",
-        color: "#1F2937",
+        color: Colors.noir,
         letterSpacing: -0.5,
         marginBottom: 8,
     },
@@ -43,16 +44,18 @@ export const styles = StyleSheet.create({
     },
     cityText: {
         fontSize: 16,
-        color: "#4A78FF",
+        color: Colors.bleu,
         fontWeight: "600",
     },
     card: {
-        backgroundColor: "white",
+        backgroundColor: Colors.blanc,
         marginHorizontal: 20,
         marginBottom: 16,
         padding: 20,
-        borderRadius: 16,
-        shadowColor: "#000",
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: Colors.grisClair,
+        shadowColor: Colors.noir,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 8,
@@ -61,7 +64,7 @@ export const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 14,
         fontWeight: "700",
-        color: "#9CA3AF",
+        color: Colors.gris,
         textTransform: "uppercase",
         letterSpacing: 1,
         marginBottom: 10,
@@ -69,19 +72,21 @@ export const styles = StyleSheet.create({
     addressText: {
         fontSize: 16,
         fontWeight: "600",
-        color: "#374151",
+        color: Colors.noir,
         marginBottom: 2,
     },
     subAddressText: {
         fontSize: 15,
-        color: "#6B7280",
+        color: Colors.gris,
     },
     mapCard: {
-        backgroundColor: "white",
+        backgroundColor: Colors.blanc,
         marginHorizontal: 20,
-        borderRadius: 16,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: Colors.grisClair,
         overflow: "hidden",
-        shadowColor: "#000",
+        shadowColor: Colors.noir,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 8,
@@ -90,7 +95,7 @@ export const styles = StyleSheet.create({
     },
     mapContainer: {
         height: 180,
-        backgroundColor: "#E5E7EB",
+        backgroundColor: Colors.fond,
     },
     map: {
         ...StyleSheet.absoluteFill,
@@ -99,13 +104,13 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#4A78FF", // Utilise la couleur primaire de ton app
+        backgroundColor: Colors.bleu,
         paddingVertical: 14,
         margin: 16,
-        borderRadius: 12,
+        borderRadius: 999,
     },
     navButtonText: {
-        color: "white",
+        color: Colors.blanc,
         fontSize: 16,
         fontWeight: "600",
     },
@@ -120,7 +125,7 @@ export const styles = StyleSheet.create({
     },
     noticeText: {
         fontSize: 13,
-        color: "#9CA3AF",
+        color: Colors.gris,
         flex: 1,
         lineHeight: 18,
     },

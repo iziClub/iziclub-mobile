@@ -4,7 +4,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Ale
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Club } from "@/types/club";
-import { likeClub, unlikeClub, saveClub, unsaveClub } from "@/services/clubs.service"; // Adjust path as needed
+import { likeClub, unlikeClub, saveClub, unsaveClub } from "@/services/clubs.service";
+import { Colors } from "@/constants/colors";
 
 interface HeaderClubDetailsProps {
   club: Club;
@@ -122,7 +123,7 @@ export default function HeaderClubDetails({
     <View style={styles.header}>
       {/* Bouton Retour */}
       <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
+        <Ionicons name="arrow-back" size={24} color={Colors.noir} />
       </TouchableOpacity>
 
       <View style={{ flex: 1 }} />
@@ -151,12 +152,12 @@ export default function HeaderClubDetails({
           hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
         >
           {loadingLike ? (
-            <ActivityIndicator size="small" color="#FF5A5F" />
+            <ActivityIndicator size="small" color={Colors.rouge} />
           ) : (
             <Ionicons 
               name={isLiked ? "heart" : "heart-outline"} 
               size={24} 
-              color={isLiked ? "#FF5A5F" : "#1A1A1A"} 
+              color={isLiked ? Colors.rouge : Colors.noir} 
             />
           )}
         </TouchableOpacity>
@@ -169,12 +170,12 @@ export default function HeaderClubDetails({
           hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
         >
           {loadingSave ? (
-            <ActivityIndicator size="small" color="#4A78FF" />
+            <ActivityIndicator size="small" color={Colors.bleu} />
           ) : (
             <MaterialIcons 
               name={isSaved ? "bookmark" : "bookmark-border"} 
               size={26} 
-              color={isSaved ? "#4A78FF" : "#1A1A1A"} 
+              color={isSaved ? Colors.bleu : Colors.noir} 
             />
           )}
         </TouchableOpacity>
@@ -186,7 +187,7 @@ export default function HeaderClubDetails({
             style={styles.actionButton}
             hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
           >
-            <Ionicons name="share-social-outline" size={24} color="#1A1A1A" />
+            <Ionicons name="share-social-outline" size={24} color={Colors.noir} />
           </TouchableOpacity>
         )}
       </View>
@@ -200,9 +201,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#E5E5EA",
-    backgroundColor: "#FFF",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grisClair,
+    backgroundColor: Colors.blanc,
   },
   backButton: { 
     padding: 6,
@@ -216,11 +217,11 @@ const styles = StyleSheet.create({
   clubName: { 
     fontSize: 16, 
     fontWeight: "bold",
-    color: "#1A1A1A",
+    color: Colors.noir,
   },
   clubCity: { 
     fontSize: 12, 
-    color: "#8E8E93",
+    color: Colors.gris,
     marginTop: 2,
   },
   clubImage: { 
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     height: 44, 
     borderRadius: 22, 
     marginRight: 10,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.fond,
   },
   actionsContainer: {
     flexDirection: "row",

@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { EngagementItem, useEngagement } from "./useEngagement";
+import { Colors } from "@/constants/colors";
 
 // ─────────────────────────────────────────────────────────
 // Micro-animation : scale bounce sur press
@@ -79,7 +80,7 @@ function ActionButton({
         <Ionicons
           name={active ? activeIcon : inactiveIcon}
           size={24}
-          color={active ? activeColor : "#444"}
+          color={active ? activeColor : Colors.noir}
         />
       </Animated.View>
       <Text style={[styles.iconButtonLabel, active && { color: activeColor, fontWeight: "700" }]}>
@@ -190,7 +191,7 @@ export default function EngagementBar({
           onPress={handleLikePress}
           activeIcon="heart"
           inactiveIcon="heart-outline"
-          activeColor="#E63946"
+          activeColor={Colors.rouge}
           label={state.likeCount > 0 ? `${state.likeCount} J'aime` : "J'aime"}
         />
 
@@ -200,7 +201,7 @@ export default function EngagementBar({
           onPress={handleSavePress}
           activeIcon="bookmark"
           inactiveIcon="bookmark-outline"
-          activeColor="#4A78FF"
+          activeColor={Colors.bleu}
           label="Enregistrer"
         />
 
@@ -211,7 +212,7 @@ export default function EngagementBar({
             onPress={handleParticipationPress}
             activeIcon="checkmark-circle"
             inactiveIcon="person-add-outline"
-            activeColor="#28a745"
+            activeColor={Colors.vert}
             label={state.participating ? "Inscrit·e" : "Participer"}
           />
         )}
@@ -228,32 +229,32 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 12,
     marginBottom: 8,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: Colors.blanc,
     borderRadius: 20,
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderWidth: 1,
-    borderColor: "#EFEFEF",
+    borderColor: Colors.grisClair,
     gap: 10,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.02,
-        shadowRadius: 4,
+        shadowColor: Colors.noir,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.04,
+        shadowRadius: 6,
       },
-      android: { elevation: 1 },
+      android: { elevation: 2 },
     }),
   },
   iconRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around", // Aligne les 3 boutons équitablement sur la ligne
+    justifyContent: "space-around",
     width: "100%",
   },
   iconRowCentered: {
     justifyContent: "space-around",
-    paddingHorizontal: "15%", // Centre harmonieusement s'il n'y a que 2 boutons (Clubs)
+    paddingHorizontal: "15%",
   },
   iconButton: {
     alignItems: "center",
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
   },
   iconButtonLabel: {
     fontSize: 11,
-    color: "#555",
+    color: Colors.gris,
     fontWeight: "500",
     textAlign: "center",
   },

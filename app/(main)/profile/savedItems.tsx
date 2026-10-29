@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import de tes services API
 import { getSavedClubs, unsaveClub, getClubById } from '@/services/clubs.service'; // Adapte le chemin d'accès
-import { getSavedEvents, unsaveEvent, getEventById } from '@/services/events.service'; // Adapte le chemin d'accès (Assure-toi de les exporter)
+import { getSavedEvents, unsaveEvent, getEventById } from '@/services/events.service';
+import { Colors } from '@/constants/colors';
 
 type TabType = 'events' | 'clubs';
 
@@ -132,7 +133,7 @@ useFocusEffect(
           <View>
             <Text style={styles.clubName} numberOfLines={1}>{title}</Text>
             <View style={styles.locationRow}>
-              <Ionicons name="location-sharp" size={14} color="#4A78FF" />
+              <Ionicons name="location-sharp" size={14} color={Colors.bleu} />
               <Text style={styles.locationText} numberOfLines={1}>
                 {item.address?.city || item.profile?.address?.city || 'Localisation non précisée'}
               </Text>
@@ -140,19 +141,12 @@ useFocusEffect(
           </View>
           
           <View style={styles.footerRow}>
-            {/* <View style={styles.ratingBox}>
-              <Ionicons name={isEvent ? "flash" : "star"} size={12} color={isEvent ? "#FF6B6B" : "#FFB900"} />
-              <Text style={[styles.ratingText, { color: isEvent ? "#FF6B6B" : "#FFB900" }]}>
-                {isEvent ? (item.type || 'Événement') : (item.rating || '4.5')}
-              </Text>
-            </View> */}
-            
             {/* Icône de marque-page cliqué */}
             <TouchableOpacity 
               onPress={() => handleUnsave(item.id, activeTab)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons name="bookmark" size={22} color="#4A78FF" />
+              <Ionicons name="bookmark" size={22} color={Colors.vert} />
             </TouchableOpacity>
           </View>
         </View>
@@ -167,9 +161,9 @@ useFocusEffect(
         <Ionicons 
           name={activeTab === 'events' ? "calendar-outline" : "business-outline"} 
           size={46} 
-          color="#A0A0A2" 
+          color={Colors.gris} 
         />
-        <Ionicons name="bookmark" size={20} color="#4A78FF" style={styles.emptyBookmarkBadge} />
+        <Ionicons name="bookmark" size={20} color={Colors.vert} style={styles.emptyBookmarkBadge} />
       </View>
       <Text style={styles.emptyTitle}>Aucun enregistrement</Text>
       <Text style={styles.emptySubtitle}>
@@ -188,10 +182,10 @@ useFocusEffect(
       {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity 
-          onPress={() => router.replace("/profile")} 
+          onPress={() => router.back()} 
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={22} color="black" />
+          <Ionicons name="arrow-back" size={22} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Enregistrés</Text>
         <View style={{ width: 40 }} />
@@ -203,7 +197,7 @@ useFocusEffect(
           style={[styles.tab, activeTab === 'events' && styles.activeTab]}
           onPress={() => setActiveTab('events')}
         >
-          <Ionicons name="bookmark-outline" size={15} color={activeTab === 'events' ? '#4A78FF' : '#8E8E93'} />
+          <Ionicons name="bookmark-outline" size={15} color={activeTab === 'events' ? Colors.vert : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Événements</Text>
         </TouchableOpacity>
 
@@ -211,7 +205,7 @@ useFocusEffect(
           style={[styles.tab, activeTab === 'clubs' && styles.activeTab]}
           onPress={() => setActiveTab('clubs')}
         >
-          <Ionicons name="business-outline" size={15} color={activeTab === 'clubs' ? '#4A78FF' : '#8E8E93'} />
+          <Ionicons name="business-outline" size={15} color={activeTab === 'clubs' ? Colors.vert : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'clubs' && styles.activeTabText]}>Clubs</Text>
         </TouchableOpacity>
       </View>
@@ -219,7 +213,7 @@ useFocusEffect(
       {/* CONTENU OU LOADER */}
       {loading ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#4A78FF" />
+          <ActivityIndicator size="large" color={Colors.bleu} />
         </View>
       ) : (
         <FlatList
@@ -236,13 +230,16 @@ useFocusEffect(
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
+  container: { flex: 1, backgroundColor: Colors.fond },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-    height: 54,
+    height: 56,
+    backgroundColor: Colors.blanc,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grisClair,
   },
   backButton: {
     width: 40,
@@ -250,18 +247,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.fond,
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#1A1A1A' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
   
   // Segmented Tabs
   tabsContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.blanc,
     marginHorizontal: 20,
     marginVertical: 12,
     padding: 4,
-    borderRadius: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   tab: {
     flex: 1,
@@ -269,30 +268,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 999,
     gap: 6,
   },
   activeTab: {
-    backgroundColor: '#FFF',
-    shadowColor: '#000',
+    backgroundColor: Colors.fond,
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
-  tabText: { fontSize: 13, fontWeight: '600', color: '#8E8E93' },
-  activeTabText: { color: '#4A78FF' },
+  tabText: { fontSize: 13, fontWeight: '600', color: Colors.gris },
+  activeTabText: { color: Colors.vert },
 
   // Cartes horizontales intégrées
   clubCard: {
     flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 16,
+    backgroundColor: Colors.blanc,
+    borderRadius: 20,
     marginBottom: 16,
-    padding: 10,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#F2F2F7',
-    shadowColor: '#000',
+    borderColor: Colors.grisClair,
+    shadowColor: Colors.noir,
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
@@ -300,8 +299,8 @@ const styles = StyleSheet.create({
   clubImage: {
     width: 85,
     height: 85,
-    borderRadius: 12,
-    backgroundColor: '#F5F5F5',
+    borderRadius: 14,
+    backgroundColor: Colors.fond,
   },
   clubInfo: {
     flex: 1,
@@ -309,34 +308,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 2,
   },
-  clubName: { fontSize: 16, fontWeight: '700', color: '#1A1A1A' },
+  clubName: { fontSize: 16, fontWeight: '700', color: Colors.noir },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  locationText: { fontSize: 13, color: '#8E8E93', marginLeft: 4, flex: 1 },
+  locationText: { fontSize: 13, color: Colors.gris, marginLeft: 4, flex: 1 },
   footerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   ratingBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
   },
-  ratingText: { fontSize: 11, fontWeight: '700', marginLeft: 4 },
-  
-  // Loader
-  loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-
-  // Empty State
-  emptyContainer: { alignItems: 'center', paddingHorizontal: 30, marginTop: 70 },
+  loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
+  emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, marginTop: 80 },
   emptyIconWrapper: {
-    width: 84,
-    height: 84,
-    borderRadius: 42,
-    backgroundColor: '#F2F2F7',
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: Colors.blanc,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -344,20 +336,19 @@ const styles = StyleSheet.create({
   },
   emptyBookmarkBadge: {
     position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
+    bottom: 12,
+    right: 12,
+    backgroundColor: Colors.blanc,
+    borderRadius: 12,
     padding: 2,
-    elevation: 1,
   },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: '#1A1A1A', marginBottom: 6 },
-  emptySubtitle: { fontSize: 13, color: '#8E8E93', textAlign: 'center', lineHeight: 18, marginBottom: 20 },
+  emptyTitle: { fontSize: 17, fontWeight: '700', color: Colors.noir, marginBottom: 6 },
+  emptySubtitle: { fontSize: 13, color: Colors.gris, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
   exploreBtn: {
-    backgroundColor: '#4A78FF',
-    paddingVertical: 10,
-    paddingHorizontal: 22,
-    borderRadius: 20,
+    backgroundColor: Colors.noir,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 999,
   },
-  exploreBtnText: { color: '#FFF', fontWeight: '700', fontSize: 14 }
+  exploreBtnText: { color: Colors.blanc, fontWeight: 'bold', fontSize: 14 },
 });

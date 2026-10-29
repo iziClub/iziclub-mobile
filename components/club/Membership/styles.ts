@@ -1,10 +1,11 @@
 import { StyleSheet } from "react-native";
+import { Colors } from "@/constants/colors";
 
 export const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingBottom: 60,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.fond,
   },
 
   centeredContainer: {
@@ -12,6 +13,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 40,
+    backgroundColor: Colors.fond,
   },
 
   headerInfo: {
@@ -22,31 +24,31 @@ export const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 6,
-    color: "#0E011A",
+    color: Colors.noir,
   },
 
   description: {
     fontSize: 14,
-    color: "#666",
+    color: Colors.gris,
     lineHeight: 20,
     marginBottom: 8,
   },
 
   dateText: {
     fontSize: 11,
-    color: "#999",
+    color: Colors.gris,
     fontStyle: "italic",
   },
 
   card: {
-    backgroundColor: "#FFF",
-    borderRadius: 16,
+    backgroundColor: Colors.blanc,
+    borderRadius: 20,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#EEE",
+    borderColor: Colors.grisClair,
 
-    shadowColor: "#000",
+    shadowColor: Colors.noir,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -67,25 +69,25 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     marginLeft: 8,
-    color: "#0E011A",
+    color: Colors.noir,
   },
 
   questionTitle: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#0E011A",
+    color: Colors.noir,
     flex: 1,
     lineHeight: 20,
   },
 
   requiredStar: {
-    color: "#D32F2F",
+    color: Colors.rouge,
     fontWeight: "bold",
   },
 
   infoText: {
     fontSize: 14,
-    color: "#444",
+    color: Colors.noir,
     marginBottom: 4,
   },
 
@@ -94,45 +96,45 @@ export const styles = StyleSheet.create({
   },
 
   editProfileText: {
-    color: "#007AFF",
+    color: Colors.bleu,
     fontSize: 12,
     fontWeight: "600",
   },
 
   hintText: {
     fontSize: 13,
-    color: "#777",
+    color: Colors.gris,
     marginBottom: 12,
     fontStyle: "italic",
     lineHeight: 18,
   },
 
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.blanc,
     borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 10,
+    borderColor: Colors.grisClair,
+    borderRadius: 12,
     padding: 12,
     fontSize: 14,
-    color: "#000",
+    color: Colors.noir,
     marginTop: 6,
   },
 
   uploadBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F9F9F9",
+    backgroundColor: Colors.blanc,
     borderWidth: 1,
-    borderColor: "#DDD",
+    borderColor: Colors.grisClair,
     borderStyle: "dashed",
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 14,
     marginTop: 4,
   },
 
   uploadBoxSuccess: {
-    backgroundColor: "#E8F5E9",
-    borderColor: "#A5D6A7",
+    backgroundColor: Colors.vertClair,
+    borderColor: Colors.vert,
     borderStyle: "solid",
   },
 
@@ -144,12 +146,12 @@ export const styles = StyleSheet.create({
   uploadTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
+    color: Colors.noir,
   },
 
   uploadSubtitle: {
     fontSize: 11,
-    color: "#888",
+    color: Colors.gris,
     marginTop: 2,
   },
 
@@ -158,39 +160,39 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 10,
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "transparent",
     marginBottom: 6,
   },
 
   optionRowSelected: {
-    backgroundColor: "#F4F1F7",
-    borderColor: "#E1DCE8",
+    backgroundColor: Colors.bleuClair,
+    borderColor: Colors.bleu,
   },
 
   optionLabel: {
     marginLeft: 10,
     fontSize: 14,
-    color: "#444",
+    color: Colors.noir,
     flex: 1,
   },
 
   optionLabelSelected: {
     fontWeight: "600",
-    color: "#0E011A",
+    color: Colors.bleu,
   },
 
   submitButton: {
-    backgroundColor: "#0E011A",
-    paddingVertical: 18,
-    borderRadius: 14,
+    backgroundColor: Colors.noir,
+    paddingVertical: 16,
+    borderRadius: 999,
     alignItems: "center",
     marginTop: 10,
   },
 
   submitButtonText: {
-    color: "#fff",
+    color: Colors.blanc,
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -200,25 +202,26 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 20,
     textAlign: "center",
+    color: Colors.noir,
   },
 
   lockSubtitle: {
     fontSize: 14,
-    color: "#666",
+    color: Colors.gris,
     textAlign: "center",
     marginTop: 8,
     marginBottom: 24,
   },
 
   loginButton: {
-    backgroundColor: "#000",
+    backgroundColor: Colors.noir,
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: 999,
   },
 
   loginButtonText: {
-    color: "#fff",
+    color: Colors.blanc,
     fontWeight: "bold",
   },
 });

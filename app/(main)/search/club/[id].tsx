@@ -17,6 +17,7 @@ import { useAuth } from "../../../../context/AuthContext";
 import { useLocation } from "../../../../context/LocationContext";
 import ImportedClubDetail from "./importClubDetail";
 import { getCurrentUser } from "@/services/auth";
+import { Colors } from "@/constants/colors";
 
 const SECTIONS = ["Informations", "Événements", "Adhésion","Galerie", "Calendrier", "Contact"];
 
@@ -77,7 +78,7 @@ export default function ClubDetail() {
     if (isLoading) {
         return (
             <View style={styles.center}>
-                <ActivityIndicator size="large" color="#4A78FF" />
+                <ActivityIndicator size="large" color={Colors.bleu} />
             </View>
         );
     }
@@ -85,7 +86,7 @@ export default function ClubDetail() {
     if (!club) {
         return (
             <View style={styles.center}>
-                <Text>Club non trouvé</Text>
+                <Text style={{ color: Colors.noir }}>Club non trouvé</Text>
             </View>
         );
     }
@@ -179,7 +180,7 @@ export default function ClubDetail() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: Colors.fond,
     },
 
     content: {
@@ -190,5 +191,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: Colors.fond,
     },
 });

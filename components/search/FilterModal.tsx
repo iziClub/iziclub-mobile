@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
+import { Colors } from "@/constants/colors";
 
 interface Props {
   visible: boolean;
@@ -117,7 +118,7 @@ export default function FilterBottomSheet({
           <View style={styles.header}>
             <Text style={styles.title}>Filtres</Text>
             <TouchableOpacity onPress={onClose} hitSlop={10}>
-              <Ionicons name="close-circle" size={30} color="#EEE" />
+              <Ionicons name="close-circle" size={30} color={Colors.gris} />
             </TouchableOpacity>
           </View>
 
@@ -138,8 +139,8 @@ export default function FilterBottomSheet({
               <Switch
                 value={useRadius}
                 onValueChange={setUseRadius}
-                trackColor={{ false: "#E0E0E0", true: "#4A78FF" }}
-                thumbColor="white"
+                trackColor={{ false: Colors.grisClair, true: Colors.bleu }}
+                thumbColor={Colors.blanc}
               />
             </View>
 
@@ -159,8 +160,8 @@ export default function FilterBottomSheet({
                 value={radius}
                 onValueChange={setRadius}
                 disabled={!useRadius}
-                minimumTrackTintColor="#4A78FF"
-                thumbTintColor={useRadius ? "#4A78FF" : "#CCC"}
+                minimumTrackTintColor={Colors.bleu}
+                thumbTintColor={useRadius ? Colors.bleu : Colors.grisClair}
               />
             </View>
 
@@ -170,7 +171,7 @@ export default function FilterBottomSheet({
             <TextInput
               style={styles.sportInput}
               placeholder="Ex: Handball, Escalade..."
-              placeholderTextColor="#999"
+              placeholderTextColor={Colors.gris}
               value={sportQuery}
               onChangeText={setSportQuery}
               autoCapitalize="words"
@@ -229,17 +230,17 @@ export default function FilterBottomSheet({
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(22,19,22,0.5)',
   },
   sheet: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    shadowColor: '#000',
+    backgroundColor: Colors.blanc,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -254,7 +255,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 3,
-    backgroundColor: '#CCC',
+    backgroundColor: Colors.grisClair,
   },
   content: {
     flex: 1,
@@ -270,17 +271,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 4,
   },
-  title: { fontSize: 32, fontWeight: 'bold' },
-  sectionTitle: { fontSize: 18, fontWeight: '700', marginTop: 15, marginBottom: 10 },
-  subLabel: { fontSize: 13, color: '#666', marginBottom: 10 },
-  divider: { height: 1, backgroundColor: '#F2F2F2', marginVertical: 15, marginHorizontal: 20 },
+  title: { fontSize: 28, fontWeight: 'bold', color: Colors.noir },
+  sectionTitle: { fontSize: 17, fontWeight: '700', marginTop: 15, marginBottom: 10, color: Colors.noir },
+  subLabel: { fontSize: 13, color: Colors.gris, marginBottom: 10 },
+  divider: { height: 1, backgroundColor: Colors.grisClair, marginVertical: 15, marginHorizontal: 20 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  distanceValue: { fontSize: 18, fontWeight: 'bold', color: '#4A78FF' },
+  distanceValue: { fontSize: 18, fontWeight: 'bold', color: Colors.bleu },
   sportInput: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 16,
+    backgroundColor: Colors.fond,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
+    padding: 14,
+    fontSize: 15,
+    color: Colors.noir,
   },
   chipsWrap: {
     flexDirection: 'row',
@@ -289,47 +293,52 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   chip: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 18,
-    backgroundColor: '#F5F5F5',
+    borderRadius: 999,
+    backgroundColor: Colors.blanc,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   chipActive: {
-    backgroundColor: '#4A78FF',
+    backgroundColor: Colors.bleu,
+    borderColor: Colors.bleu,
   },
   chipText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#666',
+    color: Colors.gris,
   },
   chipTextActive: {
-    color: 'white',
+    color: Colors.blanc,
   },
   footer: {
     flexDirection: 'row',
     gap: 12,
     paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingTop: 12,
     paddingBottom: 24,
     borderTopWidth: 1,
-    borderTopColor: '#F2F2F2',
+    borderTopColor: Colors.grisClair,
   },
   resetButton: {
     flex: 1,
     paddingVertical: 14,
-    borderRadius: 14,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.blanc,
+    borderWidth: 1.5,
+    borderColor: Colors.grisClair,
   },
-  resetButtonText: { fontWeight: '700', fontSize: 15, color: '#333' },
+  resetButtonText: { fontWeight: '700', fontSize: 15, color: Colors.noir },
   applyButton: {
     flex: 1.4,
     paddingVertical: 14,
-    borderRadius: 14,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#4A78FF',
+    backgroundColor: Colors.noir,
   },
-  applyButtonText: { fontWeight: '700', fontSize: 15, color: 'white' },
+  applyButtonText: { fontWeight: '700', fontSize: 15, color: Colors.blanc },
 });

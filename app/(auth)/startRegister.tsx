@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "expo-router";
+import { Colors } from "@/constants/colors";
 
 export default function StartRegisterScreen() {
   const router = useRouter(); // <- hook pour naviguer
@@ -53,15 +54,15 @@ export default function StartRegisterScreen() {
         >
           <Text style={styles.buttonText}>Créer un compte</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#ECEAE8" }]} onPress={handleLogin}>
-          <Text style={[styles.buttonText, { color: "#0E011A" }]}>J'ai déjà un compte</Text>
+        <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={handleLogin}>
+          <Text style={[styles.buttonText, { color: Colors.noir }]}>J'ai déjà un compte</Text>
         </TouchableOpacity>
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
           <Text style={styles.separatorText}>Ou</Text>
           <View style={styles.line} />
         </View>
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#F7F6F5", flexDirection: "row", alignItems: "center", justifyContent: "center" }]}>
+        <TouchableOpacity style={[styles.button, styles.googleButton]}>
           <Image
             source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/800px-Google_Favicon_2025.svg.png" }}
           />
@@ -69,7 +70,7 @@ export default function StartRegisterScreen() {
             source={require("../../assets/images/google-logo.png")}
             style={{ width: 20, height: 20, marginRight: 10 }}
           />
-          <Text style={[styles.buttonText, { color: "black" }]}>
+          <Text style={[styles.buttonText, { color: Colors.noir }]}>
             Se connecter avec Google
           </Text>
         </TouchableOpacity>
@@ -81,7 +82,7 @@ export default function StartRegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.blanc,
     paddingBottom: 20,
   },
   image: {
@@ -94,6 +95,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     paddingLeft: 20,
+    color: Colors.noir,
   },
   label: {
     fontSize: 16,
@@ -102,26 +104,42 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     marginBottom: 8,
+    color: Colors.gris,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderColor: Colors.grisClair,
+    borderRadius: 12,
     padding: 12,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
+    color: Colors.noir,
+    backgroundColor: Colors.blanc,
   },
   button: {
-    backgroundColor: "#0E011A",
-    padding: 20,
-    borderRadius: 8,
+    backgroundColor: Colors.noir,
+    padding: 16,
+    borderRadius: 999,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
   },
+  secondaryButton: {
+    backgroundColor: Colors.blanc,
+    borderWidth: 1.5,
+    borderColor: Colors.grisClair,
+  },
+  googleButton: {
+    backgroundColor: Colors.blanc,
+    borderWidth: 1.5,
+    borderColor: Colors.grisClair,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   buttonText: {
-    color: "white",
+    color: Colors.blanc,
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 16,
@@ -131,8 +149,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "90%",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderColor: Colors.grisClair,
+    borderRadius: 12,
     paddingRight: 10,
     marginBottom: 12,
     alignSelf: "center",
@@ -141,7 +159,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   forgotPassword: {
-    color: "#B8B4B1",
+    color: Colors.bleu,
     textAlign: "right",
     marginBottom: 12,
     textDecorationLine: "underline",
@@ -157,12 +175,12 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: "#ccc",
+    backgroundColor: Colors.grisClair,
   },
   separatorText: {
     marginHorizontal: 10,
     fontSize: 14,
-    color: "#999",
+    color: Colors.gris,
     fontWeight: "500",
   },
 });

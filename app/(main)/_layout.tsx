@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { Colors } from "@/constants/colors";
 
 export default function MainLayout() {
   return (
@@ -9,20 +10,21 @@ export default function MainLayout() {
         tabBarHideOnKeyboard: true,
         headerStyle: {
           height: 44,
+          backgroundColor: Colors.fond,
         },
         headerShadowVisible: false,
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: Colors.blanc,
           height: 60,
           paddingBottom: 4,
           paddingTop: 4,
-          borderTopWidth: 0.5,
-          borderTopColor: "#e2e2e2",
+          borderTopWidth: 1,
+          borderTopColor: Colors.grisClair,
         },
-        tabBarActiveTintColor: "black",
-        tabBarInactiveTintColor: "#848484ff",
+        tabBarActiveTintColor: Colors.bleu,
+        tabBarInactiveTintColor: Colors.gris,
         sceneStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: Colors.fond,
         },
       }}
     >
@@ -38,6 +40,12 @@ export default function MainLayout() {
 
       <Tabs.Screen
         name="search"
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate("search", { screen: "index" });
+          },
+        })}
         options={{
           title: "",
           tabBarIcon: ({ color, size }) => (
@@ -46,7 +54,13 @@ export default function MainLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile/index"
+        name="profile"
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate("profile", { screen: "index" });
+          },
+        })}
         options={{
           title: "",
           tabBarIcon: ({ color, size }) => (
@@ -54,13 +68,6 @@ export default function MainLayout() {
           ),
         }}
       />
-      <Tabs.Screen name="profile/likedItems" options={{ href: null }} />
-      <Tabs.Screen name="profile/savedItems" options={{ href: null }} />
-      <Tabs.Screen name="profile/myClubs" options={{ href: null }} />
-      <Tabs.Screen name="profile/upcomingEvents" options={{ href: null }} />
-      {/* <Tabs.Screen name="profile/pastEvents" options={{ href: null }} /> */}
-      <Tabs.Screen name="profile/inscriptions" options={{ href: null }} />
-      <Tabs.Screen name="profile/inscription-detail" options={{ href: null }} />
     </Tabs>
   );
 }

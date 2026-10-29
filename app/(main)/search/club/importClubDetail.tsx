@@ -4,6 +4,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { Ionicons } from "@expo/vector-icons"; // Ou une autre bibliothèque d'icônes si tu n'utilises pas Expo vector icons
 import { ClubDetailDTO } from "@/types/club";
 import { styles } from "./_styles";
+import { Colors } from "@/constants/colors";
 
 interface ImportedClubDetailProps {
     club: ClubDetailDTO;
@@ -33,7 +34,7 @@ export default function ImportedClubDetail({ club }: ImportedClubDetailProps) {
             {/* Badge Info / Statut */}
             <View style={styles.badgeContainer}>
                 <View style={styles.tag}>
-                    <Ionicons name="cloud-download-outline" size={14} color="#6B7280" />
+                    <Ionicons name="cloud-download-outline" size={14} color={Colors.bleu} />
                     <Text style={styles.tagText}>Données Publiques (Sélection d'État)</Text>
                 </View>
             </View>
@@ -42,7 +43,7 @@ export default function ImportedClubDetail({ club }: ImportedClubDetailProps) {
             <View style={styles.headerSection}>
                 <Text style={styles.title}>{club.name || "Club sans nom"}</Text>
                 <View style={styles.locationRow}>
-                    <Ionicons name="location" size={18} color="#4A78FF" />
+                    <Ionicons name="location" size={18} color={Colors.bleu} />
                     <Text style={styles.cityText}>{club.city}</Text>
                 </View>
             </View>
@@ -69,19 +70,19 @@ export default function ImportedClubDetail({ club }: ImportedClubDetailProps) {
                         scrollEnabled={false}
                         zoomEnabled={false}
                     >
-                        <Marker coordinate={{ latitude, longitude }} title={club.name} pinColor="#4A78FF" />
+                        <Marker coordinate={{ latitude, longitude }} title={club.name} pinColor={Colors.bleu} />
                     </MapView>
                 </View>
 
                 <TouchableOpacity style={styles.navButton} onPress={openNavigation} activeOpacity={0.8}>
-                    <Ionicons name="navigate" size={20} color="white" style={{ marginRight: 8 }} />
+                    <Ionicons name="navigate" size={20} color={Colors.blanc} style={{ marginRight: 8 }} />
                     <Text style={styles.navButtonText}>Y aller / Lancer l'itinéraire</Text>
                 </TouchableOpacity>
             </View>
 
             {/* Note d'information UI/UX épurée */}
             <View style={styles.noticeContainer}>
-                <Ionicons name="information-circle-outline" size={20} color="#9CA3AF" />
+                <Ionicons name="information-circle-outline" size={20} color={Colors.gris} />
                 <Text style={styles.noticeText}>
                     Ce club provient des répertoires officiels. Ses dirigeants n'ont pas encore revendiqué la page sur l'application.
                 </Text>

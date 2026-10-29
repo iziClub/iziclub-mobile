@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { router } from "expo-router";
+import { Colors } from "@/constants/colors";
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -126,7 +127,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.blanc,
     paddingBottom: 40,
   },
   image: {
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     paddingLeft: 20,
+    color: Colors.noir,
   },
   label: {
     fontSize: 16,
@@ -145,21 +147,24 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 20,
     marginBottom: 8,
+    color: Colors.gris,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+    borderColor: Colors.grisClair,
+    borderRadius: 12,
     padding: 12,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
+    color: Colors.noir,
+    backgroundColor: Colors.blanc,
   },
   inputError: {
-    borderColor: "#D32F2F",
+    borderColor: Colors.rouge,
   },
   errorText: {
-    color: "#D32F2F",
+    color: Colors.rouge,
     fontSize: 13,
     width: "90%",
     alignSelf: "center",
@@ -167,27 +172,26 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    backgroundColor: "#0E011A",
-    padding: 20,
-    borderRadius: 8,
+    backgroundColor: Colors.noir,
+    padding: 16,
+    borderRadius: 999,
     width: "90%",
     marginBottom: 12,
     alignSelf: "center",
   },
   buttonDisabled: {
-    backgroundColor: "#B8B4B1",
+    backgroundColor: Colors.grisClair,
   },
   buttonText: {
-    color: "white",
+    color: Colors.blanc,
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 16,
   },
   forgotPassword: {
-    color: "#B8B4B1",
-    textAlign: "right",
-    marginBottom: 12,
+    color: Colors.bleu,
+    textAlign: "center",
+    marginTop: 8,
     textDecorationLine: "underline",
-    paddingRight: 20,
   },
 });

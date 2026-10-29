@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, Pressable, ScrollView, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Colors } from "@/constants/colors";
 
 interface CardProps {
   title: string;
@@ -56,7 +57,7 @@ export default function Card({
         {address && (
           <View>
             <View style={{ flexDirection: "row", alignItems: "flex-start", marginTop: 4 }}>
-              <Icon name="map-marker" size={14} color="#666" style={{ marginTop: 6 }} />
+              <Icon name="map-marker" size={14} color={Colors.bleu} style={{ marginTop: 6 }} />
 
               <View style={{ minHeight: 40, marginLeft: 4, flex: 1 }}>
                 <Text style={styles.address} numberOfLines={2}>
@@ -111,31 +112,32 @@ export default function Card({
 
 const styles = StyleSheet.create({
   cardShadow: {
-    borderRadius: 14,
+    borderRadius: 20,
     marginBottom: 14,
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.14,
-    shadowRadius: 12,
-    elevation: 6,
+    backgroundColor: Colors.blanc,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
+    shadowColor: Colors.noir,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 3,
   },
   card: {
-    // width: "100%",
-    backgroundColor: "white",
-    borderRadius: 14,
+    backgroundColor: Colors.blanc,
+    borderRadius: 20,
     overflow: "hidden",
   },
 
   banner: {
     width: "100%",
     height: 80,
-    backgroundColor: "#ddd",
+    backgroundColor: Colors.fond,
   },
   bannerPlaceholder: {
     width: "100%",
     height: 80,
-    backgroundColor: "#e5e5e5",
+    backgroundColor: Colors.fond,
   },
 
   avatarWrapper: {
@@ -150,40 +152,40 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: "white",
-    backgroundColor: "#ccc",
+    borderColor: Colors.blanc,
+    backgroundColor: Colors.grisClair,
   },
   avatarPlaceholder: {
     width: 50,
     height: 50,
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: "white",
-    backgroundColor: "#dbdbdb",
+    borderColor: Colors.blanc,
+    backgroundColor: Colors.grisClair,
   },
 
   content: {
     paddingTop: 25,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingBottom: 12,
   },
 
   title: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#111",
+    color: Colors.noir,
   },
   address: {
     marginTop: 4,
-    color: "#666",
+    color: Colors.gris,
     fontSize: 13,
   },
   tag: {
     marginTop: 8,
-    backgroundColor: "#f1f1f1",
-    paddingHorizontal: 8,
+    backgroundColor: Colors.fond,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 999,
     alignSelf: "flex-start",
     flexShrink: 0,
     flexDirection: "row",
@@ -191,37 +193,37 @@ const styles = StyleSheet.create({
   },
   clubTag: {
     marginTop: 8,
-    backgroundColor: "#282051",
-    paddingHorizontal: 8,
+    backgroundColor: Colors.bleu,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 999,
     alignSelf: "flex-start",
   },
   eventTag: {
     marginTop: 8,
-    backgroundColor: "#FB791B",
-    paddingHorizontal: 8,
+    backgroundColor: Colors.rouge,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 999,
     alignSelf: "flex-start",
   },
   tagText: {
-    color: "#FFFFFF",
+    color: Colors.blanc,
     fontSize: 12,
     fontWeight: "600",
   },
   extraTag: {
     marginTop: 8,
-    backgroundColor: "#F7F6F5",
-    paddingHorizontal: 8,
+    backgroundColor: Colors.fond,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 999,
     alignSelf: "flex-start",
     marginLeft: 6,
   },
   extraTagText: {
     fontSize: 12,
-    color: "#333",
+    color: Colors.noir,
     fontWeight: "600",
   },
 

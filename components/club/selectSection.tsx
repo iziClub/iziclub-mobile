@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { Colors } from "@/constants/colors";
 
 interface Props {
     activeSection: string;
@@ -40,33 +41,41 @@ export default function SelectSection({ activeSection, setActiveSection, SECTION
 
 const styles = StyleSheet.create({
     sectionsContainer: {
-        maxHeight: 50,
-        borderBottomWidth: 0.5,
-        borderBottomColor: "#ddd",
+        maxHeight: 52,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.grisClair,
+        backgroundColor: Colors.blanc,
     },
 
     sectionsContent: {
         paddingHorizontal: 16,
         alignItems: "center",
+        paddingVertical: 8,
     },
 
     sectionButton: {
         paddingHorizontal: 16,
-        paddingVertical: 6,
-        marginRight: 10,
-        borderRadius: 20,
-        backgroundColor: "#eee",
+        paddingVertical: 7,
+        marginRight: 8,
+        borderRadius: 999,
+        backgroundColor: Colors.fond,
+        borderWidth: 1,
+        borderColor: Colors.grisClair,
     },
 
     sectionButtonActive: {
-        backgroundColor: "#000",
+        backgroundColor: Colors.noir,
+        borderColor: Colors.noir,
     },
 
     sectionText: {
-        color: "#555",
+        color: Colors.gris,
+        fontSize: 13,
+        fontWeight: "500",
     },
 
     sectionTextActive: {
-        color: "#fff",
+        color: Colors.blanc,
+        fontWeight: "700",
     },
 });

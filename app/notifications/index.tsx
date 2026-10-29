@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNotifications, markNotificationAsRead } from '@/services/notifications.service';
 import { getClubById } from '@/services/clubs.service';
 import { Message } from '@/types/notification';
+import { Colors } from '@/constants/colors';
 
 export default function InboxScreen() {
   const router = useRouter();
@@ -89,7 +90,7 @@ export default function InboxScreen() {
       {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
+          <Ionicons name="arrow-back" size={24} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Boîte de réception</Text>
         <View style={{ width: 40 }} />
@@ -99,13 +100,13 @@ export default function InboxScreen() {
       {loading ? (
         // 1. Écran de chargement
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#4A78FF" />
+          <ActivityIndicator size="large" color={Colors.bleu} />
         </View>
       ) : notifications.length === 0 ? (
         // 2. Écran liste vide (Empty State)
         <View style={styles.centerContainer}>
           <View style={styles.emptyIconContainer}>
-            <Ionicons name="mail-open-outline" size={48} color="#999" />
+            <Ionicons name="mail-open-outline" size={48} color={Colors.gris} />
           </View>
           <Text style={styles.emptyTitle}>Tout est propre !</Text>
           <Text style={styles.emptySubtitle}>
@@ -148,7 +149,7 @@ export default function InboxScreen() {
                   <Ionicons 
                     name={msg.isUrgent ? "alert-circle" : "people-outline"} 
                     size={12} 
-                    color={msg.isUrgent ? "#E63946" : "#666"} 
+                    color={msg.isUrgent ? Colors.rouge : Colors.gris} 
                     style={{ marginRight: 4 }} 
                   />
                   <Text style={[styles.audienceText, msg.isUrgent && styles.urgentText]}>
@@ -165,36 +166,35 @@ export default function InboxScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: Colors.fond },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: Colors.grisClair, backgroundColor: Colors.blanc },
   backButton: { width: 40, height: 40, justifyContent: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#1A1A1A' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
   listContainer: { padding: 20 },
   
-  // NOUVEAU : Styles pour les écrans de chargement et liste vide
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, backgroundColor: '#FFF' },
-  emptyIconContainer: { width: 90, height: 90, borderRadius: 45, backgroundColor: '#F8F9FF', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: '#1A1A1A', marginBottom: 8, textAlign: 'center' },
-  emptySubtitle: { fontSize: 14, color: '#666', textAlign: 'center', lineHeight: 20, marginBottom: 24 },
-  refreshButton: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: '#F0F2F5' },
-  refreshButtonText: { fontSize: 14, fontWeight: '600', color: '#4A78FF' },
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, backgroundColor: Colors.fond },
+  emptyIconContainer: { width: 90, height: 90, borderRadius: 45, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  emptyTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir, marginBottom: 8, textAlign: 'center' },
+  emptySubtitle: { fontSize: 14, color: Colors.gris, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
+  refreshButton: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 999, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair },
+  refreshButtonText: { fontSize: 14, fontWeight: '600', color: Colors.noir },
 
   // Cartes de messages
-  msgCard: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#F2F2F2', shadowColor: '#000', shadowOpacity: 0.01, shadowRadius: 5, elevation: 1 },
-  msgCardUnread: { backgroundColor: '#F8F9FF', borderColor: '#4A78FF20' },
+  msgCard: { backgroundColor: Colors.blanc, borderRadius: 20, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
+  msgCardUnread: { backgroundColor: Colors.blanc, borderColor: Colors.bleu, borderWidth: 1.5 },
   msgHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },
   clubRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  clubName: { fontSize: 13, fontWeight: '600', color: '#666' },
-  unreadBadge: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#4A78FF' },
-  msgDate: { fontSize: 11, color: '#999' },
-  msgSubject: { fontSize: 15, fontWeight: '600', color: '#1A1A1A', marginBottom: 6 },
-  textBold: { fontWeight: '700', color: '#000' },
-  msgPreview: { fontSize: 13, color: '#666', lineHeight: 18, marginBottom: 12 },
+  clubName: { fontSize: 13, fontWeight: '600', color: Colors.gris },
+  unreadBadge: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.bleu },
+  msgDate: { fontSize: 11, color: Colors.gris },
+  msgSubject: { fontSize: 15, fontWeight: '600', color: Colors.noir, marginBottom: 6 },
+  textBold: { fontWeight: '700', color: Colors.noir },
+  msgPreview: { fontSize: 13, color: Colors.gris, lineHeight: 18, marginBottom: 12 },
   msgFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   
   // Badges d'audience
-  audienceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F0F0F0', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-  audienceText: { fontSize: 11, fontWeight: '500', color: '#555' },
-  urgentBadge: { backgroundColor: '#FFF0F0' },
-  urgentText: { color: '#E63946', fontWeight: '700' },
+  audienceBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.fond, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
+  audienceText: { fontSize: 11, fontWeight: '500', color: Colors.gris },
+  urgentBadge: { backgroundColor: '#FCE8E9' },
+  urgentText: { color: Colors.rouge, fontWeight: '700' },
 });

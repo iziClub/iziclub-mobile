@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform, Alert } from "react
 import { FontAwesome } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { Club } from "@/types/club";
+import { Colors } from "@/constants/colors";
 
 const safeTrim = (value?: string | null) => (value || "").trim();
 
@@ -116,7 +117,7 @@ export default function ContactSection({ club }: { club: Club }) {
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Adresse</Text>
           <TouchableOpacity onPress={openMaps} style={styles.linkRow}>
-            <FontAwesome name="map-marker" size={16} color="#1D4ED8" />
+            <FontAwesome name="map-marker" size={16} color={Colors.bleu} />
             <Text style={styles.linkText}>{fullAddress}</Text>
           </TouchableOpacity>
         </View>
@@ -124,7 +125,7 @@ export default function ContactSection({ club }: { club: Club }) {
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Telephone</Text>
           <TouchableOpacity onPress={callPhone} style={styles.linkRow}>
-            <FontAwesome name="phone" size={16} color="#1D4ED8" />
+            <FontAwesome name="phone" size={16} color={Colors.bleu} />
             <Text style={styles.linkText}>{phoneNumber}</Text>
           </TouchableOpacity>
         </View>
@@ -132,7 +133,7 @@ export default function ContactSection({ club }: { club: Club }) {
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Email</Text>
           <TouchableOpacity onPress={sendEmail} style={styles.linkRow}>
-            <FontAwesome name="envelope" size={16} color="#1D4ED8" />
+            <FontAwesome name="envelope" size={16} color={Colors.bleu} />
             <Text style={styles.linkText}>{emailAddress}</Text>
           </TouchableOpacity>
         </View>
@@ -191,26 +192,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 24,
-    backgroundColor: "#ffffff",
+    backgroundColor: Colors.fond,
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    backgroundColor: Colors.blanc,
+    borderRadius: 20,
     padding: 18,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
+    shadowColor: Colors.noir,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
   title: {
     fontSize: 20,
     fontWeight: "800",
-    color: "#0F172A",
+    color: Colors.noir,
   },
   subtitle: {
     fontSize: 14,
-    color: "#475569",
+    color: Colors.gris,
     marginTop: 4,
     marginBottom: 14,
   },
@@ -221,8 +224,8 @@ const styles = StyleSheet.create({
   },
   statPill: {
     flex: 1,
-    backgroundColor: "#EFF6FF",
-    borderRadius: 12,
+    backgroundColor: Colors.bleuClair,
+    borderRadius: 14,
     paddingVertical: 10,
     paddingHorizontal: 8,
     alignItems: "center",
@@ -230,23 +233,24 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#1E3A8A",
+    color: Colors.bleu,
   },
   statLabel: {
     fontSize: 11,
-    color: "#1E40AF",
+    color: Colors.bleu,
     marginTop: 2,
+    fontWeight: "600",
   },
   infoBlock: {
     borderTopWidth: 1,
-    borderTopColor: "#E2E8F0",
+    borderTopColor: Colors.grisClair,
     paddingTop: 12,
     marginTop: 2,
   },
   infoLabel: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#64748B",
+    color: Colors.gris,
     textTransform: "uppercase",
     letterSpacing: 0.6,
     marginBottom: 8,
@@ -259,13 +263,13 @@ const styles = StyleSheet.create({
   linkText: {
     flex: 1,
     fontSize: 15,
-    color: "#1D4ED8",
+    color: Colors.bleu,
     textDecorationLine: "underline",
   },
   infoText: {
     fontSize: 15,
     lineHeight: 22,
-    color: "#1E293B",
+    color: Colors.noir,
   },
   socialRow: {
     flexDirection: "row",
@@ -278,7 +282,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 8,
-    borderRadius: 12,
+    borderRadius: 999,
     paddingVertical: 12,
   },
   instagramButton: {

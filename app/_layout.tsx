@@ -4,6 +4,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ActivityIndicator, View } from "react-native";
+import { Colors } from "@/constants/colors";
 
 function RootLayoutNav() {
   const { user, isLoading } = useAuth();
@@ -29,8 +30,8 @@ function RootLayoutNav() {
   // Pendant le chargement du token, on affiche un loader pour éviter le flash d'écran
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#0E011A" />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond }}>
+        <ActivityIndicator size="large" color={Colors.bleu} />
       </View>
     );
   }

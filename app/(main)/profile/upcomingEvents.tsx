@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // 💡 Import de ton service d'événements
 import { getParticipatingEvents } from '@/services/events.service';
+import { Colors } from '@/constants/colors';
 
 export default function UpcomingEventsScreen() {
   const insets = useSafeAreaInsets();
@@ -65,10 +66,10 @@ export default function UpcomingEventsScreen() {
       {/* HEADER */}
       <View style={styles.header}>
         <TouchableOpacity 
-          onPress={() => router.replace("/profile")} 
+          onPress={() => router.back()} 
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name="arrow-back" size={24} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mes Participations</Text>
         <View style={{ width: 40 }} />
@@ -77,7 +78,7 @@ export default function UpcomingEventsScreen() {
       {loading ? (
         // 💡 Loader central pendant le chargement initial
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#4A78FF" />
+          <ActivityIndicator size="large" color={Colors.bleu} />
           <Text style={styles.loadingText}>Chargement de vos sorties...</Text>
         </View>
       ) : (
@@ -116,24 +117,19 @@ export default function UpcomingEventsScreen() {
                   <Text style={styles.eventTitle} numberOfLines={2}>{eventDetails.title}</Text>
                   
                   <View style={styles.locationRow}>
-                    <Ionicons name="location-outline" size={14} color="#666" />
+                    <Ionicons name="location-outline" size={14} color={Colors.bleu} />
                     {/* Concaténation propre de la rue et de la ville reçues de l'API */}
                     <Text style={styles.locationText} numberOfLines={1}>
                       {eventDetails.location?.street}, {eventDetails.location?.city}
                     </Text>
                   </View>
-
-                  {/* <TouchableOpacity style={styles.ticketButton}>
-                    <Text style={styles.ticketButtonText}>Voir mon pass</Text>
-                    <Ionicons name="qr-code-outline" size={16} color="#4A78FF" />
-                  </TouchableOpacity> */}
                 </TouchableOpacity>
               </View>
             );
           }}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="calendar-outline" size={60} color="#DDD" />
+              <Ionicons name="calendar-outline" size={60} color={Colors.gris} />
               <Text style={styles.emptyText}>Vous ne participez à aucun événement</Text>
             </View>
           }
@@ -144,13 +140,16 @@ export default function UpcomingEventsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
+  container: { flex: 1, backgroundColor: Colors.fond },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-    height: 50,
+    height: 56,
+    backgroundColor: Colors.blanc,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grisClair,
   },
   backButton: {
     width: 40,
@@ -158,9 +157,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.fond,
   },
-  headerTitle: { fontSize: 18, fontWeight: 'bold' },
+  headerTitle: { fontSize: 18, fontWeight: 'bold', color: Colors.noir },
   
   eventRow: {
     flexDirection: 'row',
@@ -172,19 +171,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 5,
   },
-  dateDay: { fontSize: 24, fontWeight: '800', color: '#1A1A1A' },
-  dateMonth: { fontSize: 11, fontWeight: 'bold', color: '#FFB900' },
+  dateDay: { fontSize: 24, fontWeight: '800', color: Colors.noir },
+  dateMonth: { fontSize: 11, fontWeight: 'bold', color: Colors.rouge },
   
   eventCard: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     borderRadius: 20,
     padding: 16,
     marginLeft: 10,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
+    borderColor: Colors.grisClair,
+    shadowColor: Colors.noir,
+    shadowOpacity: 0.04,
     shadowRadius: 10,
     elevation: 2,
   },
@@ -197,35 +196,35 @@ const styles = StyleSheet.create({
   categoryTag: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#4A78FF',
-    backgroundColor: '#Eef2ff',
+    color: Colors.rouge,
+    backgroundColor: '#FCE8E9',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 999,
     textTransform: 'uppercase',
   },
-  timeText: { fontSize: 12, fontWeight: '600', color: '#888' },
-  eventTitle: { fontSize: 16, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 6 },
+  timeText: { fontSize: 12, fontWeight: '600', color: Colors.gris },
+  eventTitle: { fontSize: 16, fontWeight: 'bold', color: Colors.noir, marginBottom: 6 },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  locationText: { fontSize: 13, color: '#666', marginLeft: 4, flex: 1 },
+  locationText: { fontSize: 13, color: Colors.gris, marginLeft: 4, flex: 1 },
   
   ticketButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#F5F5F5',
+    borderTopColor: Colors.grisClair,
     paddingTop: 12,
   },
   ticketButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#4A78FF',
+    color: Colors.bleu,
     marginRight: 8,
   },
 
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
-  loadingText: { marginTop: 10, color: '#666', fontSize: 14 },
+  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: Colors.fond },
+  loadingText: { marginTop: 10, color: Colors.gris, fontSize: 14 },
   emptyContainer: { marginTop: 100, alignItems: 'center' },
-  emptyText: { color: '#999', marginTop: 10 },
+  emptyText: { color: Colors.gris, marginTop: 10 },
 });

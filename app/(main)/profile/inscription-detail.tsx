@@ -6,6 +6,7 @@ import * as DocumentPicker from 'expo-document-picker';
 
 import { InscriptionStatus } from './inscriptions';
 import QuestionCard from "@/components/club/Membership/QuestionCard"; 
+import { Colors } from "@/constants/colors"; 
 
 import {
   deleteSubmission,
@@ -293,11 +294,11 @@ export default function InscriptionDetailScreen() {
 
   const getStatusConfig = (status: InscriptionStatus) => {
     switch (status) {
-      case 'approved': return { color: '#10B981', bg: '#E6F4EA', label: 'Dossier Validé', icon: 'verified' };
-      case 'rejected': return { color: '#EF4444', bg: '#FCE8E6', label: 'Dossier Refusé', icon: 'cancel' };
-      case 'needs_more_info': return { color: '#F59E0B', bg: '#FEF3C7', label: 'Action requise', icon: 'error' };
-      case 'draft': return { color: '#4A78FF', bg: '#F0F4FF', label: 'Brouillon', icon: 'edit' };
-      default: return { color: '#3B82F6', bg: '#EBF5FF', label: 'En cours d\'analyse', icon: 'hourglass-top' };
+      case 'approved': return { color: Colors.vert, bg: Colors.vertClair, label: 'Dossier Validé', icon: 'verified' };
+      case 'rejected': return { color: Colors.rouge, bg: '#FCE8E9', label: 'Dossier Refusé', icon: 'cancel' };
+      case 'needs_more_info': return { color: '#D97706', bg: '#FEF3C7', label: 'Action requise', icon: 'error' };
+      case 'draft': return { color: Colors.bleu, bg: Colors.bleuClair, label: 'Brouillon', icon: 'edit' };
+      default: return { color: Colors.bleu, bg: Colors.bleuClair, label: 'En cours d\'analyse', icon: 'hourglass-top' };
     }
   };
 
@@ -401,7 +402,7 @@ export default function InscriptionDetailScreen() {
     <View style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.replace("/profile/inscriptions")}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={22} color="#1A1A1A" />
         </TouchableOpacity>
 
@@ -463,7 +464,7 @@ export default function InscriptionDetailScreen() {
 
           {loadingForm ? (
             <View style={styles.loaderContainer}>
-              <ActivityIndicator size="small" color="#3B82F6" />
+              <ActivityIndicator size="small" color={Colors.bleu} />
             </View>
           ) : (isDraftMode || isNeedsMoreInfo) && formStructure?.questions ? (
             <View style={{ gap: 16 }}>
@@ -517,7 +518,7 @@ export default function InscriptionDetailScreen() {
         {/* ───────────────────────────────────────────────────────── */}
         {(isDraftMode || isNeedsMoreInfo) && !loadingForm && (
           <View style={styles.legalNoticeContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}
               onPress={() => setHasAgreedToTerms(!hasAgreedToTerms)}
               activeOpacity={0.8}
@@ -526,8 +527,8 @@ export default function InscriptionDetailScreen() {
               <View style={[
                 styles.checkboxVisual, 
                 { 
-                  borderColor: hasAgreedToTerms ? '#4A78FF' : '#A3A3A3',
-                  backgroundColor: hasAgreedToTerms ? '#4A78FF' : 'transparent'
+                  borderColor: hasAgreedToTerms ? Colors.bleu : Colors.grisClair,
+                  backgroundColor: hasAgreedToTerms ? Colors.bleu : 'transparent'
                 }
               ]}>
                 {hasAgreedToTerms && (
@@ -537,11 +538,11 @@ export default function InscriptionDetailScreen() {
 
               {/* Texte explicatif */}
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontWeight: '700', color: '#171717', marginBottom: 4 }}>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: Colors.noir, marginBottom: 4 }}>
                   Certification & Engagement Officiel
                 </Text>
-                <Text style={{ fontSize: 13, color: '#404040', lineHeight: 18 }}>
-                  Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontWeight: '700' }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
+                <Text style={{ fontSize: 13, color: Colors.gris, lineHeight: 18 }}>
+                  Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontWeight: '700', color: Colors.noir }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
                 </Text>
               </View>
             </TouchableOpacity>
@@ -552,23 +553,23 @@ export default function InscriptionDetailScreen() {
         {(isDraftMode || isNeedsMoreInfo) && !loadingForm && (
           <View style={{ marginTop: 10, gap: 12 }}>
             <TouchableOpacity
-              style={[styles.submitButton, { backgroundColor: '#F0F4FF', borderColor: '#4A78FF', borderWidth: 1 }]}
+              style={[styles.submitButton, { backgroundColor: Colors.blanc, borderColor: Colors.grisClair, borderWidth: 1.5 }]}
               onPress={handleDraftSave}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
             >
-              {isSavingDraft ? <ActivityIndicator size="small" color="#4A78FF" /> : <Text style={[styles.submitButtonText, { color: '#4A78FF' }]}>Mettre à jour le brouillon</Text>}
+              {isSavingDraft ? <ActivityIndicator size="small" color={Colors.bleu} /> : <Text style={[styles.submitButtonText, { color: Colors.noir }]}>Mettre à jour le brouillon</Text>}
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[
                 styles.submitButton, 
-                { backgroundColor: '#4A78FF' }, 
+                { backgroundColor: Colors.noir }, 
                 (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { opacity: 0.6 }
               ]}
               onPress={isNeedsMoreInfo ? handleResubmit : handleSubmit}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
             >
-              {isSubmitting ? <ActivityIndicator size="small" color="white" /> : <Text style={[styles.submitButtonText, { color: '#FFF' }]}>{isNeedsMoreInfo ? 'Renvoyer la soumission' : 'Envoyer mon dossier finalisé'}</Text>}
+              {isSubmitting ? <ActivityIndicator size="small" color="white" /> : <Text style={[styles.submitButtonText, { color: Colors.blanc }]}>{isNeedsMoreInfo ? 'Renvoyer la soumission' : 'Envoyer mon dossier finalisé'}</Text>}
             </TouchableOpacity>
           </View>
         )}
@@ -578,42 +579,41 @@ export default function InscriptionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  formName: { fontSize: 18, fontWeight: '700', color: '#171717', marginBottom: 16 },
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 60, backgroundColor: '#FFF', borderBottomWidth: 1, borderColor: '#E5E5E5' },
-  backButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: '#F5F5F5' },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#171717', flex: 1, textAlign: 'center' },
-  deleteButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: '#FCE8E6' },
+  formName: { fontSize: 18, fontWeight: '700', color: Colors.noir, marginBottom: 16 },
+  container: { flex: 1, backgroundColor: Colors.fond },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 60, backgroundColor: Colors.blanc, borderBottomWidth: 1, borderColor: Colors.grisClair },
+  backButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: Colors.fond },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.noir, flex: 1, textAlign: 'center' },
+  deleteButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: '#FCE8E9' },
   scrollContainer: { padding: 20, paddingBottom: 40 },
-  statusBanner: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, borderWidth: 1, marginBottom: 24 },
-  iconWrapper: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
+  statusBanner: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 20, borderWidth: 1, marginBottom: 24 },
+  iconWrapper: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
   statusBannerText: { marginLeft: 16, flex: 1 },
   statusLabel: { fontSize: 16, fontWeight: '700' },
-  statusSubtitle: { fontSize: 12, color: '#666', marginTop: 2 },
+  statusSubtitle: { fontSize: 12, color: Colors.gris, marginTop: 2 },
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 11, fontWeight: '700', color: '#737373', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 },
-  messageBubbleClub: { backgroundColor: '#FFF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#E5E5E5' },
+  sectionTitle: { fontSize: 11, fontWeight: '700', color: Colors.gris, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 },
+  messageBubbleClub: { backgroundColor: Colors.blanc, borderRadius: 20, padding: 16, borderWidth: 1, borderColor: Colors.grisClair },
   clubMessageHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  clubMessageSender: { fontWeight: '700', color: '#171717', fontSize: 14 },
-  clubMessageTime: { fontSize: 12, color: '#A3A3A3', fontWeight: '500' },
-  clubMessageBody: { fontSize: 14, color: '#404040', lineHeight: 22 },
-  emptyMessageContainer: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: '#FFF', borderRadius: 16, borderWidth: 1, borderColor: '#E5E5E5' },
-  emptyMessageText: { fontSize: 13, color: '#737373', marginLeft: 12, flex: 1 },
-  responsesCard: { backgroundColor: '#FFF', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 4, borderWidth: 1, borderColor: '#E5E5E5' },
-  responseRow: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#F5F5F5' },
-  responseQuestion: { fontSize: 13, fontWeight: '500', color: '#737373', marginBottom: 4 },
-  responseValue: { fontSize: 14, fontWeight: '600', color: '#171717' },
+  clubMessageSender: { fontWeight: '700', color: Colors.noir, fontSize: 14 },
+  clubMessageTime: { fontSize: 12, color: Colors.gris, fontWeight: '500' },
+  clubMessageBody: { fontSize: 14, color: Colors.noir, lineHeight: 22 },
+  emptyMessageContainer: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: Colors.blanc, borderRadius: 20, borderWidth: 1, borderColor: Colors.grisClair },
+  emptyMessageText: { fontSize: 13, color: Colors.gris, marginLeft: 12, flex: 1 },
+  responsesCard: { backgroundColor: Colors.blanc, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 4, borderWidth: 1, borderColor: Colors.grisClair },
+  responseRow: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: Colors.grisClair },
+  responseQuestion: { fontSize: 13, fontWeight: '500', color: Colors.gris, marginBottom: 4 },
+  responseValue: { fontSize: 14, fontWeight: '600', color: Colors.noir },
   loaderContainer: { paddingVertical: 24, alignItems: 'center' },
 
-  submitButton: { height: 48, borderRadius: 12, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' },
+  submitButton: { height: 48, borderRadius: 999, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' },
   submitButtonText: { fontSize: 14, fontWeight: '600' },
 
-  // 💡 NOUVEAUX STYLES AJOUTÉS
   legalNoticeContainer: {
-    backgroundColor: '#FFF9F3', 
+    backgroundColor: Colors.blanc, 
     borderWidth: 1,
-    borderColor: '#FFE2C5',
-    borderRadius: 16,
+    borderColor: Colors.grisClair,
+    borderRadius: 20,
     padding: 16,
     marginTop: 8,
     marginBottom: 20

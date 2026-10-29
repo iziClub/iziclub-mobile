@@ -7,6 +7,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { styles } from "./styles";
+import { Colors } from "@/constants/colors";
 
 export default function LoginRequired() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function LoginRequired() {
       <Ionicons
         name="lock-closed"
         size={64}
-        color="#ccc"
+        color={Colors.gris}
       />
 
       <Text style={styles.lockTitle}>

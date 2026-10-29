@@ -4,6 +4,7 @@ import Card from "@/components/card";
 import { useRouter } from "expo-router";
 import { ClubSearchItem } from "@/components/search/types";
 import { useEffect } from "react";
+import { Colors } from "@/constants/colors";
 
 interface Props {
   data: ClubSearchItem[];
@@ -22,13 +23,13 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
   const isEmpty = !isLoading && (!localData || localData.length === 0);
 
   const renderSkeleton = () => (
-    <View style={{ flex: 1, paddingHorizontal: 12, paddingTop: 10, backgroundColor: 'white' }}>
+    <View style={{ flex: 1, paddingHorizontal: 12, paddingTop: 10, backgroundColor: Colors.fond }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 }}>
         {Array.from({ length: 4 }).map((_, index) => (
           <View key={index} style={{ width: '49%', marginBottom: 16 }}>
-            <View style={{ height: 160, borderRadius: 18, backgroundColor: '#E5E7EB' }} />
-            <View style={{ height: 14, width: '60%', borderRadius: 8, backgroundColor: '#E5E7EB', marginTop: 12 }} />
-            <View style={{ height: 12, width: '40%', borderRadius: 8, backgroundColor: '#E5E7EB', marginTop: 8 }} />
+            <View style={{ height: 160, borderRadius: 18, backgroundColor: Colors.grisClair }} />
+            <View style={{ height: 14, width: '60%', borderRadius: 8, backgroundColor: Colors.grisClair, marginTop: 12 }} />
+            <View style={{ height: 12, width: '40%', borderRadius: 8, backgroundColor: Colors.grisClair, marginTop: 8 }} />
           </View>
         ))}
       </View>
@@ -36,10 +37,10 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
   );
 
   const renderEmptyState = () => (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 28, backgroundColor: 'white' }}>
-      <View style={{ width: 80, height: 80, borderRadius: 20, backgroundColor: '#F3F4F6', marginBottom: 16 }} />
-      <Text style={{ fontSize: 18, fontWeight: '700', color: '#1F2937', textAlign: 'center' }}>Aucun club trouvé</Text>
-      <Text style={{ marginTop: 8, color: '#6B7280', textAlign: 'center' }}>Essaye une autre recherche ou élargis ton rayon pour voir plus de clubs.</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 28, backgroundColor: Colors.fond }}>
+      <View style={{ width: 80, height: 80, borderRadius: 20, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair, marginBottom: 16 }} />
+      <Text style={{ fontSize: 18, fontWeight: '700', color: Colors.noir, textAlign: 'center' }}>Aucun club trouvé</Text>
+      <Text style={{ marginTop: 8, color: Colors.gris, textAlign: 'center' }}>Essaye une autre recherche ou élargis ton rayon pour voir plus de clubs.</Text>
     </View>
   );
 
@@ -52,7 +53,7 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
   }
 
   return (
-    <View style={{flex:1,paddingHorizontal:12,paddingTop:10}}>
+    <View style={{flex:1,paddingHorizontal:12,paddingTop:10, backgroundColor: Colors.fond}}>
       <FlatList
         data={localData}
         keyExtractor={(item)=>item.id}
@@ -60,8 +61,8 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
         <RefreshControl 
           refreshing={refreshing} 
           onRefresh={onRefresh} 
-          colors={['#4A78FF']} // Couleur sur Android
-          tintColor={'#4A78FF'} // Couleur sur iOS
+          colors={[Colors.bleu]} // Couleur sur Android
+          tintColor={Colors.bleu} // Couleur sur iOS
         />
       }
         numColumns={2}

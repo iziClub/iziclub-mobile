@@ -3,6 +3,7 @@ import { View, Text, FlatList, RefreshControl, ActivityIndicator } from "react-n
 import Card from "@/components/card";
 import { EventSearchItem } from "../../../components/search/types";
 import { useRouter } from "expo-router";
+import { Colors } from "@/constants/colors";
 
 interface Props {
   data: EventSearchItem[];
@@ -18,13 +19,13 @@ export default function EventsTab({ data, refreshing, onRefresh, onEndReached, l
   const isEmpty = !isLoading && (!data || data.length === 0);
 
   const renderSkeleton = () => (
-    <View style={{ flex: 1, paddingHorizontal: 12, paddingTop: 10, backgroundColor: 'white' }}>
+    <View style={{ flex: 1, paddingHorizontal: 12, paddingTop: 10, backgroundColor: Colors.fond }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 }}>
         {Array.from({ length: 4 }).map((_, index) => (
           <View key={index} style={{ width: '49%', marginBottom: 16 }}>
-            <View style={{ height: 120, borderRadius: 18, backgroundColor: '#E5E7EB' }} />
-            <View style={{ height: 14, width: '70%', borderRadius: 8, backgroundColor: '#E5E7EB', marginTop: 12 }} />
-            <View style={{ height: 12, width: '50%', borderRadius: 8, backgroundColor: '#E5E7EB', marginTop: 8 }} />
+            <View style={{ height: 120, borderRadius: 18, backgroundColor: Colors.grisClair }} />
+            <View style={{ height: 14, width: '70%', borderRadius: 8, backgroundColor: Colors.grisClair, marginTop: 12 }} />
+            <View style={{ height: 12, width: '50%', borderRadius: 8, backgroundColor: Colors.grisClair, marginTop: 8 }} />
           </View>
         ))}
       </View>
@@ -32,10 +33,10 @@ export default function EventsTab({ data, refreshing, onRefresh, onEndReached, l
   );
 
   const renderEmptyState = () => (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 28, backgroundColor: 'white' }}>
-      <View style={{ width: 80, height: 80, borderRadius: 20, backgroundColor: '#F3F4F6', marginBottom: 16 }} />
-      <Text style={{ fontSize: 18, fontWeight: '700', color: '#1F2937', textAlign: 'center' }}>Aucun événement trouvé</Text>
-      <Text style={{ marginTop: 8, color: '#6B7280', textAlign: 'center' }}>Essaye une autre recherche ou élargis ton rayon pour voir plus d'événements.</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 28, backgroundColor: Colors.fond }}>
+      <View style={{ width: 80, height: 80, borderRadius: 20, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair, marginBottom: 16 }} />
+      <Text style={{ fontSize: 18, fontWeight: '700', color: Colors.noir, textAlign: 'center' }}>Aucun événement trouvé</Text>
+      <Text style={{ marginTop: 8, color: Colors.gris, textAlign: 'center' }}>Essaye une autre recherche ou élargis ton rayon pour voir plus d'événements.</Text>
     </View>
   );
 
@@ -52,13 +53,13 @@ export default function EventsTab({ data, refreshing, onRefresh, onEndReached, l
     if (!loadingMore) return null;
     return (
       <View style={{ paddingVertical: 20, alignItems: 'center' }}>
-        <ActivityIndicator size="small" color="#4A78FF" />
+        <ActivityIndicator size="small" color={Colors.bleu} />
       </View>
     );
   };
 
   return (
-    <View style={{ flex: 1, paddingHorizontal: 12, paddingTop: 10 }}>
+    <View style={{ flex: 1, paddingHorizontal: 12, paddingTop: 10, backgroundColor: Colors.fond }}>
       <FlatList
         data={data} // Utilisation directe de la prop injectée
         keyExtractor={(item) => item.id}
@@ -71,8 +72,8 @@ export default function EventsTab({ data, refreshing, onRefresh, onEndReached, l
           <RefreshControl 
             refreshing={refreshing} 
             onRefresh={onRefresh} 
-            colors={['#4A78FF']} 
-            tintColor={'#4A78FF'} 
+            colors={[Colors.bleu]} 
+            tintColor={Colors.bleu} 
           />
         }
 

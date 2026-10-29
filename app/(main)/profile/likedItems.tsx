@@ -7,7 +7,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 // Import de tes services API
 import { getLikedClubs, unlikeClub, getClubById } from '@/services/clubs.service' // Adapte le chemin d'accès
-import { getLikedEvents, unlikeEvent, getEventById } from '@/services/events.service'; // Adapte le chemin d'accès
+import { getLikedEvents, unlikeEvent, getEventById } from '@/services/events.service';
+import { Colors } from '@/constants/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -170,7 +171,7 @@ export default function LikedItemsScreen() {
               activeOpacity={0.7}
               onPress={() => handleUnlike(item.id, activeTab)}
             >
-              <Ionicons name="heart" size={20} color="#FF5A5F" />
+              <Ionicons name="heart" size={20} color={Colors.rouge} />
             </TouchableOpacity>
             
             <View>
@@ -206,9 +207,9 @@ export default function LikedItemsScreen() {
         <Ionicons 
           name={activeTab === 'events' ? "calendar-outline" : "shield-outline"} 
           size={50} 
-          color="#A0A0A2" 
+          color={Colors.gris} 
         />
-        <Ionicons name="heart" size={22} color="#FF5A5F" style={styles.emptyHeartBadge} />
+        <Ionicons name="heart" size={22} color={Colors.rouge} style={styles.emptyHeartBadge} />
       </View>
       <Text style={styles.emptyTitle}>Rien pour le moment</Text>
       <Text style={styles.emptySubtitle}>
@@ -229,8 +230,8 @@ export default function LikedItemsScreen() {
     <View style={[styles.container]}>
       {/* HEADER BAR */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.replace("/profile")} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={22} color="#1C1C1E" />
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={22} color={Colors.noir} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mes Favoris</Text>
         <View style={{ width: 40 }} /> 
@@ -242,7 +243,7 @@ export default function LikedItemsScreen() {
           style={[styles.tab, activeTab === 'events' && styles.activeTab]}
           onPress={() => setActiveTab('events')}
         >
-          <Ionicons name="flash" size={16} color={activeTab === 'events' ? '#4A78FF' : '#8E8E93'} />
+          <Ionicons name="flash" size={16} color={activeTab === 'events' ? Colors.bleu : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Événements</Text>
         </TouchableOpacity>
 
@@ -250,7 +251,7 @@ export default function LikedItemsScreen() {
           style={[styles.tab, activeTab === 'clubs' && styles.activeTab]}
           onPress={() => setActiveTab('clubs')}
         >
-          <Ionicons name="people" size={16} color={activeTab === 'clubs' ? '#4A78FF' : '#8E8E93'} />
+          <Ionicons name="people" size={16} color={activeTab === 'clubs' ? Colors.bleu : Colors.gris} />
           <Text style={[styles.tabText, activeTab === 'clubs' && styles.activeTabText]}>Clubs</Text>
         </TouchableOpacity>
       </View>
@@ -258,7 +259,7 @@ export default function LikedItemsScreen() {
       {/* LIST OR LOADER */}
       {loading ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#4A78FF" />
+          <ActivityIndicator size="large" color={Colors.bleu} />
         </View>
       ) : (
         <FlatList
@@ -275,14 +276,16 @@ export default function LikedItemsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: Colors.fond },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     height: 56,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.blanc,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.grisClair,
   },
   backButton: {
     width: 38,
@@ -290,18 +293,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: Colors.fond,
   },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#1C1C1E' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: Colors.noir },
   
   // Onglets de navigation (Tabs)
   tabsContainer: {
     flexDirection: 'row',
-    backgroundColor: '#EFFF',
+    backgroundColor: Colors.blanc,
     marginHorizontal: 16,
     marginVertical: 14,
     padding: 4,
-    borderRadius: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
   },
   tab: {
     flex: 1,
@@ -309,46 +314,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: 999,
     gap: 6,
   },
   activeTab: {
-    backgroundColor: '#FFF',
-    shadowColor: '#000',
+    backgroundColor: Colors.fond,
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
-  tabText: { fontSize: 13, fontWeight: '600', color: '#8E8E93' },
-  activeTabText: { color: '#4A78FF' },
+  tabText: { fontSize: 13, fontWeight: '600', color: Colors.gris },
+  activeTabText: { color: Colors.bleu },
 
   // Listes & Cartes
   listContent: { paddingHorizontal: 16, paddingBottom: 30, paddingTop: 4 },
   card: {
     height: 190,
     marginBottom: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFF',
-    shadowColor: '#000',
+    borderRadius: 20,
+    backgroundColor: Colors.blanc,
+    shadowColor: Colors.noir,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
+    overflow: 'hidden',
   },
   imageBackground: { flex: 1 },
   gradient: {
     flex: 1,
     padding: 16,
     justifyContent: 'space-between',
-    borderRadius: 16,
+    borderRadius: 20,
   },
   heartButton: {
     alignSelf: 'flex-end',
-    backgroundColor: 'white',
+    backgroundColor: Colors.blanc,
     padding: 9,
-    borderRadius: 20,
-    shadowColor: '#000',
+    borderRadius: 999,
+    shadowColor: Colors.noir,
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
@@ -358,7 +366,7 @@ const styles = StyleSheet.create({
   infoText: { color: '#EAEAEA', fontSize: 12, marginLeft: 4, fontWeight: '500' },
   
   // Chargement
-  loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
 
   // États vides de l'UI (Empty State UX)
   emptyContainer: { 
@@ -371,7 +379,9 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#EFEFEF',
+    backgroundColor: Colors.blanc,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -381,17 +391,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 12,
     right: 12,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.blanc,
     borderRadius: 12,
     padding: 2,
   },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: '#1C1C1E', marginBottom: 6 },
-  emptySubtitle: { fontSize: 13, color: '#8E8E93', textAlign: 'center', lineHeight: 18, marginBottom: 20 },
+  emptyTitle: { fontSize: 17, fontWeight: '700', color: Colors.noir, marginBottom: 6 },
+  emptySubtitle: { fontSize: 13, color: Colors.gris, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
   exploreBtn: {
-    backgroundColor: '#4A78FF',
-    paddingVertical: 10,
+    backgroundColor: Colors.noir,
+    paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 20,
+    borderRadius: 999,
   },
-  exploreBtnText: { color: '#FFF', fontWeight: '700', fontSize: 14 }
+  exploreBtnText: { color: Colors.blanc, fontWeight: 'bold', fontSize: 14 }
 });
