@@ -1,12 +1,15 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useLocation } from '@/context/LocationContext';
 import { useSearch } from '../../../components/search/useSearch';
 import { Colors } from '@/constants/colors';
-import { Fonts } from "@/constants/theme";
+import { Fonts, Radius, Shadow } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
+import IconButton from "@/components/ui/IconButton";
+import Tag from "@/components/ui/Tag";
 
 const DEFAULT_REGION: Region = {
   latitude: 48.692,
@@ -165,7 +168,7 @@ export default function MapScreen() {
               <View style={styles.calloutWrapper}>
                 <View style={styles.calloutCard}>
                   <Text style={styles.clubTitle} numberOfLines={1}>{club.name}</Text>
-                  <View style={styles.tagBadgeClub}><Text style={styles.tagTextClub}>Club</Text></View>
+                  <Tag label="Club" variant="doux" />
                   <View style={styles.divider} />
                   <View style={styles.addressRow}>
                     <Icon name="location" size={12} color={Colors.bleu} />
@@ -200,7 +203,7 @@ export default function MapScreen() {
               <View style={styles.calloutWrapper}>
                 <View style={styles.calloutCard}>
                   <Text style={styles.clubTitle} numberOfLines={1}>{event.name}</Text>
-                  <View style={styles.tagBadgeEvent}><Text style={styles.tagTextEvent}>Événement</Text></View>
+                  <Tag label="Événement" variant="danger" />
                   <View style={styles.divider} />
                   <View style={styles.addressRow}>
                     <Icon name="location" size={12} color={Colors.rouge} />
@@ -228,81 +231,53 @@ export default function MapScreen() {
       <View style={styles.topControlsContainer}>
         {/* Bouton "Rechercher ici" */}
         {showSearchButton && (
-          <TouchableOpacity
+          <Button
+            label={loading ? "Chargement..." : "Rechercher dans cette zone"}
+            icon="refresh"
+            variant="secondaire"
+            loading={loading}
             style={styles.searchHereBtn}
             onPress={handleSearchHere}
-            activeOpacity={0.9}
-            disabled={loading}
-          >
-            <Icon
-              name={loading ? "hourglass-outline" : "refresh"}
-              size={18}
-              color={Colors.noir}
-            />
-            <Text style={styles.searchHereText}>
-              {loading ? "Chargement..." : "Rechercher dans cette zone"}
-            </Text>
-          </TouchableOpacity>
+          />
         )}
 
         {/* BARRE DE FILTRES UI/UX */}
         <View style={styles.filterContainer}>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              showClubs ? styles.filterButtonClubActive : styles.filterButtonInactive
-            ]}
+          <Tag
+            label="Clubs"
+            icon={showClubs ? "people-circle" : "people-circle-outline"}
+            variant="neutre"
+            selected={showClubs}
             onPress={() => toggleFilter('clubs')}
-            activeOpacity={0.8}
-          >
-            <Icon 
-              name={showClubs ? "people-circle" : "people-circle-outline"} 
-              size={16} 
-              color={showClubs ? Colors.blanc : Colors.gris} 
-            />
-            <Text style={[styles.filterText, showClubs ? styles.filterTextActive : styles.filterTextInactive]}>
-              Clubs
-            </Text>
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              showEvents ? styles.filterButtonEventActive : styles.filterButtonInactive
-            ]}
+          <Tag
+            label="Événements"
+            icon={showEvents ? "medal" : "medal-outline"}
+            variant="neutre"
+            selected={showEvents}
             onPress={() => toggleFilter('events')}
-            activeOpacity={0.8}
-          >
-            <Icon 
-              name={showEvents ? "medal" : "medal-outline"} 
-              size={16} 
-              color={showEvents ? Colors.blanc : Colors.gris} 
-            />
-            <Text style={[styles.filterText, showEvents ? styles.filterTextActive : styles.filterTextInactive]}>
-              Événements
-            </Text>
-          </TouchableOpacity>
+          />
         </View>
       </View>
 
       {/* Bouton Géolocalisation */}
-      <TouchableOpacity
+      <IconButton
+        name="locate-outline"
+        iconSize={22}
+        accessibilityLabel="Me localiser"
         style={styles.fabLocation}
         onPress={handleRequestLocation}
-        activeOpacity={0.8}
-      >
-        <Icon name="locate-outline" size={22} color={Colors.noir} />
-      </TouchableOpacity>
+      />
 
       {/* Bouton Retour Liste */}
-      <TouchableOpacity
+      <Button
+        label="Liste"
+        icon="list"
+        variant="secondaire"
         style={styles.fabList}
         onPress={() => router.back()}
-        activeOpacity={0.8}
-      >
-        <Icon name="list" size={24} color={Colors.noir} />
-        <Text style={styles.fabText}>Liste</Text>
-      </TouchableOpacity>
+      />
     </View>
   );
 }
@@ -329,20 +304,11 @@ const styles = StyleSheet.create({
   },
 
   searchHereBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: Colors.blanc,
-    paddingVertical: 11,
-    paddingHorizontal: 20,
-    borderRadius: 999,
-    elevation: 4,
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
+    borderRadius: Radius.full,
+    borderWidth: 0,
+    ...Shadow.flottante,
   },
-  searchHereText: { marginLeft: 8, color: Colors.noir, fontFamily: Fonts.medium, fontSize: 14 },
 
   // Styles de la barre de filtres
   filterContainer: {
@@ -357,33 +323,6 @@ const styles = StyleSheet.create({
     gap: 8,
     borderWidth: 1,
     borderColor: Colors.grisClair,
-  },
-  filterButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 7,
-    paddingHorizontal: 16,
-    borderRadius: 999,
-    gap: 8,
-  },
-  filterButtonClubActive: {
-    backgroundColor: Colors.noir,
-  },
-  filterButtonEventActive: {
-    backgroundColor: Colors.noir,
-  },
-  filterButtonInactive: {
-    backgroundColor: 'transparent',
-  },
-  filterText: {
-    fontSize: 12,
-    fontFamily: Fonts.medium,
-  },
-  filterTextActive: {
-    color: Colors.blanc,
-  },
-  filterTextInactive: {
-    color: Colors.grisTexte,
   },
 
   markerShadowContainer: {
@@ -431,22 +370,6 @@ const styles = StyleSheet.create({
   addressText: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, marginLeft: 4, textTransform: 'capitalize', flex: 1 },
   moreInfo: { fontSize: 12, fontFamily: Fonts.medium, marginTop: 8, textAlign: 'right' },
   
-  tagBadgeClub: {
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.bleuClair,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 999,
-  },
-  tagBadgeEvent: {
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.rougeClair,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 999,
-  },
-  tagTextClub: { fontSize: 12,fontFamily: Fonts.medium, color: Colors.noir },
-  tagTextEvent: { fontSize: 12,fontFamily: Fonts.medium, color: Colors.noir },
   
   arrow: {
     width: 0, height: 0, backgroundColor: 'transparent', borderStyle: 'solid',
@@ -459,32 +382,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 95,
     right: 20,
-    backgroundColor: Colors.blanc,
-    padding: 12,
-    borderRadius: 999,
-    elevation: 4,
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
+    ...Shadow.flottante,
   },
   fabList: {
     position: 'absolute',
     bottom: 30,
     alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: Colors.blanc,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-    elevation: 4,
-    shadowColor: Colors.noir,
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
+    borderRadius: Radius.full,
+    borderWidth: 0,
+    ...Shadow.flottante,
   },
-  fabText: { marginLeft: 8, fontFamily: Fonts.medium, fontSize: 16, color: Colors.noir },
 });

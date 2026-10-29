@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { Colors } from "@/constants/colors";
-import { Fonts } from "@/constants/theme";
+import Tag from "@/components/ui/Tag";
 
 interface Props {
     activeSection: string;
@@ -18,23 +18,14 @@ export default function SelectSection({ activeSection, setActiveSection, SECTION
             contentContainerStyle={styles.sectionsContent}
         >
             {SECTIONS.map((section) => (
-                <TouchableOpacity
+                <Tag
                     key={section}
-                    style={[
-                        styles.sectionButton,
-                        activeSection === section && styles.sectionButtonActive,
-                    ]}
+                    label={section}
+                    variant="neutre"
+                    selected={activeSection === section}
                     onPress={() => setActiveSection(section)}
-                >
-                    <Text
-                        style={[
-                            styles.sectionText,
-                            activeSection === section && styles.sectionTextActive,
-                        ]}
-                    >
-                        {section}
-                    </Text>
-                </TouchableOpacity>
+                    style={styles.sectionButton}
+                />
             ))}
         </ScrollView>
     )
@@ -55,28 +46,9 @@ const styles = StyleSheet.create({
     },
 
     sectionButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 7,
         marginRight: 8,
-        borderRadius: 999,
-        backgroundColor: Colors.fond,
-        borderWidth: 1,
-        borderColor: Colors.grisClair,
     },
 
-    sectionButtonActive: {
-        backgroundColor: Colors.noir,
-        borderColor: Colors.noir,
-    },
 
-    sectionText: {
-        color: Colors.grisTexte,
-        fontSize: 14,
-        fontFamily: Fonts.medium,
-    },
 
-    sectionTextActive: {
-        color: Colors.blanc,
-        fontFamily: Fonts.medium,
-    },
 });

@@ -3,21 +3,20 @@ import Checkbox from "expo-checkbox";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  ActivityIndicator,
   Alert
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { registerUser } from "../../services/auth";
 import { Colors } from "@/constants/colors";
-import { Fonts } from "@/constants/theme";
+import { Fonts, Spacing } from "@/constants/theme";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 export default function PasswordCreationScreen() {
   const { login } = useAuth();
@@ -30,7 +29,6 @@ export default function PasswordCreationScreen() {
   }>();
   const router = useRouter();
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const rules = [
@@ -105,21 +103,15 @@ export default function PasswordCreationScreen() {
         />
         <Text style={styles.title}>Sécurise ton compte</Text>
 
-        <Text style={styles.label}>Mot de passe</Text>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={[styles.input, { flex: 1, marginBottom: 0, borderWidth: 0 }]}
+        <View style={styles.form}>
+          <Input
+            label="Mot de passe"
             placeholder="Ton mot de passe"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={!showPassword}
+            password
+            autoComplete="new-password"
           />
-          <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
-            style={styles.eyeButton}
-          >
-            <Text style={{ fontSize: 18, fontFamily: Fonts.regular }}>{showPassword ? "🙈" : "👁️"}</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.rulesContainer}>
@@ -133,7 +125,7 @@ export default function PasswordCreationScreen() {
                   style={{ marginRight: 12, width: 18, height: 18 }}
                   disabled
                 />
-                <Text style={{ color: valid ? Colors.vert : Colors.gris, fontSize: 14, fontFamily: Fonts.regular }}>
+                <Text style={{ color: valid ? Colors.noir : Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular }}>
                   {rule.label}
                 </Text>
               </View>
@@ -141,24 +133,17 @@ export default function PasswordCreationScreen() {
           })}
         </View>
 
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: allValid && !isSubmitting ? Colors.noir : Colors.grisClair },
-          ]}
-          disabled={!allValid || isSubmitting}
-          onPress={handleRegister}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color={Colors.blanc} />
-          ) : (
-            <Text style={styles.buttonText}>Créer un compte</Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleGoBack}>
-          <Text style={styles.forgotPassword}>Modifier mes informations</Text>
-        </TouchableOpacity>
+        <View style={styles.form}>
+          <Button
+            label="Créer un compte"
+            size="l"
+            fullWidth
+            disabled={!allValid}
+            loading={isSubmitting}
+            onPress={handleRegister}
+          />
+          <Button variant="tertiaire" label="Modifier mes informations" onPress={handleGoBack} />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -175,6 +160,10 @@ const styles = StyleSheet.create({
     height: 350,
     resizeMode: "contain",
   },
+  form: {
+    paddingHorizontal: Spacing[5],
+    gap: Spacing[4],
+  },
   title: {
     fontSize: 32,
     fontFamily: Fonts.titre,
@@ -182,28 +171,10 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     color: Colors.noir,
   },
-  label: {
-    fontSize: 16,
-    fontFamily: Fonts.medium,
-    alignSelf: "flex-start",
-    marginLeft: 20,
-    marginBottom: 8,
-    color: Colors.grisTexte,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    padding: 12,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-    color: Colors.noir,
-    backgroundColor: Colors.blanc,
-  },
   rulesContainer: {
     width: "90%",
     alignSelf: "center",
+    marginTop: 16,
     marginBottom: 32,
     backgroundColor: Colors.fond,
     padding: 16,
@@ -214,67 +185,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 4,
   },
-  button: {
-    backgroundColor: Colors.noir,
-    minHeight: 52,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  buttonText: {
-    color: Colors.blanc,
-    fontFamily: Fonts.medium,
-    textAlign: "center",
-    fontSize: 16,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "90%",
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    paddingRight: 12,
-    marginBottom: 20,
-    alignSelf: "center",
-  },
-  eyeButton: {
-    paddingHorizontal: 8,
-  },
-  forgotPassword: {
-    color: Colors.bleu,
-    textAlign: "center",
-    marginTop: 12,
-    marginBottom: 12,
-    textDecorationLine: "underline",
-  },
-  separatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 20,
-    width: "90%",
-    alignSelf: "center"
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Colors.grisClair,
-  },
-  separatorText: {
-    marginHorizontal: 12,
-    fontSize: 14,
-    color: Colors.grisTexte,
-    fontFamily: Fonts.medium,
-  },
-  googleButton: {
-    backgroundColor: Colors.fond, 
-    flexDirection: "row", 
-    alignItems: "center", 
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: Colors.grisClair
-  }
 });

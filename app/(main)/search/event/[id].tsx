@@ -3,13 +3,13 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity,
   ScrollView,
   Alert,
   Platform,
   ActivityIndicator,
   Linking,
   Share,
+  Pressable,
 } from "react-native";
 import { useRouter, useGlobalSearchParams } from "expo-router";
 import * as Calendar from "expo-calendar/legacy";
@@ -24,6 +24,10 @@ import { getSportById } from "@/services/sports.service";
 import { styles } from "./_styles";
 import { Colors } from "@/constants/colors";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
+import IconButton from "@/components/ui/IconButton";
+import Tag from "@/components/ui/Tag";
+import ListItem from "@/components/ui/ListItem";
 
 // -------------------
 // Calendrier
@@ -258,8 +262,10 @@ export default function EventDetailScreen() {
       
       <View style={styles.imageContainer}>
         <Image source={{ uri: event.coverImagePath ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
-        <TouchableOpacity 
-          style={styles.backButton} 
+        <IconButton
+          name="arrow-back"
+          accessibilityLabel="Retour"
+          style={styles.backButton}
           onPress={() => {
             if (router.canGoBack()) {
               router.back();
@@ -267,10 +273,7 @@ export default function EventDetailScreen() {
               router.replace('/search');
             }
           }}
-          activeOpacity={0.7}
-        >
-          <Icon name="arrow-back" size={20} color={Colors.noir} />
-        </TouchableOpacity>
+        />
       </View>
 
       {/* TITRE */}
@@ -280,20 +283,17 @@ export default function EventDetailScreen() {
       {(eventTags.length > 0 || resolvedSportName) && (
         <View style={styles.tagContainer}>
           {resolvedSportName ? (
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{resolvedSportName}</Text>
-            </View>
+            <Tag label={resolvedSportName} variant="doux" style={styles.tag} />
           ) : null}
           {eventTags.map((tag) => (
-            <View key={tag} style={styles.tag}>
-              <Text style={styles.tagText}>{tag}</Text>
-            </View>
+            <Tag key={tag} label={tag} variant="doux" style={styles.tag} />
           ))}
         </View>
       )}
 
-      <TouchableOpacity
-        style={styles.clubContainer}
+      <Pressable
+        accessibilityRole="link"
+        style={({ pressed }) => [styles.clubContainer, pressed && { opacity: 0.6 }]}
         disabled={!event.clubId}
         onPress={() => event.clubId && router.push(`/search/club/${event.clubId}`)}
       >
@@ -301,19 +301,18 @@ export default function EventDetailScreen() {
           <Image source={{ uri: club.profile.profileImagePath }} style={styles.clubImage} />
         )}
         <Text style={styles.clubName}>Publié par {club?.name}</Text>
-      </TouchableOpacity>
+      </Pressable>
 
       {event.partnerClubs && event.partnerClubs.length > 0 && (
         <View style={styles.partnerSection}>
           <Text style={styles.partnerTitle}>Clubs partenaires</Text>
           {event.partnerClubs.map((partner) => (
-            <TouchableOpacity
+            <ListItem
               key={partner.id}
+              label={partner.name}
               style={styles.partnerChip}
               onPress={() => router.push(`/search/club/${partner.id}`)}
-            >
-              <Text style={styles.partnerName}>{partner.name}</Text>
-            </TouchableOpacity>
+            />
           ))}
         </View>
       )}
@@ -335,13 +334,13 @@ export default function EventDetailScreen() {
             {formatEventTime(event.startDate)} - {formatEventTime(event.endDate)}
           </Text>
 
-          <TouchableOpacity
+          <Button
+            label="Ajouter"
+            icon="calendar-outline"
+            variant="secondaire"
             style={styles.calendarButton}
             onPress={() => confirmAddToCalendar(event)}
-          >
-            <Icon name="calendar-outline" size={20} color={Colors.blanc} />
-            <Text style={styles.calendarButtonText}>Ajouter</Text>
-          </TouchableOpacity>
+          />
 
 
         </View>
@@ -375,13 +374,12 @@ export default function EventDetailScreen() {
                 </View>
               )}
 
-              <TouchableOpacity
+              <Button
+                label="Y aller"
+                icon="navigate"
                 style={styles.navOverlayButton}
                 onPress={() => openNavigation(event.address.street, event.address.city)}
-              >
-                <Icon name="navigate" size={18} color={Colors.blanc} />
-                <Text style={styles.navOverlayText}>Y aller</Text>
-              </TouchableOpacity>
+              />
             </View>
           </>
         ) : (
@@ -413,13 +411,11 @@ export default function EventDetailScreen() {
         initialLikeCount={isLoggedIn ? (event.status?.countLikes ?? 0) : 0}
         isLoggedIn={isLoggedIn}
       />
-      <TouchableOpacity style={[styles.calendarButton, {
-        backgroundColor: Colors.noir, justifyContent: "center", marginHorizontal: 16,
-        marginTop: 20,
-        paddingVertical: 16,
-        paddingHorizontal: 12,
-        borderRadius: 999
-      }]}
+      <Button
+        label="Partager"
+        icon="share-social-outline"
+        size="l"
+        style={styles.shareButton}
         onPress={async () => {
           const tags = ["iziclub", "sport", event.type?.toLowerCase() || "event", event.address.city?.toLowerCase().replace(/\s+/g, "")]
             .filter(Boolean)
@@ -438,10 +434,7 @@ export default function EventDetailScreen() {
             console.error("Erreur partage natif :", error);
           }
         }}
-      >
-        <Icon name="share-social-outline" size={20} color={Colors.blanc} />
-        <Text style={styles.calendarButtonText}>Partager</Text>
-      </TouchableOpacity>
+      />
     </ScrollView>
   );
 }

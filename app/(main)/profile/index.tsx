@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal, Pressable, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
@@ -19,6 +19,10 @@ import { getNotifications } from '@/services/notifications.service';
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import IconButton from "@/components/ui/IconButton";
+import ListItem from "@/components/ui/ListItem";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -231,13 +235,8 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.guestActions}>
-          <TouchableOpacity style={styles.loginButton} onPress={() => router.push("/(auth)/login")} activeOpacity={0.85}>
-            <Text style={styles.loginButtonText}>Se connecter</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.registerButton} onPress={() => router.push("/(auth)/register")} activeOpacity={0.85}>
-            <Text style={styles.registerButtonText}>Créer un compte</Text>
-          </TouchableOpacity>
+          <Button label="Se connecter" size="l" fullWidth onPress={() => router.push("/(auth)/login")} />
+          <Button label="Créer un compte" variant="secondaire" size="l" fullWidth onPress={() => router.push("/(auth)/register")} />
         </View>
       </ScrollView>
     );
@@ -276,7 +275,7 @@ export default function ProfileScreen() {
           <Text style={styles.sectionTitle}>Espace personnel & Suivis</Text>
           <View style={styles.gridContainer}>
             {savedCategories.map((cat) => (
-              <TouchableOpacity key={cat.id} style={styles.gridCard} onPress={() => router.push({ pathname: cat.path })}>
+              <Card key={cat.id} bordered style={styles.gridCard} onPress={() => router.push({ pathname: cat.path })}>
                 <View style={[styles.iconCircle, { backgroundColor: cat.color + '15' }]}>
                   <Icon name={cat.icon as any} size={22} color={cat.color} />
                 </View>
@@ -288,7 +287,7 @@ export default function ProfileScreen() {
                     <Text style={styles.gridBadgeText}>{cat.badge}</Text>
                   </View>
                 ) : null}
-              </TouchableOpacity>
+              </Card>
             ))}
           </View>
         </View>
@@ -296,7 +295,8 @@ export default function ProfileScreen() {
         {/* 3. SECTION : MES INSCRIPTIONS (Ligne élégante isolée) */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Mes inscriptions</Text>
-          <TouchableOpacity
+          <Card
+            bordered
             style={styles.inscriptionsCard}
             onPress={() => router.push("/profile/inscriptions")}
           >
@@ -313,18 +313,13 @@ export default function ProfileScreen() {
               <Text style={styles.badgeAlertText}>{stats.dossiersCount}</Text>
               <Icon name="chevron-forward" size={16} color={Colors.gris} style={{ marginLeft: 4 }} />
             </View>
-          </TouchableOpacity>
+          </Card>
         </View>
 
         {/* 5. DÉCONNEXION */}
         <View style={styles.navigationMenu}>
           <Text style={styles.navHeader}>Compte & Sécurité</Text>
-          <TouchableOpacity onPress={logout} style={styles.logoutButton}>
-            <View style={styles.navButtonContent}>
-              <Icon name="log-out-outline" size={20} color={Colors.rouge} />
-              <Text style={[styles.navButtonText, { color: Colors.rouge }]}>Déconnexion</Text>
-            </View>
-          </TouchableOpacity>
+          <ListItem label="Déconnexion" icon="log-out-outline" danger chevron={false} onPress={logout} />
         </View>
       </ScrollView>
 
@@ -334,9 +329,7 @@ export default function ProfileScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{selectedDoc?.title}</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Icon name="close" size={24} color={Colors.noir} />
-              </TouchableOpacity>
+              <IconButton name="close" variant="fantome" accessibilityLabel="Fermer" onPress={() => setModalVisible(false)} />
             </View>
             {selectedDoc?.type === 'qr' ? (
               <View style={styles.qrContainer}>
@@ -350,10 +343,7 @@ export default function ProfileScreen() {
                 <Text style={styles.docDate}>Valide jusqu'au 01/01/2027</Text>
               </View>
             )}
-            <TouchableOpacity style={styles.downloadButton}>
-              <Icon name="download-outline" size={20} color={Colors.blanc} />
-              <Text style={styles.downloadText}>Télécharger le PDF</Text>
-            </TouchableOpacity>
+            <Button label="Télécharger le PDF" icon="download-outline" size="l" style={{ marginTop: 20 }} />
           </View>
         </Pressable>
       </Modal>
@@ -371,18 +361,18 @@ export default function ProfileScreen() {
           <Text style={styles.uploadTitle}>Ajouter un document</Text>
           <Text style={styles.uploadSubtitle}>Choisissez une méthode pour importer votre justificatif.</Text>
           <View style={styles.uploadOptionsRow}>
-            <TouchableOpacity style={styles.uploadOption} onPress={takePhoto}>
+            <Pressable accessibilityRole="button" style={({ pressed }) => [styles.uploadOption, pressed && { opacity: 0.6 }]} onPress={takePhoto}>
               <View style={[styles.optionIconCircle, { backgroundColor: Colors.vertClair }]}>
                 <Icon name="camera" size={30} color={Colors.vert} />
               </View>
               <Text style={styles.optionText}>Prendre une photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.uploadOption} onPress={pickDocument}>
+            </Pressable>
+            <Pressable accessibilityRole="button" style={({ pressed }) => [styles.uploadOption, pressed && { opacity: 0.6 }]} onPress={pickDocument}>
               <View style={[styles.optionIconCircle, { backgroundColor: Colors.bleuClair }]}>
                 <Icon name="document" size={30} color={Colors.bleu} />
               </View>
               <Text style={styles.optionText}>Fichier PDF</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </BottomSheetView>
       </BottomSheet>
@@ -396,11 +386,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.blanc,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
   },
   inscriptionsLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   inscriptionsTextContainer: { marginLeft: 12, flex: 1 },
@@ -452,14 +437,10 @@ const styles = StyleSheet.create({
   },
   gridCard: {
     width: '48%',
-    backgroundColor: Colors.blanc,
-    padding: 16,
-    borderRadius: 16,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
     alignItems: 'center',
     position: 'relative',
+    overflow: 'visible',
   },
   gridBadge: {
     position: 'absolute',
@@ -490,8 +471,6 @@ const styles = StyleSheet.create({
 
   navigationMenu: { marginTop: 32, paddingHorizontal: 20 },
   navHeader: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.grisTexte, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 },
-  navButtonContent: { flexDirection: 'row', alignItems: 'center' },
-  navButtonText: { marginLeft: 12, fontFamily: Fonts.medium, color: Colors.noir },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(22, 19, 22, 0.6)',
@@ -519,36 +498,6 @@ const styles = StyleSheet.create({
   docPlaceholder: { alignItems: 'center', padding: 32 },
   docInfo: { marginTop: 16, fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
   docDate: { color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular, marginTop: 4 },
-  downloadButton: {
-    flexDirection: 'row',
-    backgroundColor: Colors.noir,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  downloadText: { color: Colors.blanc, fontFamily: Fonts.medium, marginLeft: 12 },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.bleuClair,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
-  },
-  addButtonText: {
-    color: Colors.bleu,
-    fontFamily: Fonts.medium,
-    fontSize: 14,
-    marginLeft: 4,
-  },
   sheetContent: {
     padding: 20,
     alignItems: 'center',
@@ -579,34 +528,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   optionText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir },
-  docContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.blanc,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    marginBottom: 12,
-    paddingRight: 12,
-  },
-  docRow: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-  docText: {
-    marginLeft: 12,
-    fontSize: 14,
-    color: Colors.noir,
-    fontFamily: Fonts.medium,
-    flex: 1
-  },
-  deleteIconButton: {
-    padding: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   guestHero: {
     alignItems: 'center',
     paddingTop: 32,
@@ -652,10 +573,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   guestFeatureLabel: { flex: 1, fontSize: 14, color: Colors.noir, fontFamily: Fonts.medium },
-  guestActions: { paddingHorizontal: 32, marginTop: 28 },
-  loginButton: { backgroundColor: Colors.noir, width: '100%', padding: 20, borderRadius: 999, alignItems: 'center', marginBottom: 12 },
-  loginButtonText: { color: Colors.blanc, fontFamily: Fonts.medium, fontSize: 16 },
-  registerButton: { backgroundColor: Colors.blanc, borderWidth: 1.5, borderColor: Colors.noir, width: '100%', padding: 20, borderRadius: 999, alignItems: 'center' },
-  registerButtonText: { color: Colors.noir, fontFamily: Fonts.medium, fontSize: 16 },
-  logoutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, marginTop: 12 },
+  guestActions: { paddingHorizontal: 32, marginTop: 28, gap: 12 },
 });

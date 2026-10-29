@@ -1,6 +1,8 @@
 import React from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 import { Colors } from "@/constants/colors";
+import Icon from "@/components/ui/Icon";
+import Input from "@/components/ui/Input";
 
 interface SearchbarProps {
   value: string;
@@ -10,19 +12,13 @@ interface SearchbarProps {
 export default function Searchbar({ value, onChangeText }: SearchbarProps) {
   return (
     <View style={{ padding: 16 }}>
-      <TextInput
+      <Input
+        accessibilityLabel="Rechercher un club"
         placeholder="Rechercher un club..."
         value={value}
         onChangeText={onChangeText}
-        placeholderTextColor={Colors.gris}
-        style={{
-          backgroundColor: Colors.blanc,
-          padding: 12,
-          borderRadius: 16,
-          borderWidth: 1,
-          borderColor: Colors.grisClair,
-          color: Colors.noir,
-        }}
+        returnKeyType="search"
+        leading={<Icon name="search" size={20} color={Colors.gris} />}
       />
     </View>
   );

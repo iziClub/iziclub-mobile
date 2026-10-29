@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
 
@@ -16,6 +16,9 @@ import {
 } from '@/services/forms.service';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Button from "@/components/ui/Button";
+import Choice from "@/components/ui/Choice";
 
 export default function InscriptionDetailScreen() {
   const router = useRouter();
@@ -403,15 +406,18 @@ export default function InscriptionDetailScreen() {
     <View style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Icon name="arrow-back" size={22} color={Colors.noir} />
-        </TouchableOpacity>
+        <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={() => router.back()} />
 
         <Text style={styles.headerTitle}>{isDraftMode ? "Modifier le brouillon" : "Détail de la demande"}</Text>
 
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteInscription} disabled={isDeleting}>
-          {isDeleting ? <ActivityIndicator size="small" color={Colors.rouge} /> : <Icon name="trash-outline" size={20} color={Colors.rouge} />}
-        </TouchableOpacity>
+        <IconButton
+          name="trash-outline"
+          variant="fantome"
+          color={Colors.rouge}
+          accessibilityLabel="Supprimer la demande"
+          onPress={handleDeleteInscription}
+          disabled={isDeleting}
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
@@ -519,59 +525,39 @@ export default function InscriptionDetailScreen() {
         {/* ───────────────────────────────────────────────────────── */}
         {(isDraftMode || isNeedsMoreInfo) && !loadingForm && (
           <View style={styles.legalNoticeContainer}>
-            <TouchableOpacity
-              style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}
+            <Choice
+              framed={false}
+              label="Certification & Engagement Officiel"
+              selected={hasAgreedToTerms}
               onPress={() => setHasAgreedToTerms(!hasAgreedToTerms)}
-              activeOpacity={0.8}
-            >
-              {/* Checkbox Visuelle */}
-              <View style={[
-                styles.checkboxVisual, 
-                { 
-                  borderColor: hasAgreedToTerms ? Colors.noir : Colors.grisClair,
-                  backgroundColor: hasAgreedToTerms ? Colors.noir : 'transparent'
-                }
-              ]}>
-                {hasAgreedToTerms && (
-                  <Text style={{ color: Colors.blanc, fontSize: 12, fontFamily: Fonts.medium }}>✓</Text>
-                )}
-              </View>
-
-              {/* Texte explicatif */}
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 4 }}>
-                  Certification & Engagement Officiel
-                </Text>
-                <Text style={{ fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, lineHeight: 18 }}>
+              description={
+                <>
                   Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontFamily: Fonts.medium, color: Colors.noir }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
-                </Text>
-              </View>
-            </TouchableOpacity>
+                </>
+              }
+            />
           </View>
         )}
 
         {/* ACTIONS DU BAS */}
         {(isDraftMode || isNeedsMoreInfo) && !loadingForm && (
           <View style={{ marginTop: 12, gap: 12 }}>
-            <TouchableOpacity
-              style={[styles.submitButton, { backgroundColor: Colors.blanc, borderColor: Colors.grisClair, borderWidth: 1.5 }]}
+            <Button
+              label="Mettre à jour le brouillon"
+              variant="secondaire"
+              size="l"
+              loading={isSavingDraft}
               onPress={handleDraftSave}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
-            >
-              {isSavingDraft ? <ActivityIndicator size="small" color={Colors.noir} /> : <Text style={[styles.submitButtonText, { color: Colors.noir }]}>Mettre à jour le brouillon</Text>}
-            </TouchableOpacity>
+            />
 
-            <TouchableOpacity
-              style={[
-                styles.submitButton, 
-                { backgroundColor: Colors.noir }, 
-                (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { backgroundColor: Colors.grisClair }
-              ]}
+            <Button
+              label={isNeedsMoreInfo ? 'Renvoyer la soumission' : 'Envoyer mon dossier finalisé'}
+              size="l"
+              loading={isSubmitting}
               onPress={isNeedsMoreInfo ? handleResubmit : handleSubmit}
               disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
-            >
-              {isSubmitting ? <ActivityIndicator size="small" color={Colors.blanc} /> : <Text style={[styles.submitButtonText, { color: (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) ? Colors.gris : Colors.blanc }]}>{isNeedsMoreInfo ? 'Renvoyer la soumission' : 'Envoyer mon dossier finalisé'}</Text>}
-            </TouchableOpacity>
+            />
           </View>
         )}
       </ScrollView>
@@ -583,9 +569,7 @@ const styles = StyleSheet.create({
   formName: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 16 },
   container: { flex: 1, backgroundColor: Colors.fond },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 60, backgroundColor: Colors.blanc, borderBottomWidth: 1, borderColor: Colors.grisClair },
-  backButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: Colors.fond },
   headerTitle: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir, flex: 1, textAlign: 'center' },
-  deleteButton: { width: 36, height: 36, justifyContent: 'center', alignItems: 'center', borderRadius: 18, backgroundColor: Colors.rougeClair },
   scrollContainer: { padding: 20, paddingBottom: 40 },
   statusBanner: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, borderWidth: 1, marginBottom: 24 },
   iconWrapper: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center', shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
@@ -607,8 +591,6 @@ const styles = StyleSheet.create({
   responseValue: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir },
   loaderContainer: { paddingVertical: 24, alignItems: 'center' },
 
-  submitButton: { height: 48, borderRadius: 999, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' },
-  submitButtonText: { fontSize: 14, fontFamily: Fonts.medium },
 
   legalNoticeContainer: {
     backgroundColor: Colors.blanc, 
@@ -619,13 +601,4 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 20
   },
-  checkboxVisual: {
-    width: 22,
-    height: 22,
-    borderRadius: 8,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 2 
-  }
 });

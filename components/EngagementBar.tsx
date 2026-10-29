@@ -3,10 +3,10 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Animated,
   Platform,
   Alert,
+  Pressable,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { EngagementItem, useEngagement } from "./useEngagement";
@@ -71,11 +71,13 @@ function ActionButton({
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={handlePress}
-      activeOpacity={0.7}
       disabled={disabled}
-      style={styles.iconButton}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ selected: active, disabled: !!disabled }}
+      style={({ pressed }) => [styles.iconButton, pressed && { opacity: 0.6 }]}
     >
       <Animated.View style={{ transform: [{ scale }] }}>
         <Icon
@@ -84,10 +86,10 @@ function ActionButton({
           color={active ? activeColor : Colors.noir}
         />
       </Animated.View>
-      <Text style={[styles.iconButtonLabel, active && { color: activeColor, fontFamily: Fonts.medium }]}>
+      <Text style={[styles.iconButtonLabel, active && { color: Colors.noir, fontFamily: Fonts.medium }]}>
         {label}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

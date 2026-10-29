@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Image,
   KeyboardAvoidingView,
@@ -12,7 +10,9 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { Colors } from "@/constants/colors";
-import { Fonts } from "@/constants/theme";
+import { Fonts, Spacing } from "@/constants/theme";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
@@ -67,59 +67,46 @@ export default function RegisterScreen() {
 
         <Text style={styles.title}>Inscris-toi</Text>
 
-        <Text style={styles.label}>Prénom</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ton prénom"
-          value={firstName}
-          onChangeText={setFirstName}
-        />
-
-        <Text style={styles.label}>Nom de famille</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ton nom de famille"
-          value={lastName}
-          onChangeText={setLastName}
-        />
-
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={[
-            styles.input,
-            email.length > 0 && !isValidEmail(email.trim())
-              ? styles.inputError
-              : null,
-          ]}
-          placeholder="Ton adresse email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          autoCorrect={false}
-        />
-
-        {email.length > 0 && !isValidEmail(email.trim()) && (
-          <Text style={styles.errorText}>
-            Veuillez entrer une adresse email valide.
-          </Text>
-        )}
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { marginTop: 32 },
-            !isFormValid && styles.buttonDisabled,
-          ]}
-          onPress={handleNextStep}
-          disabled={!isFormValid}
-        >
-          <Text style={[styles.buttonText, !isFormValid && { color: Colors.gris }]}>Créer un mot de passe</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleAlreadyAccount}>
-          <Text style={styles.forgotPassword}>J'ai déjà un compte</Text>
-        </TouchableOpacity>
+        <View style={styles.form}>
+          <Input
+            label="Prénom"
+            placeholder="Ton prénom"
+            value={firstName}
+            onChangeText={setFirstName}
+            autoComplete="given-name"
+          />
+          <Input
+            label="Nom de famille"
+            placeholder="Ton nom de famille"
+            value={lastName}
+            onChangeText={setLastName}
+            autoComplete="family-name"
+          />
+          <Input
+            label="Email"
+            placeholder="Ton adresse email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoCorrect={false}
+            autoComplete="email"
+            error={
+              email.length > 0 && !isValidEmail(email.trim())
+                ? "Veuillez entrer une adresse email valide."
+                : undefined
+            }
+          />
+          <Button
+            label="Créer un mot de passe"
+            size="l"
+            fullWidth
+            onPress={handleNextStep}
+            disabled={!isFormValid}
+            style={{ marginTop: Spacing[4] }}
+          />
+          <Button variant="tertiaire" label="J'ai déjà un compte" onPress={handleAlreadyAccount} />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -135,66 +122,15 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 350,
   },
+  form: {
+    paddingHorizontal: Spacing[5],
+    gap: Spacing[4],
+  },
   title: {
     fontSize: 32,
     fontFamily: Fonts.titre,
     marginBottom: 20,
     paddingLeft: 20,
     color: Colors.noir,
-  },
-  label: {
-    fontSize: 16,
-    fontFamily: Fonts.medium,
-    alignSelf: "flex-start",
-    marginLeft: 20,
-    marginBottom: 8,
-    color: Colors.grisTexte,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    padding: 12,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-    color: Colors.noir,
-    backgroundColor: Colors.blanc,
-  },
-  inputError: {
-    borderColor: Colors.rouge,
-  },
-  errorText: {
-    color: Colors.rouge,
-    fontSize: 14, fontFamily: Fonts.regular,
-    width: "90%",
-    alignSelf: "center",
-    marginTop: -8,
-    marginBottom: 4,
-  },
-  button: {
-    backgroundColor: Colors.noir,
-    minHeight: 52,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  buttonDisabled: {
-    backgroundColor: Colors.grisClair,
-  },
-  buttonText: {
-    color: Colors.blanc,
-    fontFamily: Fonts.medium,
-    textAlign: "center",
-    fontSize: 16,
-  },
-  forgotPassword: {
-    color: Colors.bleu,
-    textAlign: "center",
-    marginTop: 8,
-    textDecorationLine: "underline",
   },
 });

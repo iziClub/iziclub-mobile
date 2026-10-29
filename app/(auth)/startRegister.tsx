@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Image,
   KeyboardAvoidingView,
@@ -14,6 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
+import Button from "@/components/ui/Button";
 
 export default function StartRegisterScreen() {
   const router = useRouter(); // <- hook pour naviguer
@@ -49,32 +48,29 @@ export default function StartRegisterScreen() {
 
         <Text style={styles.label}>Connecte-toi ou crée ton compte et découvre le sport près de chez toi</Text>
 
-        <TouchableOpacity
-          style={[styles.button, { marginTop: 40 }]}
-          onPress={handleCreateAccount}
-        >
-          <Text style={styles.buttonText}>Créer un compte</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.secondaryButton]} onPress={handleLogin}>
-          <Text style={[styles.buttonText, { color: Colors.noir }]}>J'ai déjà un compte</Text>
-        </TouchableOpacity>
+        <View style={[styles.actions, { marginTop: 40 }]}>
+          <Button label="Créer un compte" size="l" fullWidth onPress={handleCreateAccount} />
+          <Button label="J'ai déjà un compte" variant="secondaire" size="l" fullWidth onPress={handleLogin} />
+        </View>
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
           <Text style={styles.separatorText}>Ou</Text>
           <View style={styles.line} />
         </View>
-        <TouchableOpacity style={[styles.button, styles.googleButton]}>
-          <Image
-            source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Google_Favicon_2025.svg/800px-Google_Favicon_2025.svg.png" }}
+        <View style={styles.actions}>
+          <Button
+            label="Se connecter avec Google"
+            variant="secondaire"
+            size="l"
+            fullWidth
+            leading={
+              <Image
+                source={require("../../assets/images/google-logo.png")}
+                style={{ width: 20, height: 20 }}
+              />
+            }
           />
-          <Image
-            source={require("../../assets/images/google-logo.png")}
-            style={{ width: 20, height: 20, marginRight: 12 }}
-          />
-          <Text style={[styles.buttonText, { color: Colors.noir }]}>
-            Se connecter avec Google
-          </Text>
-        </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -107,66 +103,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: Colors.grisTexte,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    padding: 12,
+  actions: {
     width: "90%",
-    marginBottom: 12,
     alignSelf: "center",
-    color: Colors.noir,
-    backgroundColor: Colors.blanc,
-  },
-  button: {
-    backgroundColor: Colors.noir,
-    minHeight: 52,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  secondaryButton: {
-    backgroundColor: Colors.blanc,
-    borderWidth: 1.5,
-    borderColor: Colors.noir,
-  },
-  googleButton: {
-    backgroundColor: Colors.blanc,
-    borderWidth: 1.5,
-    borderColor: Colors.grisClair,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: {
-    color: Colors.blanc,
-    fontFamily: Fonts.medium,
-    textAlign: "center",
-    fontSize: 16,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "90%",
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    paddingRight: 12,
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  eyeButton: {
-    paddingHorizontal: 8,
-  },
-  forgotPassword: {
-    color: Colors.bleu,
-    textAlign: "right",
-    marginBottom: 12,
-    textDecorationLine: "underline",
-    paddingRight: 20,
+    gap: 12,
   },
   separatorContainer: {
     flexDirection: "row",

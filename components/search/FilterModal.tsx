@@ -9,15 +9,16 @@ import {
   StyleSheet,
   Switch,
   Text,
-  TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
-import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
+import IconButton from "@/components/ui/IconButton";
+import Tag from "@/components/ui/Tag";
+import Input from "@/components/ui/Input";
 
 interface Props {
   visible: boolean;
@@ -118,9 +119,7 @@ export default function FilterBottomSheet({
 
           <View style={styles.header}>
             <Text style={styles.title}>Filtres</Text>
-            <TouchableOpacity onPress={onClose} hitSlop={10}>
-              <Icon name="close-circle" size={30} color={Colors.gris} />
-            </TouchableOpacity>
+            <IconButton name="close" variant="fantome" accessibilityLabel="Fermer les filtres" onPress={onClose} />
           </View>
 
           <View style={styles.divider} />
@@ -169,10 +168,9 @@ export default function FilterBottomSheet({
             <View style={styles.divider} />
 
             <Text style={styles.sectionTitle}>Sport (événements)</Text>
-            <TextInput
-              style={styles.sportInput}
+            <Input
+              accessibilityLabel="Sport"
               placeholder="Ex: Handball, Escalade..."
-              placeholderTextColor={Colors.gris}
               value={sportQuery}
               onChangeText={setSportQuery}
               autoCapitalize="words"
@@ -185,42 +183,30 @@ export default function FilterBottomSheet({
             <Text style={styles.sectionTitle}>Type d'événement</Text>
             <Text style={styles.subLabel}>Ne s'applique qu'à l'onglet Événements</Text>
             <View style={styles.chipsWrap}>
-              <TouchableOpacity
-                style={[styles.chip, !eventType && styles.chipActive]}
-                onPress={() => setEventType('')}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.chipText, !eventType && styles.chipTextActive]}>Tous</Text>
-              </TouchableOpacity>
+              <Tag label="Tous" selected={!eventType} onPress={() => setEventType('')} />
               {EVENT_TYPES.map((item) => (
-                <TouchableOpacity
+                <Tag
                   key={item.value}
-                  style={[styles.chip, eventType === item.value && styles.chipActive]}
+                  label={item.label}
+                  selected={eventType === item.value}
                   onPress={() => setEventType(eventType === item.value ? '' : item.value)}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[styles.chipText, eventType === item.value && styles.chipTextActive]}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
+                />
               ))}
             </View>
           </ScrollView>
 
           <View style={styles.footer}>
-            <TouchableOpacity
+            <Button
+              label="Réinitialiser"
+              variant="secondaire"
+              size="l"
               style={styles.resetButton}
               onPress={() => {
                 onReset?.();
               }}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.resetButtonText}>Réinitialiser</Text>
-            </TouchableOpacity>
+            />
 
-            <TouchableOpacity style={styles.applyButton} onPress={onClose} activeOpacity={0.85}>
-              <Text style={styles.applyButtonText}>Voir les résultats</Text>
-            </TouchableOpacity>
+            <Button label="Voir les résultats" size="l" style={styles.applyButton} onPress={onClose} />
           </View>
         </Animated.View>
       </View>
@@ -278,40 +264,11 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: Colors.grisClair, marginVertical: 16, marginHorizontal: 20 },
   rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   distanceValue: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
-  sportInput: {
-    backgroundColor: Colors.fond,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    padding: 16,
-    fontSize: 16, fontFamily: Fonts.regular,
-    color: Colors.noir,
-  },
   chipsWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
     marginTop: 4,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: Colors.blanc,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-  },
-  chipActive: {
-    backgroundColor: Colors.noir,
-    borderColor: Colors.noir,
-  },
-  chipText: {
-    fontSize: 14,
-    fontFamily: Fonts.medium,
-    color: Colors.grisTexte,
-  },
-  chipTextActive: {
-    color: Colors.blanc,
   },
   footer: {
     flexDirection: 'row',
@@ -322,24 +279,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.grisClair,
   },
-  resetButton: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.blanc,
-    borderWidth: 1.5,
-    borderColor: Colors.grisClair,
-  },
-  resetButtonText: { fontFamily: Fonts.medium, fontSize: 16, color: Colors.noir },
-  applyButton: {
-    flex: 1.4,
-    paddingVertical: 16,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.noir,
-  },
-  applyButtonText: { fontFamily: Fonts.medium, fontSize: 16, color: Colors.blanc },
+  resetButton: { flex: 1 },
+  applyButton: { flex: 1.4 },
 });

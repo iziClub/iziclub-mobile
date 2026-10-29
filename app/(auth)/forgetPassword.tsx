@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Image,
   KeyboardAvoidingView,
@@ -12,7 +10,9 @@ import {
   ScrollView,
 } from "react-native";
 import { Colors } from "@/constants/colors";
-import { Fonts } from "@/constants/theme";
+import { Fonts, Spacing } from "@/constants/theme";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -46,34 +46,26 @@ export default function ForgotPassword() {
           Entre ton adresse email pour recevoir un lien de réinitialisation.
         </Text>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="ton@email.com"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: isValidEmail(email) ? Colors.noir : Colors.grisClair },
-          ]}
-          disabled={!isValidEmail(email)}
-          onPress={handleResetPassword}
-        >
-          <Text style={styles.buttonText}>
-            Envoyer le lien de réinitialisation
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => router.push("/login")}>
-          <Text style={styles.forgotPassword}>
-            Retour à la connexion
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.form}>
+          <Input
+            label="Email"
+            placeholder="ton@email.com"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+          />
+          <Button
+            label="Envoyer le lien de réinitialisation"
+            size="l"
+            fullWidth
+            disabled={!isValidEmail(email)}
+            onPress={handleResetPassword}
+            style={{ marginTop: Spacing[4] }}
+          />
+          <Button variant="tertiaire" label="Retour à la connexion" onPress={() => router.push("/login")} />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -90,6 +82,10 @@ const styles = StyleSheet.create({
     height: 400,
     resizeMode: "contain",
   },
+  form: {
+    paddingHorizontal: Spacing[5],
+    gap: Spacing[4],
+  },
   title: {
     fontSize: 32,
     fontFamily: Fonts.titre,
@@ -102,46 +98,5 @@ const styles = StyleSheet.create({
     color: Colors.grisTexte,
     marginBottom: 20,
     paddingHorizontal: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontFamily: Fonts.medium,
-    alignSelf: "flex-start",
-    marginLeft: 20,
-    marginBottom: 8,
-    color: Colors.grisTexte,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    padding: 12,
-    width: "90%",
-    marginBottom: 20,
-    alignSelf: "center",
-    color: Colors.noir,
-    backgroundColor: Colors.blanc,
-  },
-  button: {
-    minHeight: 52,
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    width: "90%",
-    marginBottom: 12,
-    alignSelf: "center",
-  },
-  buttonText: {
-    color: Colors.blanc,
-    fontFamily: Fonts.medium,
-    textAlign: "center",
-    fontSize: 16,
-  },
-  forgotPassword: {
-    color: Colors.bleu,
-    textAlign: "center",
-    marginTop: 8,
-    marginBottom: 12,
-    textDecorationLine: "underline",
   },
 });

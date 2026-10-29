@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Platform, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Linking, Platform, ScrollView } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { ClubDetailDTO } from "@/types/club";
 import { styles } from "./_styles";
 import { Colors } from "@/constants/colors";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
 
 interface ImportedClubDetailProps {
     club: ClubDetailDTO;
@@ -74,10 +75,7 @@ export default function ImportedClubDetail({ club }: ImportedClubDetailProps) {
                     </MapView>
                 </View>
 
-                <TouchableOpacity style={styles.navButton} onPress={openNavigation} activeOpacity={0.8}>
-                    <Icon name="navigate" size={20} color={Colors.blanc} style={{ marginRight: 8 }} />
-                    <Text style={styles.navButtonText}>Y aller / Lancer l'itinéraire</Text>
-                </TouchableOpacity>
+                <Button label="Y aller / Lancer l'itinéraire" icon="navigate" size="l" onPress={openNavigation} style={styles.navButton} />
             </View>
 
             {/* Note d'information UI/UX épurée */}

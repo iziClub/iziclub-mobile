@@ -1,8 +1,10 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Pressable, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable, ScrollView } from "react-native";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import UiCard from "@/components/ui/Card";
+import Tag from "@/components/ui/Tag";
 
 interface CardProps {
   title: string;
@@ -31,8 +33,7 @@ export default function Card({
   //   distanceInKm, title
   // });
   return (
-    <View style={[styles.cardShadow, { width }]}>
-    <View style={styles.card}>
+    <UiCard bordered padding={0} style={[styles.card, { width: width as any }]}>
       {/* Bannière */}
       {banner ? (
         <Image source={{ uri: banner }} style={styles.banner} />
@@ -50,7 +51,11 @@ export default function Card({
       </View>
 
       {/* Contenu (pressable) */}
-      <TouchableOpacity onPress={onPress} style={styles.content}>
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        style={({ pressed }) => [styles.content, pressed && { opacity: 0.7 }]}
+      >
         <View style={styles.headerRow}>
           <Text style={styles.title}>{title}</Text>
         </View>
@@ -75,7 +80,7 @@ export default function Card({
             }
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Tags (outside Pressable so they can scroll) */}
       <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>
@@ -87,15 +92,11 @@ export default function Card({
             contentContainerStyle={{ paddingRight: 12 }}
           >
             {/* Tag type (club/event) */}
-            <View style={[styles.tag, type === "club" ? styles.clubTag : styles.eventTag]}>
-              <Icon
-                name={type === "club" ? "account-group" : "calendar"}
-                size={14}
-                color={Colors.blanc}
-                style={{ marginRight: 4 }}
-              />
-              <Text style={styles.tagText}>{type === "club" ? "Club" : "Événement"}</Text>
-            </View>
+            <Tag
+              label={type === "club" ? "Club" : "Événement"}
+              icon={type === "club" ? "account-group" : "calendar"}
+              variant={type === "club" ? "doux" : "danger"}
+            />
 
             {/* Autres tags */}
             {/* {tags?.map((tag, index) => (
@@ -106,23 +107,13 @@ export default function Card({
           </ScrollView>
         </View>
       </View>
-    </View>
-    </View>
+    </UiCard>
   );
 }
 
 const styles = StyleSheet.create({
-  cardShadow: {
-    borderRadius: 16,
-    marginBottom: 16,
-    backgroundColor: Colors.blanc,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-  },
   card: {
-    backgroundColor: Colors.blanc,
-    borderRadius: 16,
-    overflow: "hidden",
+    marginBottom: 16,
   },
 
   banner: {
@@ -151,14 +142,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.blanc,
     backgroundColor: Colors.grisClair,
   },
-  avatarPlaceholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 2,
-    borderColor: Colors.blanc,
-    backgroundColor: Colors.grisClair,
-  },
 
   content: {
     paddingTop: 24,
@@ -175,38 +158,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: Colors.grisTexte,
     fontSize: 14, fontFamily: Fonts.regular,
-  },
-  tag: {
-    marginTop: 8,
-    backgroundColor: Colors.fond,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
-    alignSelf: "flex-start",
-    flexShrink: 0,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  clubTag: {
-    marginTop: 8,
-    backgroundColor: Colors.bleuClair,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
-    alignSelf: "flex-start",
-  },
-  eventTag: {
-    marginTop: 8,
-    backgroundColor: Colors.rougeClair,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
-    alignSelf: "flex-start",
-  },
-  tagText: {
-    color: Colors.noir,
-    fontSize: 12,
-    fontFamily: Fonts.medium,
   },
   extraTag: {
     marginTop: 8,

@@ -1,11 +1,14 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Image } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMemberClubs } from '@/services/clubs.service';
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
 
 export default function MyClubsScreen() {
   const insets = useSafeAreaInsets();
@@ -34,11 +37,9 @@ export default function MyClubsScreen() {
   const renderClub = ({ item }: { item: any }) => {
     const imageUrl = item.profile?.profileImagePath || item.profile?.bannerPath || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg';
     return (
-      <TouchableOpacity
+      <Card bordered padding={0}
         style={styles.clubCard}
-        activeOpacity={0.8}
-        onPress={() => router.push({ pathname: `/search/club/${item.id}`, params: { from: 'myClubs' } })}
-      >
+        onPress={() => router.push({ pathname: `/search/club/${item.id}`, params: { from: 'myClubs' } })}>
         <Image source={{ uri: imageUrl }} style={styles.clubImage} />
         <View style={styles.clubContent}>
           <Text style={styles.clubTitle} numberOfLines={1}>{item.name}</Text>
@@ -50,18 +51,16 @@ export default function MyClubsScreen() {
             </Text>
           </View>
         </View>
-      </TouchableOpacity>
+      </Card>
     );
   };
 
   return (
     <View style={[styles.container]}> 
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Icon name="arrow-back" size={22} color={Colors.noir} />
-        </TouchableOpacity>
+        <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={() => router.back()} />
         <Text style={styles.headerTitle}>Mes clubs</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       {loading ? (
@@ -81,9 +80,7 @@ export default function MyClubsScreen() {
               <Icon name="people-outline" size={56} color={Colors.gris} />
               <Text style={styles.emptyTitle}>Aucun club affilié</Text>
               <Text style={styles.emptySubtitle}>Rejoins un club pour le retrouver ici et suivre tes informations membres.</Text>
-              <TouchableOpacity style={styles.exploreButton} onPress={() => router.push('/search')}>
-                <Text style={styles.exploreButtonText}>Explorer les clubs</Text>
-              </TouchableOpacity>
+              <Button label="Explorer les clubs" onPress={() => router.push('/search')} style={{ marginTop: 20 }} />
             </View>
           }
         />
@@ -104,25 +101,12 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.grisClair,
     backgroundColor: Colors.blanc,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: Colors.fond,
-  },
   headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
   loadingText: { marginTop: 12, color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular },
   clubCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.blanc,
-    borderRadius: 16,
-    overflow: 'hidden',
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
   },
   clubImage: {
     width: 100,
@@ -145,12 +129,4 @@ const styles = StyleSheet.create({
   emptyState: { padding: 24, alignItems: 'center' },
   emptyTitle: { marginTop: 16, fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   emptySubtitle: { marginTop: 8, color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular, textAlign: 'center' },
-  exploreButton: {
-    marginTop: 20,
-    backgroundColor: Colors.noir,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-  },
-  exploreButtonText: { color: Colors.blanc, fontSize: 14, fontFamily: Fonts.medium },
 });

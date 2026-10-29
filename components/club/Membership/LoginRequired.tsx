@@ -2,12 +2,12 @@ import React from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { styles } from "./styles";
 import { Colors } from "@/constants/colors";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
 
 export default function LoginRequired() {
   const router = useRouter();
@@ -29,14 +29,12 @@ export default function LoginRequired() {
         ton dossier d'inscription.
       </Text>
 
-      <TouchableOpacity
-        style={styles.loginButton}
+      <Button
+        label="Se connecter / S'inscrire"
+        size="l"
         onPress={() => router.push("/login")}
-      >
-        <Text style={styles.loginButtonText}>
-          Se connecter / S'inscrire
-        </Text>
-      </TouchableOpacity>
+        style={styles.loginButton}
+      />
     </View>
   );
 }

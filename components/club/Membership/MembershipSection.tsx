@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   ScrollView,
-  TouchableOpacity,
   Text,
   Alert,
   ActivityIndicator,
@@ -30,6 +29,8 @@ import {
 } from "@/services/forms.service";
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
+import Choice from "@/components/ui/Choice";
 
 type Props = {
   club: any;
@@ -331,11 +332,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
             <Text style={{ fontSize: 14, fontFamily: Fonts.regular, color: Colors.noir, lineHeight: 18 }}>
               Tu avais déjà commencé ce dossier, on a préremplis tes réponses. Tu peux continuer ou repartir de zéro.
             </Text>
-            <TouchableOpacity onPress={handleRestartFromScratch} style={{ marginTop: 8 }}>
-              <Text style={{ color: Colors.bleu, fontFamily: Fonts.medium, fontSize: 14 }}>
-                Repartir de zéro
-              </Text>
-            </TouchableOpacity>
+            <Button variant="lien" label="Repartir de zéro" onPress={handleRestartFromScratch} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
           </View>
         </View>
       )}
@@ -379,66 +376,37 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
         padding: 16,
         marginTop: 24,
       }}>
-        <TouchableOpacity 
-          style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}
+        <Choice
+          framed={false}
+          label="Certification & Engagement Officiel"
+          selected={hasAgreedToTerms}
           onPress={() => setHasAgreedToTerms(!hasAgreedToTerms)}
-          activeOpacity={0.8}
-        >
-          <View style={{
-            width: 22,
-            height: 22,
-            borderRadius: 8,
-            borderWidth: 2,
-            borderColor: hasAgreedToTerms ? Colors.noir : Colors.grisClair,
-            backgroundColor: hasAgreedToTerms ? Colors.noir : 'transparent',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 2 
-          }}>
-            {hasAgreedToTerms && (
-              <Text style={{ color: Colors.blanc, fontSize: 12, fontFamily: Fonts.medium }}>✓</Text>
-            )}
-          </View>
-
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 4 }}>
-              Certification & Engagement Officiel
-            </Text>
-            <Text style={{ fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, lineHeight: 18 }}>
+          description={
+            <>
               Je certifie sur l'honneur l'exactitude des informations fournies. Je comprends que la soumission de ce formulaire constitue un <Text style={{ fontFamily: Fonts.medium, color: Colors.noir }}>engagement réel et officiel</Text> auprès du club, et valide mon adhésion sous réserve d'acceptation de mon dossier.
-            </Text>
-          </View>
-        </TouchableOpacity>
+            </>
+          }
+        />
       </View>
 
       {/* Reste des boutons */}
       <View style={{ marginTop: 20, gap: 12 }}>
-        <TouchableOpacity
-          style={[styles.submitButton, { backgroundColor: Colors.blanc, borderColor: Colors.grisClair, borderWidth: 1.5 }]}
+        <Button
+          label="Enregistrer en brouillon"
+          variant="secondaire"
+          size="l"
+          loading={isSavingDraft}
           onPress={handleDraftSave}
           disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
-        >
-          {isSavingDraft ? (
-            <ActivityIndicator size="small" color={Colors.noir} />
-          ) : (
-            <Text style={[styles.submitButtonText, { color: Colors.noir }]}>Enregistrer en brouillon</Text>
-          )}
-        </TouchableOpacity>
+        />
 
-        <TouchableOpacity
-          style={[
-            styles.submitButton, 
-            (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) && { backgroundColor: Colors.grisClair }
-          ]}
+        <Button
+          label="Envoyer mon dossier"
+          size="l"
+          loading={isSubmitting}
           onPress={handleSubmit}
           disabled={isSubmitting || isSavingDraft || !!uploadingQuestionId}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color={Colors.blanc} />
-          ) : (
-            <Text style={[styles.submitButtonText, { color: (isSubmitting || isSavingDraft || !!uploadingQuestionId || !hasAgreedToTerms) ? Colors.gris : Colors.blanc }]}>Envoyer mon dossier</Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
     </ScrollView>
   );

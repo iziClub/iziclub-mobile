@@ -1,11 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import Card from "../card";
 import TeamCard from "../teamCard";
 import { Club } from "@/types/club";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
+import Button from "@/components/ui/Button";
 
 interface Props {
     club: Club;
@@ -64,9 +65,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 <>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.bigTitle}>Nos événements</Text>
-                        <TouchableOpacity onPress={() => onSeeMore("Événements")}>
-                            <Text style={styles.seeMore}>Voir plus</Text>
-                        </TouchableOpacity>
+                        <Button variant="lien" label="Voir plus" onPress={() => onSeeMore("Événements")} />
                     </View>
 
                     <ScrollView
@@ -120,9 +119,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 <>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.bigTitle}>Nos photos</Text>
-                        <TouchableOpacity onPress={() => onSeeMore("Galerie")}>
-                            <Text style={styles.seeMore}>Voir plus</Text>
-                        </TouchableOpacity>
+                        <Button variant="lien" label="Voir plus" onPress={() => onSeeMore("Galerie")} />
                     </View>
 
                     <View style={styles.gallery}>
@@ -179,11 +176,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 12,
-    },
-    seeMore: {
-        fontSize: 14,
-        color: Colors.bleu,
-        fontFamily: Fonts.medium,
     },
     description: {
         fontSize: 16, fontFamily: Fonts.regular,

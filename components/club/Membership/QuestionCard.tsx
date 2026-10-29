@@ -1,11 +1,13 @@
 import React from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, Pressable } from "react-native";
 
 import { Question } from "./types";
 import { styles } from "./styles";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import Input from "@/components/ui/Input";
+import Choice from "@/components/ui/Choice";
 
 type Props = {
   question: Question;
@@ -46,20 +48,21 @@ export default function QuestionCard({
 
       {/* TYPE: TEXT */}
       {question.type === "text" && (
-        <TextInput
-          style={styles.input}
+        <Input
+          accessibilityLabel={question.name}
           value={value || ""}
           onChangeText={onTextChange}
           placeholder="Écris ta réponse ici..."
-          placeholderTextColor={Colors.gris}
         />
       )}
 
       {/* TYPE: DOCUMENT */}
       {question.type === "document" && (
-        <TouchableOpacity
-          style={[
+        <Pressable
+          accessibilityRole="button"
+          style={({ pressed }) => [
             styles.uploadBox,
+            pressed && { backgroundColor: Colors.fond },
             isAnswered && styles.uploadBoxSuccess,
           ]}
           onPress={onDocumentUpload}
@@ -71,7 +74,7 @@ export default function QuestionCard({
           />
 
           <View style={styles.uploadTextContainer}>
-            <Text style={[styles.uploadTitle, isAnswered && { color: Colors.vert, fontFamily: Fonts.medium }]}>
+            <Text style={[styles.uploadTitle, isAnswered && { fontFamily: Fonts.medium }]}>
               {isAnswered ? value : "Sélectionner un fichier"}
             </Text>
 
@@ -79,7 +82,7 @@ export default function QuestionCard({
               {isAnswered ? "Fichier ajouté avec succès" : "Clique pour ajouter un document"}
             </Text>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       )}
 
       {/* TYPE: RADIO */}
@@ -89,30 +92,14 @@ export default function QuestionCard({
           const selected = value === option.label;
 
           return (
-            <TouchableOpacity
+            <Choice
               key={option.id}
-              style={[
-                styles.optionRow,
-                selected && styles.optionRowSelected,
-              ]}
+              type="radio"
+              label={option.label}
+              selected={selected}
               // 💡 On renvoie le label
               onPress={() => onRadioChange(option.label)}
-            >
-              <Icon
-                name={selected ? "radio-button-on" : "radio-button-off"}
-                size={20}
-                color={selected ? Colors.noir : Colors.gris}
-              />
-
-              <Text
-                style={[
-                  styles.optionLabel,
-                  selected && styles.optionLabelSelected,
-                ]}
-              >
-                {option.label}
-              </Text>
-            </TouchableOpacity>
+            />
           );
         })}
 
@@ -123,30 +110,14 @@ export default function QuestionCard({
           const checked = value?.includes(option.label);
 
           return (
-            <TouchableOpacity
+            <Choice
               key={option.id}
-              style={[
-                styles.optionRow,
-                checked && styles.optionRowSelected,
-              ]}
+              type="checkbox"
+              label={option.label}
+              selected={!!checked}
               // 💡 On renvoie le label
               onPress={() => onCheckboxChange(option.label)}
-            >
-              <Icon
-                name={checked ? "checkbox" : "square-outline"}
-                size={20}
-                color={checked ? Colors.noir : Colors.gris}
-              />
-
-              <Text
-                style={[
-                  styles.optionLabel,
-                  checked && styles.optionLabelSelected,
-                ]}
-              >
-                {option.label}
-              </Text>
-            </TouchableOpacity>
+            />
           );
         })}
     </View>

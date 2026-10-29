@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, ImageBackground, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, FlatList, ImageBackground, ActivityIndicator, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,10 @@ import { getLikedEvents, unlikeEvent, getEventById } from '@/services/events.ser
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Tabs from "@/components/ui/Tabs";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
 
 const { width } = Dimensions.get('window');
 
@@ -152,9 +156,10 @@ export default function LikedItemsScreen() {
       : 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg');
 
     return (
-      <TouchableOpacity 
-        style={styles.card} 
-        activeOpacity={0.9}
+      <Card
+        bordered
+        padding={0}
+        style={styles.card}
         onPress={() => router.push(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
       >
         <ImageBackground 
@@ -167,13 +172,13 @@ export default function LikedItemsScreen() {
             style={styles.gradient}
           >
             {/* Bouton de Like (Cliqué) */}
-            <TouchableOpacity 
-              style={styles.heartButton}
-              activeOpacity={0.7}
+            <IconButton
+              name="heart"
+              color={Colors.rouge}
+              accessibilityLabel="Retirer des favoris"
               onPress={() => handleUnlike(item.id, activeTab)}
-            >
-              <Icon name="heart" size={20} color={Colors.rouge} />
-            </TouchableOpacity>
+              style={styles.heartButton}
+            />
             
             <View>
               <Text style={styles.cardTitle} numberOfLines={1}>{title}</Text>
@@ -197,7 +202,7 @@ export default function LikedItemsScreen() {
             </View>
           </LinearGradient>
         </ImageBackground>
-      </TouchableOpacity>
+      </Card>
     );
   };
 
@@ -218,12 +223,7 @@ export default function LikedItemsScreen() {
           ? "Les événements que tu ajouteras en favoris apparaîtront ici."
           : "Trouve tes clubs préférés et rejoins la communauté !"}
       </Text>
-      <TouchableOpacity 
-        style={styles.exploreBtn}
-        onPress={() => router.push("/search")}
-      >
-        <Text style={styles.exploreBtnText}>Découvrir</Text>
-      </TouchableOpacity>
+      <Button label="Découvrir" onPress={() => router.push("/search")} />
     </View>
   );
 
@@ -231,31 +231,21 @@ export default function LikedItemsScreen() {
     <View style={[styles.container]}>
       {/* HEADER BAR */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Icon name="arrow-back" size={22} color={Colors.noir} />
-        </TouchableOpacity>
+        <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={() => router.back()} />
         <Text style={styles.headerTitle}>Mes Favoris</Text>
-        <View style={{ width: 40 }} /> 
+        <View style={{ width: 44 }} /> 
       </View>
 
       {/* SEGMENTED TABS CONTROLLER */}
-      <View style={styles.tabsContainer}>
-        <TouchableOpacity 
-          style={[styles.tab, activeTab === 'events' && styles.activeTab]}
-          onPress={() => setActiveTab('events')}
-        >
-          <Icon name="flash" size={16} color={activeTab === 'events' ? Colors.noir : Colors.gris} />
-          <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Événements</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.tab, activeTab === 'clubs' && styles.activeTab]}
-          onPress={() => setActiveTab('clubs')}
-        >
-          <Icon name="people" size={16} color={activeTab === 'clubs' ? Colors.noir : Colors.gris} />
-          <Text style={[styles.tabText, activeTab === 'clubs' && styles.activeTabText]}>Clubs</Text>
-        </TouchableOpacity>
-      </View>
+      <Tabs
+        style={styles.tabsContainer}
+        value={activeTab}
+        onChange={setActiveTab}
+        items={[
+          { value: 'events', label: 'Événements', icon: 'flash' },
+          { value: 'clubs', label: 'Clubs', icon: 'people' },
+        ]}
+      />
 
       {/* LIST OR LOADER */}
       {loading ? (
@@ -288,52 +278,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.grisClair,
   },
-  backButton: {
-    width: 38,
-    height: 38,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: Colors.fond,
-  },
   headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   
   // Onglets de navigation (Tabs)
   tabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: Colors.blanc,
     marginHorizontal: 16,
     marginVertical: 16,
-    padding: 4,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
   },
-  tab: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 999,
-    gap: 8,
-  },
-  activeTab: {
-    backgroundColor: Colors.fond,
-  },
-  tabText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },
-  activeTabText: { color: Colors.noir },
 
   // Listes & Cartes
   listContent: { paddingHorizontal: 16, paddingBottom: 32, paddingTop: 4 },
   card: {
     height: 190,
     marginBottom: 16,
-    borderRadius: 20,
-    backgroundColor: Colors.blanc,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    overflow: 'hidden',
   },
   imageBackground: { flex: 1 },
   gradient: {
@@ -344,9 +301,6 @@ const styles = StyleSheet.create({
   },
   heartButton: {
     alignSelf: 'flex-end',
-    backgroundColor: Colors.blanc,
-    padding: 9,
-    borderRadius: 999,
   },
   cardTitle: { color: Colors.blanc, fontSize: 20, fontFamily: Fonts.titre, marginBottom: 2 },
   infoRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
@@ -384,11 +338,4 @@ const styles = StyleSheet.create({
   },
   emptyTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 8 },
   emptySubtitle: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
-  exploreBtn: {
-    backgroundColor: Colors.noir,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-  },
-  exploreBtnText: { color: Colors.blanc, fontFamily: Fonts.medium, fontSize: 14 }
 });

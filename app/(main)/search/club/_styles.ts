@@ -92,18 +92,7 @@ export const styles = StyleSheet.create({
         ...StyleSheet.absoluteFill,
     },
     navButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: Colors.noir,
-        paddingVertical: 16,
         margin: 16,
-        borderRadius: 999,
-    },
-    navButtonText: {
-        color: Colors.blanc,
-        fontSize: 16,
-        fontFamily: Fonts.medium,
     },
     noticeContainer: {
         flexDirection: "row",

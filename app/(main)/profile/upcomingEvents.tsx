@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,6 +8,9 @@ import { getParticipatingEvents } from '@/services/events.service';
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Card from "@/components/ui/Card";
+import Tag from "@/components/ui/Tag";
 
 export default function UpcomingEventsScreen() {
   const insets = useSafeAreaInsets();
@@ -66,14 +69,9 @@ export default function UpcomingEventsScreen() {
     <View style={[styles.container]}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => router.back()} 
-          style={styles.backButton}
-        >
-          <Icon name="arrow-back" size={24} color={Colors.noir} />
-        </TouchableOpacity>
+        <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={() => router.back()} />
         <Text style={styles.headerTitle}>Mes Participations</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       {loading ? (
@@ -104,14 +102,13 @@ export default function UpcomingEventsScreen() {
                 </View>
 
                 {/* CONTENU DE L'ÉVÉNEMENT */}
-                <TouchableOpacity 
-                  style={styles.eventCard} 
-                  activeOpacity={0.7}
+                <Card bordered padding={0} 
+                  style={styles.eventCard}
                   onPress={() => router.push(`/search/event/${eventDetails.id}`)} // Redirection vers le détail si applicable
                 >
                   <View style={styles.cardHeader}>
                     {/* Tu peux afficher un tag fixe ou utiliser un fallback s'il n'y a pas de catégorie */}
-                    <Text style={styles.categoryTag}>Événement</Text>
+                    <Tag label="Événement" variant="danger" />
                     <Text style={styles.timeText}>{time}</Text>
                   </View>
                   
@@ -124,7 +121,7 @@ export default function UpcomingEventsScreen() {
                       {eventDetails.location?.street}, {eventDetails.location?.city}
                     </Text>
                   </View>
-                </TouchableOpacity>
+                </Card>
               </View>
             );
           }}
@@ -152,14 +149,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.grisClair,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: Colors.fond,
-  },
   headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   
   eventRow: {
@@ -177,12 +166,8 @@ const styles = StyleSheet.create({
   
   eventCard: {
     flex: 1,
-    backgroundColor: Colors.blanc,
-    borderRadius: 16,
     padding: 16,
     marginLeft: 12,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -190,35 +175,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  categoryTag: {
-    fontSize: 12,
-    fontFamily: Fonts.medium,
-    color: Colors.rouge,
-    backgroundColor: Colors.rougeClair,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-    textTransform: 'uppercase',
-  },
   timeText: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.grisTexte },
   eventTitle: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir, marginBottom: 8 },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   locationText: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, marginLeft: 4, flex: 1 },
   
-  ticketButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopWidth: 1,
-    borderTopColor: Colors.grisClair,
-    paddingTop: 12,
-  },
-  ticketButtonText: {
-    fontSize: 14,
-    fontFamily: Fonts.medium,
-    color: Colors.noir,
-    marginRight: 8,
-  },
 
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: Colors.fond },
   loadingText: { marginTop: 12, color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular },

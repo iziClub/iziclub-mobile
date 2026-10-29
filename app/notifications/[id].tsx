@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Message } from '@/types/notification';
@@ -8,6 +8,8 @@ import { getClubById } from '@/services/clubs.service';
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Button from "@/components/ui/Button";
 // On réutilise le même type (Idéalement à exporter depuis un fichier types.ts)
 
 // Mock data (Copie conforme de ton index pour la démo)
@@ -135,9 +137,7 @@ export default function MessageDetailScreen() {
     return (
       <View style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}>
         <Text style={{ color: Colors.noir }}>Message introuvable</Text>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 12 }}>
-          <Text style={{ color: Colors.bleu }}>Retour</Text>
-        </TouchableOpacity>
+        <Button variant="lien" label="Retour" onPress={() => router.back()} style={{ marginTop: 12 }} />
       </View>
     );
   }
@@ -154,11 +154,9 @@ export default function MessageDetailScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* HEADER ENTIÈREMENT PERSONNALISÉ */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Icon name="arrow-back" size={24} color={Colors.noir} />
-        </TouchableOpacity>
+        <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={() => router.back()} />
         <Text style={styles.headerTitle} numberOfLines={1}>{message.clubName}</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -188,7 +186,6 @@ export default function MessageDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.fond },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: Colors.grisClair, backgroundColor: Colors.blanc },
-  backButton: { width: 40, height: 40, justifyContent: 'center' },
   headerTitle: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir, maxWidth: '70%' },
   content: { padding: 24 },
   date: { fontSize: 12, fontFamily: Fonts.regular, color: Colors.grisTexte, marginBottom: 8 },

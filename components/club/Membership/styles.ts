@@ -82,33 +82,12 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
 
-  editProfile: {
-    marginTop: 12,
-  },
-
-  editProfileText: {
-    color: Colors.bleu,
-    fontSize: 12,
-    fontFamily: Fonts.medium,
-  },
-
   hintText: {
     fontSize: 14, fontFamily: Fonts.regular,
     color: Colors.grisTexte,
     marginBottom: 12,
     fontStyle: "italic",
     lineHeight: 18,
-  },
-
-  input: {
-    backgroundColor: Colors.blanc,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    borderRadius: 12,
-    padding: 12,
-    fontSize: 14, fontFamily: Fonts.regular,
-    color: Colors.noir,
-    marginTop: 8,
   },
 
   uploadBox: {
@@ -146,48 +125,6 @@ export const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  optionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "transparent",
-    marginBottom: 8,
-  },
-
-  optionRowSelected: {
-    backgroundColor: Colors.bleuClair,
-    borderColor: Colors.noir,
-  },
-
-  optionLabel: {
-    marginLeft: 12,
-    fontSize: 14, fontFamily: Fonts.regular,
-    color: Colors.noir,
-    flex: 1,
-  },
-
-  optionLabelSelected: {
-    fontFamily: Fonts.medium,
-    color: Colors.noir,
-  },
-
-  submitButton: {
-    backgroundColor: Colors.noir,
-    paddingVertical: 16,
-    borderRadius: 999,
-    alignItems: "center",
-    marginTop: 12,
-  },
-
-  submitButtonText: {
-    color: Colors.blanc,
-    fontSize: 16,
-    fontFamily: Fonts.medium,
-  },
-
   lockTitle: {
     fontSize: 18,
     fontFamily: Fonts.titre,
@@ -205,14 +142,7 @@ export const styles = StyleSheet.create({
   },
 
   loginButton: {
-    backgroundColor: Colors.noir,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 999,
+    alignSelf: "center",
   },
 
-  loginButtonText: {
-    color: Colors.blanc,
-    fontFamily: Fonts.medium,
-  },
 });

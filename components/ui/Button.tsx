@@ -21,6 +21,8 @@ type ButtonProps = Omit<PressableProps, "style" | "children"> & {
   size?: "m" | "l";
   /** Nom d'icône (voir components/ui/Icon), affichée à gauche du libellé */
   icon?: string;
+  /** Élément libre à gauche du libellé (logo Google, image) */
+  leading?: React.ReactNode;
   loading?: boolean;
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -36,6 +38,7 @@ export default function Button({
   variant = "primaire",
   size = "m",
   icon,
+  leading,
   loading = false,
   fullWidth = false,
   disabled,
@@ -66,7 +69,9 @@ export default function Button({
           <ActivityIndicator size="small" color={fg} />
         ) : icon ? (
           <Icon name={icon} size={20} color={fg} />
-        ) : null}
+        ) : (
+          leading ?? null
+        )}
         <Text
           style={[
             styles.label,
@@ -118,7 +123,7 @@ const styles = StyleSheet.create({
   fullWidth: { alignSelf: "stretch" },
   disabled: { backgroundColor: Colors.grisClair, borderColor: Colors.grisClair },
   content: { flexDirection: "row", alignItems: "center", gap: Spacing[2] },
-  label: { fontFamily: Fonts.medium, fontSize: 14, lineHeight: 20 },
+  label: { fontFamily: Fonts.medium, fontSize: 14, lineHeight: 20, flexShrink: 1 },
   labelLarge: { fontSize: 16, lineHeight: 24 },
   labelLien: { textDecorationLine: "underline" },
 });

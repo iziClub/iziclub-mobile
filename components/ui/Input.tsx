@@ -12,6 +12,10 @@ type InputProps = TextInputProps & {
   required?: boolean;
   /** Champ mot de passe avec bouton afficher / masquer */
   password?: boolean;
+  /** Élément à gauche dans le champ (icône loupe) */
+  leading?: React.ReactNode;
+  /** Élément à droite dans le champ (bouton effacer) */
+  trailing?: React.ReactNode;
 };
 
 /** Champ de saisie commun : libellé au-dessus, aide ou erreur en dessous. */
@@ -21,6 +25,8 @@ export default function Input({
   error,
   required,
   password,
+  leading,
+  trailing,
   style,
   onFocus,
   onBlur,
@@ -44,6 +50,7 @@ export default function Input({
           !!error && styles.boxError,
         ]}
       >
+        {leading ? <View style={styles.leading}>{leading}</View> : null}
         <TextInput
           style={[styles.input, style]}
           placeholderTextColor={Colors.gris}
@@ -70,6 +77,8 @@ export default function Input({
           >
             {visible ? <EyeOff size={20} color={Colors.gris} /> : <Eye size={20} color={Colors.gris} />}
           </Pressable>
+        ) : trailing ? (
+          <View style={styles.trailing}>{trailing}</View>
         ) : null}
       </View>
       {error ? (
@@ -105,6 +114,8 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing[3] - 2,
   },
   eye: { paddingLeft: Spacing[2] },
+  leading: { paddingRight: Spacing[2] },
+  trailing: { paddingLeft: Spacing[2] },
   hint: { fontFamily: Fonts.regular, fontSize: 12, lineHeight: 16, color: Colors.grisTexte },
   error: { color: Colors.rouge },
 });

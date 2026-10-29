@@ -1,11 +1,11 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from "react-native";
+import { View, Text, StyleSheet, Image, Alert } from "react-native";
 import { Club } from "@/types/club";
 import { likeClub, unlikeClub, saveClub, unsaveClub } from "@/services/clubs.service";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
-import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
 
 interface HeaderClubDetailsProps {
   club: Club;
@@ -122,9 +122,7 @@ export default function HeaderClubDetails({
   return (
     <View style={styles.header}>
       {/* Bouton Retour */}
-      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-        <Icon name="arrow-back" size={24} color={Colors.noir} />
-      </TouchableOpacity>
+      <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={handleGoBack} />
 
       <View style={{ flex: 1 }} />
 
@@ -145,50 +143,39 @@ export default function HeaderClubDetails({
       {/* Actions (Like & Save) */}
       <View style={styles.actionsContainer}>
         {/* BOUTON LIKE */}
-        <TouchableOpacity 
-          onPress={handleToggleLike} 
-          style={[styles.actionButton, !isLoggedIn && styles.actionButtonDisabled]}
-          disabled={loadingLike}
-          hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
-        >
-          {loadingLike ? (
-            <ActivityIndicator size="small" color={Colors.rouge} />
-          ) : (
-            <Icon 
-              name={isLiked ? "heart" : "heart-outline"} 
-              size={24} 
-              color={isLiked ? Colors.rouge : Colors.noir} 
-            />
-          )}
-        </TouchableOpacity>
+        <IconButton
+          name={isLiked ? "heart" : "heart-outline"}
+          variant="fantome"
+          iconSize={24}
+          color={isLiked ? Colors.rouge : Colors.noir}
+          accessibilityLabel={isLiked ? "Retirer des favoris" : "Ajouter aux favoris"}
+          accessibilityState={{ selected: isLiked }}
+          onPress={handleToggleLike}
+          loading={loadingLike}
+          style={!isLoggedIn && styles.actionButtonDisabled}
+        />
 
         {/* BOUTON SAVE */}
-        <TouchableOpacity 
-          onPress={handleToggleSave} 
-          style={[styles.actionButton, !isLoggedIn && styles.actionButtonDisabled]}
-          disabled={loadingSave}
-          hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
-        >
-          {loadingSave ? (
-            <ActivityIndicator size="small" color={Colors.noir} />
-          ) : (
-            <Icon 
-              name={isSaved ? "bookmark" : "bookmark-border"} 
-              size={26} 
-              color={isSaved ? Colors.noir : Colors.noir} 
-            />
-          )}
-        </TouchableOpacity>
+        <IconButton
+          name={isSaved ? "bookmark" : "bookmark-border"}
+          variant="fantome"
+          iconSize={24}
+          accessibilityLabel={isSaved ? "Retirer des enregistrés" : "Enregistrer"}
+          accessibilityState={{ selected: isSaved }}
+          onPress={handleToggleSave}
+          loading={loadingSave}
+          style={!isLoggedIn && styles.actionButtonDisabled}
+        />
 
         {/* BOUTON PARTAGE */}
         {onSharePress && (
-          <TouchableOpacity
+          <IconButton
+            name="share-social-outline"
+            variant="fantome"
+            iconSize={24}
+            accessibilityLabel="Partager"
             onPress={onSharePress}
-            style={styles.actionButton}
-            hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
-          >
-            <Icon name="share-social-outline" size={24} color={Colors.noir} />
-          </TouchableOpacity>
+          />
         )}
       </View>
     </View>
@@ -204,10 +191,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.grisClair,
     backgroundColor: Colors.blanc,
-  },
-  backButton: { 
-    padding: 8,
-    borderRadius: 8,
   },
   clubInfo: { 
     marginRight: 12, 
@@ -235,12 +218,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-  },
-  actionButton: { 
-    padding: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    minWidth: 36,
   },
   actionButtonDisabled: {
     opacity: 0.6,

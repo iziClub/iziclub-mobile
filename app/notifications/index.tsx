@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNotifications, markNotificationAsRead } from '@/services/notifications.service';
@@ -8,6 +8,9 @@ import { Message } from '@/types/notification';
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
 
 export default function InboxScreen() {
   const router = useRouter();
@@ -90,11 +93,9 @@ export default function InboxScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Icon name="arrow-back" size={24} color={Colors.noir} />
-        </TouchableOpacity>
+        <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={() => router.back()} />
         <Text style={styles.headerTitle}>Boîte de réception</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       {/* GESTION DE L'AFFICHAGE */}
@@ -113,9 +114,7 @@ export default function InboxScreen() {
           <Text style={styles.emptySubtitle}>
             Vous n'avez reçu aucun message ou notification pour le moment.
           </Text>
-          <TouchableOpacity style={styles.refreshButton} onPress={fetchNotifications}>
-            <Text style={styles.refreshButtonText}>Actualiser</Text>
-          </TouchableOpacity>
+          <Button label="Actualiser" variant="secondaire" icon="refresh" onPress={fetchNotifications} />
         </View>
       ) : (
         // 3. Liste des messages
@@ -123,11 +122,12 @@ export default function InboxScreen() {
           {notifications.map((msg) => {
             const unread = isMessageUnread(msg);
             return (
-              <TouchableOpacity 
-                key={msg.id} 
+              <Card
+                key={msg.id}
+                bordered
+                padding={16}
                 style={[styles.msgCard, unread && styles.msgCardUnread]}
                 onPress={() => handleOpenMessage(msg)}
-                activeOpacity={0.7}
               >
               <View style={styles.msgHeader}>
                 <View style={styles.clubRow}>
@@ -158,7 +158,7 @@ export default function InboxScreen() {
                   </Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </Card>
           )})}
         </ScrollView>
       )}
@@ -169,7 +169,6 @@ export default function InboxScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.fond },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: Colors.grisClair, backgroundColor: Colors.blanc },
-  backButton: { width: 40, height: 40, justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   listContainer: { padding: 20 },
   
@@ -177,12 +176,10 @@ const styles = StyleSheet.create({
   emptyIconContainer: { width: 90, height: 90, borderRadius: 45, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
   emptyTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 8, textAlign: 'center' },
   emptySubtitle: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, textAlign: 'center', lineHeight: 20, marginBottom: 24 },
-  refreshButton: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 999, backgroundColor: Colors.blanc, borderWidth: 1, borderColor: Colors.grisClair },
-  refreshButtonText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir },
 
   // Cartes de messages
-  msgCard: { backgroundColor: Colors.blanc, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
-  msgCardUnread: { backgroundColor: Colors.blanc, borderColor: Colors.bleu, borderWidth: 1.5 },
+  msgCard: { marginBottom: 16 },
+  msgCardUnread: { borderColor: Colors.noir, borderWidth: 1.5 },
   msgHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   clubRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   clubName: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },

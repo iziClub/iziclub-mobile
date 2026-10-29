@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Modal,
   Linking,
   Alert,
@@ -11,6 +10,7 @@ import {
   Platform,
   Image,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
@@ -18,6 +18,8 @@ import * as Clipboard from "expo-clipboard";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Tag from "@/components/ui/Tag";
 
 // ─────────────────────────────────────────────
 // Types
@@ -355,7 +357,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
       animationType="slide"
       onRequestClose={onClose}
     >
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose} />
+      <Pressable style={styles.overlay} onPress={onClose} accessibilityLabel="Fermer" />
 
       <View style={styles.sheet}>
         {/* Handle */}
@@ -396,12 +398,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
               </Text>
             )}
           </View>
-          <TouchableOpacity
-            onPress={onClose}
-            hitSlop={{ top: 12, right: 12, bottom: 12, left: 12 }}
-          >
-            <Icon name="close" size={22} color={Colors.noir} />
-          </TouchableOpacity>
+          <IconButton name="close" variant="fantome" accessibilityLabel="Fermer" onPress={onClose} />
         </View>
 
         <View style={styles.divider} />
@@ -409,9 +406,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
         {/* Hashtags */}
         <View style={styles.hashtagsRow}>
           {tags.map((tag) => (
-            <View key={tag} style={styles.hashtagPill}>
-              <Text style={styles.hashtagText}>#{tag}</Text>
-            </View>
+            <Tag key={tag} label={`#${tag}`} variant="doux" />
           ))}
         </View>
 
@@ -420,9 +415,11 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
         {/* Boutons réseaux */}
         <View style={styles.socialRow}>
           {SOCIAL_OPTIONS.map((opt) => (
-            <TouchableOpacity
+            <Pressable
               key={opt.key}
-              style={styles.socialItem}
+              accessibilityRole="button"
+              accessibilityLabel={`${opt.label} ${opt.sublabel ?? ""}`.trim()}
+              style={({ pressed }) => [styles.socialItem, pressed && { opacity: 0.6 }]}
               onPress={() => handlePress(opt)}
               disabled={loading !== null}
             >
@@ -435,7 +432,7 @@ export default function SocialShareModal({ visible, onClose, item }: Props) {
               </View>
               <Text style={styles.socialLabel}>{opt.label}</Text>
               <Text style={styles.socialSub}>{opt.sublabel}</Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
 
@@ -532,19 +529,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 8,
     marginBottom: 20,
-  },
-  hashtagPill: {
-    backgroundColor: Colors.bleuClair,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
-    borderWidth: 1.5,
-    borderColor: Colors.noir,
-  },
-  hashtagText: {
-    fontSize: 12,
-    color: Colors.noir,
-    fontFamily: Fonts.medium,
   },
   // ── Social ──
   sectionTitle: {

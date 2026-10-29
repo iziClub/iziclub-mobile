@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, TextInput, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useRouter } from 'expo-router';
 // Tes imports
 import ClubsTab from "./ClubsTab";
@@ -8,8 +8,12 @@ import FilterBottomSheet from "../../../components/search/FilterModal";
 import { useSearch } from "../../../components/search/useSearch";
 import { useLocalSearchParams } from 'expo-router';
 import { Colors } from "@/constants/colors";
-import { Fonts } from "@/constants/theme";
+import { Radius, Shadow } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
+import IconButton from "@/components/ui/IconButton";
+import Tabs from "@/components/ui/Tabs";
+import Input from "@/components/ui/Input";
 
 type SearchTab = "Clubs" | "Événements";
 
@@ -67,46 +71,38 @@ export default function SearchScreen() {
       
       {/* HEADER DE RECHERCHE */}
       <View style={styles.headerArea}>
-        <View style={styles.searchBar}>
-          <TextInput
-            placeholder="Rechercher"
-            value={query}
-            onChangeText={setQuery}
-            placeholderTextColor={Colors.gris}
-            style={{ flex: 1, fontSize: 16, fontFamily: Fonts.regular, color: Colors.noir }}
-          />
-          {query.length > 0 ? (
-            <TouchableOpacity onPress={() => setQuery("")}>
-               <Icon name="close-circle" size={20} color={Colors.gris} />
-            </TouchableOpacity>
-          ) : (
-            <Icon name="search" size={20} color={Colors.gris} />
-          )}
-        </View>
+        <Input
+          accessibilityLabel="Rechercher"
+          placeholder="Rechercher"
+          value={query}
+          onChangeText={setQuery}
+          returnKeyType="search"
+          leading={<Icon name="search" size={20} color={Colors.gris} />}
+          trailing={
+            query.length > 0 ? (
+              <IconButton
+                name="close-circle"
+                variant="fantome"
+                color={Colors.gris}
+                accessibilityLabel="Effacer la recherche"
+                onPress={() => setQuery("")}
+                style={{ width: 32, height: 32 }}
+              />
+            ) : null
+          }
+        />
       </View>
 
       {/* TABS NAVIGATION */}
-      <View style={styles.tabBar}>
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab("Clubs")}
-        >
-          <Text style={[styles.tabLabel, activeTab === "Clubs" && styles.tabLabelActive]}>
-            Clubs ({clubs?.length || 0})
-          </Text>
-          {activeTab === "Clubs" && <View style={styles.tabIndicator} />}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab("Événements")}
-        >
-          <Text style={[styles.tabLabel, activeTab === "Événements" && styles.tabLabelActive]}>
-            Événements ({upcomingEvents?.length || 0})
-          </Text>
-          {activeTab === "Événements" && <View style={styles.tabIndicator} />}
-        </TouchableOpacity>
-      </View>
+      <Tabs
+        style={styles.tabBar}
+        value={activeTab}
+        onChange={setActiveTab}
+        items={[
+          { value: "Clubs", label: `Clubs (${clubs?.length || 0})` },
+          { value: "Événements", label: `Événements (${upcomingEvents?.length || 0})` },
+        ]}
+      />
 
       {activeTab === "Clubs" ? (
         <ClubsTab data={clubs} refreshing={loading} onRefresh={refresh} />
@@ -117,23 +113,25 @@ export default function SearchScreen() {
       {/* BOUTONS FLOTTANTS (FABs) */}
       <View style={styles.fabContainer}>
         {/* BOUTON FILTRES */}
-        <TouchableOpacity 
-          style={styles.fabWhite} 
-          onPress={() => setShowFilters(true)}
-        >
-          <Icon name="options-outline" size={20} color={Colors.noir} />
-          <Text style={styles.fabTextBlack}>Filtres</Text>
-          {hasActiveFilters && <View style={styles.badge} />}
-        </TouchableOpacity>
+        <View>
+          <Button
+            label="Filtres"
+            icon="options-outline"
+            variant="secondaire"
+            style={styles.fabWhite}
+            onPress={() => setShowFilters(true)}
+            accessibilityHint={hasActiveFilters ? "Des filtres sont actifs" : undefined}
+          />
+          {hasActiveFilters && <View style={styles.badge} pointerEvents="none" />}
+        </View>
 
         {/* BOUTON CARTE */}
-        <TouchableOpacity 
+        <Button
+          label="Carte"
+          icon="map-outline"
           style={styles.fabBlue}
           onPress={() => router.push('/(main)/search/map')}
-        >
-          <Text style={styles.fabTextWhite}>Carte</Text>
-          <Icon name="map-outline" size={20} color={Colors.blanc} />
-        </TouchableOpacity>
+        />
       </View>
 
       {/* OVERLAY FILTRES */}
@@ -169,41 +167,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.fond,
   },
   tabBar: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.grisClair,
-    backgroundColor: Colors.fond,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  tabLabel: {
-    fontFamily: Fonts.medium,
-    fontSize: 16,
-    color: Colors.grisTexte,
-  },
-  tabLabelActive: {
-    color: Colors.noir,
-  },
-  tabIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2.5,
-    backgroundColor: Colors.noir,
-  },
-  searchBar: {
-    flexDirection: 'row',
-    backgroundColor: Colors.blanc,
-    paddingHorizontal: 16,
-    height: 48,
-    borderRadius: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
+    marginHorizontal: 20,
+    marginBottom: 12,
   },
   fabContainer: {
     position: 'absolute',
@@ -214,34 +179,13 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   fabWhite: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: Colors.blanc,
-    paddingVertical: 12,
-    paddingHorizontal: 22,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
+    borderRadius: Radius.full,
+    ...Shadow.flottante,
   },
   fabBlue: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.noir,
-    paddingVertical: 12,
-    paddingHorizontal: 22,
-    borderRadius: 999,
-  },
-  fabTextBlack: { 
-    marginLeft: 8, 
-    fontFamily: Fonts.medium, 
-    fontSize: 16,
-    color: Colors.noir,
-  },
-  fabTextWhite: { 
-    marginRight: 8, 
-    fontFamily: Fonts.medium, 
-    fontSize: 16, 
-    color: Colors.blanc,
+    borderRadius: Radius.full,
+    ...Shadow.flottante,
   },
   badge: {
     position: 'absolute',

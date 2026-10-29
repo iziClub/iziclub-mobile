@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Share } from "react-native";
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, Share } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import ClubCalendar from "@/components/calendar";

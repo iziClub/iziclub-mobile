@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Image, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Image, ActivityIndicator, Dimensions } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -9,6 +9,10 @@ import { getSavedEvents, unsaveEvent, getEventById } from '@/services/events.ser
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import IconButton from "@/components/ui/IconButton";
+import Tabs from "@/components/ui/Tabs";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
 
 type TabType = 'events' | 'clubs';
 
@@ -123,9 +127,10 @@ useFocusEffect(
       ? 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg'
       : 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg');
     return (
-      <TouchableOpacity 
-        style={styles.clubCard} 
-        activeOpacity={0.7}
+      <Card
+        bordered
+        padding={12}
+        style={styles.clubCard}
         onPress={() => router.push(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
       >
         <Image source={{ uri: imageSource }} style={styles.clubImage} />
@@ -143,15 +148,16 @@ useFocusEffect(
           
           <View style={styles.footerRow}>
             {/* Icône de marque-page cliqué */}
-            <TouchableOpacity 
+            <IconButton
+              name="bookmark"
+              variant="fantome"
+              color={Colors.noir}
+              accessibilityLabel="Retirer des enregistrés"
               onPress={() => handleUnsave(item.id, activeTab)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Icon name="bookmark" size={22} color={Colors.vert} />
-            </TouchableOpacity>
+            />
           </View>
         </View>
-      </TouchableOpacity>
+      </Card>
     );
   };
 
@@ -172,9 +178,7 @@ useFocusEffect(
           ? "Sauvegarde des événements pour planifier tes futures séances de sport."
           : "Enregistre des clubs pour retrouver facilement leurs horaires et actus."}
       </Text>
-      <TouchableOpacity style={styles.exploreBtn} onPress={() => router.push("/search")}>
-        <Text style={styles.exploreBtnText}>Parcourir la carte</Text>
-      </TouchableOpacity>
+      <Button label="Parcourir la carte" onPress={() => router.push("/search")} />
     </View>
   );
 
@@ -182,34 +186,21 @@ useFocusEffect(
     <View style={[styles.container]}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => router.back()} 
-          style={styles.backButton}
-        >
-          <Icon name="arrow-back" size={22} color={Colors.noir} />
-        </TouchableOpacity>
+        <IconButton name="arrow-back" accessibilityLabel="Retour" onPress={() => router.back()} />
         <Text style={styles.headerTitle}>Enregistrés</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       {/* TABS CONTROLLER CONTAINER */}
-      <View style={styles.tabsContainer}>
-        <TouchableOpacity 
-          style={[styles.tab, activeTab === 'events' && styles.activeTab]}
-          onPress={() => setActiveTab('events')}
-        >
-          <Icon name="bookmark-outline" size={15} color={activeTab === 'events' ? Colors.vert : Colors.gris} />
-          <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>Événements</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.tab, activeTab === 'clubs' && styles.activeTab]}
-          onPress={() => setActiveTab('clubs')}
-        >
-          <Icon name="business-outline" size={15} color={activeTab === 'clubs' ? Colors.vert : Colors.gris} />
-          <Text style={[styles.tabText, activeTab === 'clubs' && styles.activeTabText]}>Clubs</Text>
-        </TouchableOpacity>
-      </View>
+      <Tabs
+        style={styles.tabsContainer}
+        value={activeTab}
+        onChange={setActiveTab}
+        items={[
+          { value: 'events', label: 'Événements', icon: 'bookmark-outline' },
+          { value: 'clubs', label: 'Clubs', icon: 'business-outline' },
+        ]}
+      />
 
       {/* CONTENU OU LOADER */}
       {loading ? (
@@ -242,51 +233,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.grisClair,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-    backgroundColor: Colors.fond,
-  },
   headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   
   // Segmented Tabs
   tabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: Colors.blanc,
     marginHorizontal: 20,
     marginVertical: 12,
-    padding: 4,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
   },
-  tab: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 999,
-    gap: 8,
-  },
-  activeTab: {
-    backgroundColor: Colors.fond,
-  },
-  tabText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },
-  activeTabText: { color: Colors.vert },
 
   // Cartes horizontales intégrées
   clubCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.blanc,
-    borderRadius: 16,
     marginBottom: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
   },
   clubImage: {
     width: 85,
@@ -306,10 +264,6 @@ const styles = StyleSheet.create({
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  ratingBox: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
   loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.fond },
@@ -336,11 +290,4 @@ const styles = StyleSheet.create({
   },
   emptyTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir, marginBottom: 8 },
   emptySubtitle: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte, textAlign: 'center', lineHeight: 18, marginBottom: 20 },
-  exploreBtn: {
-    backgroundColor: Colors.noir,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 999,
-  },
-  exploreBtnText: { color: Colors.blanc, fontFamily: Fonts.medium, fontSize: 14 },
 });

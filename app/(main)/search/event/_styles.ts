@@ -3,19 +3,11 @@ import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
-  backButton: { 
-  position: 'absolute',
-  top: Platform.OS === 'ios' ? 50 : 20,
-  left: 16,
-  width: 38, 
-  height: 38, 
-  justifyContent: 'center', 
-  alignItems: 'center', 
-  borderRadius: 19, 
-  backgroundColor: Colors.blanc,
-  borderWidth: 1,
-  borderColor: Colors.grisClair,
-},
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 20,
+    left: 16,
+  },
   mapWrapper: {
     height: 150,
     width: "100%",
@@ -39,18 +31,6 @@ export const styles = StyleSheet.create({
     position: "absolute",
     bottom: 10,
     right: 10,
-    backgroundColor: Colors.noir,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 999,
-  },
-  navOverlayText: {
-    color: Colors.blanc,
-    fontFamily: Fonts.medium,
-    marginLeft: 8,
-    fontSize: 12,
   },
   container: { flex: 1, backgroundColor: Colors.fond },
   imageContainer: {
@@ -74,17 +54,8 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
   tag: {
-    backgroundColor: Colors.bleuClair,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
     marginRight: 8,
     marginBottom: 8,
-  },
-  tagText: {
-    color: Colors.noir,
-    fontSize: 12,
-    fontFamily: Fonts.medium,
   },
   description: {
     fontSize: 16, fontFamily: Fonts.regular,
@@ -117,19 +88,7 @@ export const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   calendarButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.noir,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 999,
     marginLeft: 8,
-  },
-  calendarButtonText: {
-    color: Colors.blanc,
-    fontSize: 14,
-    marginLeft: 4,
-    fontFamily: Fonts.medium,
   },
   clubContainer: {
     flexDirection: "row",
@@ -166,12 +125,9 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   partnerChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
     paddingHorizontal: 12,
     borderRadius: 16,
-    backgroundColor: Colors.fond,
+    backgroundColor: Colors.blanc,
     marginBottom: 12,
     borderWidth: 1,
     borderColor: Colors.grisClair,
@@ -183,9 +139,8 @@ export const styles = StyleSheet.create({
     marginRight: 12,
     backgroundColor: Colors.grisClair,
   },
-  partnerName: {
-    fontSize: 14,
-    fontFamily: Fonts.medium,
-    color: Colors.noir,
+  shareButton: {
+    marginHorizontal: 16,
+    marginTop: 20,
   },
 });

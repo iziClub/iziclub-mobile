@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Alert } from "react-native";
+import { View, Text, StyleSheet, Platform, Alert } from "react-native";
 import * as Linking from "expo-linking";
 import { Club } from "@/types/club";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
-import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
 
 const safeTrim = (value?: string | null) => (value || "").trim();
 
@@ -117,26 +117,17 @@ export default function ContactSection({ club }: { club: Club }) {
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Adresse</Text>
-          <TouchableOpacity onPress={openMaps} style={styles.linkRow}>
-            <Icon name="map-marker" size={16} color={Colors.bleu} />
-            <Text style={styles.linkText}>{fullAddress}</Text>
-          </TouchableOpacity>
+          <Button variant="lien" icon="map-marker" label={fullAddress} onPress={openMaps} style={styles.linkRow} />
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Telephone</Text>
-          <TouchableOpacity onPress={callPhone} style={styles.linkRow}>
-            <Icon name="phone" size={16} color={Colors.bleu} />
-            <Text style={styles.linkText}>{phoneNumber}</Text>
-          </TouchableOpacity>
+          <Button variant="lien" icon="phone" label={phoneNumber} onPress={callPhone} style={styles.linkRow} />
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Email</Text>
-          <TouchableOpacity onPress={sendEmail} style={styles.linkRow}>
-            <Icon name="envelope" size={16} color={Colors.bleu} />
-            <Text style={styles.linkText}>{emailAddress}</Text>
-          </TouchableOpacity>
+          <Button variant="lien" icon="envelope" label={emailAddress} onPress={sendEmail} style={styles.linkRow} />
         </View>
 
         <View style={styles.infoBlock}>
@@ -145,43 +136,39 @@ export default function ContactSection({ club }: { club: Club }) {
         </View>
 
         <View style={styles.socialRow}>
-          <TouchableOpacity
-            style={[styles.socialButton, styles.instagramButton, !instagramUrl && styles.socialButtonDisabled]}
+          <Button
+            icon="instagram"
+            label={instagramUrl ? "Instagram" : "Non renseigné"}
             onPress={() => openExternalUrl(instagramUrl)}
             disabled={!instagramUrl}
-          >
-            <Icon name="instagram" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{instagramUrl ? "Instagram" : "non renseigne"}</Text>
-          </TouchableOpacity>
+            style={styles.socialButton}
+          />
 
-          <TouchableOpacity
-            style={[styles.socialButton, styles.facebookButton, !facebookUrl && styles.socialButtonDisabled]}
+          <Button
+            icon="facebook"
+            label={facebookUrl ? "Facebook" : "Non renseigné"}
             onPress={() => openExternalUrl(facebookUrl)}
             disabled={!facebookUrl}
-          >
-            <Icon name="facebook" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{facebookUrl ? "Facebook" : "non renseigne"}</Text>
-          </TouchableOpacity>
+            style={styles.socialButton}
+          />
         </View>
 
         <View style={styles.socialRow}>
-          <TouchableOpacity
-            style={[styles.socialButton, styles.linkedinButton, !linkedinUrl && styles.socialButtonDisabled]}
+          <Button
+            icon="linkedin"
+            label={linkedinUrl ? "LinkedIn" : "Non renseigné"}
             onPress={() => openExternalUrl(linkedinUrl)}
             disabled={!linkedinUrl}
-          >
-            <Icon name="linkedin" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{linkedinUrl ? "LinkedIn" : "non renseigne"}</Text>
-          </TouchableOpacity>
+            style={styles.socialButton}
+          />
 
-          <TouchableOpacity
-            style={[styles.socialButton, styles.tiktokButton, !tiktokUrl && styles.socialButtonDisabled]}
+          <Button
+            icon="music"
+            label={tiktokUrl ? "TikTok" : "Non renseigné"}
             onPress={() => openExternalUrl(tiktokUrl)}
             disabled={!tiktokUrl}
-          >
-            <Icon name="music" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{tiktokUrl ? "TikTok" : "non renseigne"}</Text>
-          </TouchableOpacity>
+            style={styles.socialButton}
+          />
         </View>
       </View>
     </View>
@@ -252,15 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   linkRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  linkText: {
-    flex: 1,
-    fontSize: 16, fontFamily: Fonts.regular,
-    color: Colors.bleu,
-    textDecorationLine: "underline",
+    alignSelf: "flex-start",
   },
   infoText: {
     fontSize: 16, fontFamily: Fonts.regular,
@@ -274,31 +253,5 @@ const styles = StyleSheet.create({
   },
   socialButton: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    borderRadius: 999,
-    paddingVertical: 12,
-  },
-  instagramButton: {
-    backgroundColor: Colors.noir,
-  },
-  facebookButton: {
-    backgroundColor: Colors.noir,
-  },
-  linkedinButton: {
-    backgroundColor: Colors.noir,
-  },
-  tiktokButton: {
-    backgroundColor: Colors.noir,
-  },
-  socialText: {
-    color: Colors.blanc,
-    fontSize: 14,
-    fontFamily: Fonts.medium,
-  },
-  socialButtonDisabled: {
-    opacity: 0.5,
   },
 });

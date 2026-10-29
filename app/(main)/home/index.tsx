@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
-  Image, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Image,
   ImageBackground,
-  ActivityIndicator,
   Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
@@ -23,6 +22,10 @@ import { getNotifications } from '@/services/notifications.service';
 import { Colors } from '@/constants/colors';
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import IconButton from "@/components/ui/IconButton";
+import Tag from "@/components/ui/Tag";
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -126,20 +129,22 @@ export default function Home() {
             <Text style={styles.greeting}>Bonjour {userName || ''} 👋</Text>
             <Text style={styles.userName}>Prêt à Bouger ?</Text>
           </View>
-          <TouchableOpacity 
-  style={styles.profileBadge} 
-  onPress={() => router.push("/notifications")}
->
-  <Icon name="notifications-outline" size={24} color={Colors.noir} />
-  {/* Pastille rouge de notification non lue */}
-  {notificationsCount > 0 && <View style={styles.notificationDot} />}
-</TouchableOpacity>
+          <View>
+            <IconButton
+              name="notifications-outline"
+              iconSize={22}
+              accessibilityLabel={notificationsCount > 0 ? `Notifications, ${notificationsCount} non lues` : "Notifications"}
+              onPress={() => router.push("/notifications")}
+            />
+            {/* Pastille rouge de notification non lue */}
+            {notificationsCount > 0 && <View style={styles.notificationDot} pointerEvents="none" />}
+          </View>
         </View>
 
         {/* 2. RECHERCHE */}
-        <TouchableOpacity 
-          activeOpacity={0.9}
+        <Pressable
           onPress={() => router.push("/search")}
+          accessibilityRole="search"
           style={styles.searchSection}
         >
           <View style={styles.searchBar}>
@@ -147,18 +152,14 @@ export default function Home() {
             <Text style={{ color: Colors.gris, flex: 1 }}>Rechercher un club, un sport...</Text>
             <Icon name="options-outline" size={20} color={Colors.noir} />
           </View>
-        </TouchableOpacity>
+        </Pressable>
 
         {!isLoggedIn && (
           <View style={styles.loginBanner}>
             <Text style={styles.loginBannerTitle}>Connecte-toi pour profiter de toutes les fonctionnalités</Text>
             <View style={styles.loginBannerActions}>
-              <TouchableOpacity style={styles.loginBtn} onPress={() => router.push('/(auth)/login')}>
-                <Text style={styles.loginBtnText}>Se connecter</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.registerBtn} onPress={() => router.push('/(auth)/register')}>
-                <Text style={styles.registerBtnText}>Créer un compte</Text>
-              </TouchableOpacity>
+              <Button label="Se connecter" onPress={() => router.push('/(auth)/login')} />
+              <Button label="Créer un compte" variant="secondaire" onPress={() => router.push('/(auth)/register')} />
             </View>
           </View>
         )}
@@ -166,9 +167,7 @@ export default function Home() {
         {/* 3. SECTION ÉVÉNEMENTS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Événements à la une</Text>
-          <TouchableOpacity onPress={() => router.push({ pathname: "/search", params: { tab: "Événements" } })}>
-            <Text style={styles.seeAll}>Voir tout</Text>
-          </TouchableOpacity>
+          <Button variant="lien" label="Voir tout" onPress={() => router.push({ pathname: "/search", params: { tab: "Événements" } })} />
         </View>
         
         <ScrollView 
@@ -190,7 +189,7 @@ export default function Home() {
             ))
           ) : (
             featuredEvents.map((event: any) => (
-              <TouchableOpacity key={event.id} activeOpacity={0.9} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 16 }}>
+              <Card key={event.id} padding={0} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 16 }}>
                 <ImageBackground 
                   source={{ uri: event.coverImagePath || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                   style={styles.eventCardImage}
@@ -200,16 +199,16 @@ export default function Home() {
                     colors={['transparent', 'rgba(0,0,0,0.85)']}
                     style={styles.eventGradient}
                   >
-                    <View style={styles.eventBadge}>
-                      <Text style={styles.eventBadgeText}>{event.type ?? event.category ?? ''}</Text>
-                    </View>
+                    {!!(event.type ?? event.category) && (
+                      <Tag label={event.type ?? event.category} variant="actif" style={styles.eventBadge} />
+                    )}
                     <View style={styles.eventContent}>
                       <Text style={styles.eventDate}>{event.eventDate ? new Date(event.eventDate).toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : ''}</Text>
                       <Text style={styles.eventTitle} numberOfLines={1}>{event.name ?? event.title}</Text>
                     </View>
                   </LinearGradient>
                 </ImageBackground>
-              </TouchableOpacity>
+              </Card>
             ))
           )}
         </ScrollView>
@@ -224,9 +223,10 @@ export default function Home() {
         )}
 
         {/* 4. BANNIÈRE MAP */}
-        <TouchableOpacity 
+        <Pressable
           onPress={() => router.push("/(main)/search/map")}
-          style={styles.mapBanner}
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.mapBanner, pressed && { backgroundColor: Colors.noirSurvol }]}
         >
           <View style={styles.mapBannerContent}>
             <Text style={styles.mapBannerTitle}>Explorer la carte</Text>
@@ -235,7 +235,7 @@ export default function Home() {
           <View style={styles.mapBannerCircle}>
             <Icon name="map" size={24} color={Colors.blanc} />
           </View>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* 5. SPORTS (CATÉGORIES) */}
         <View style={styles.sectionHeader}>
@@ -243,24 +243,24 @@ export default function Home() {
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
           {categories.map((cat) => (
-            <TouchableOpacity key={cat.id} style={styles.categoryCard} onPress={() => router.push({
-        pathname: "/search",
-        params: { q: cat.name }
-      })}>
+            <Pressable
+              key={cat.id}
+              accessibilityRole="button"
+              style={({ pressed }) => [styles.categoryCard, pressed && { opacity: 0.6 }]}
+              onPress={() => router.push({ pathname: "/search", params: { q: cat.name } })}
+            >
               <View style={styles.categoryIcon}>
                 <Icon name={cat.icon as any} size={24} color={Colors.bleu} />
               </View>
               <Text style={styles.categoryName}>{cat.name}</Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </ScrollView>
 
         {/* 6. CLUBS RECOMMANDÉS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Clubs recommandés</Text>
-          <TouchableOpacity onPress={() => router.push("/search")}>
-            <Text style={styles.seeAll}>Voir tout</Text>
-          </TouchableOpacity>
+          <Button variant="lien" label="Voir tout" onPress={() => router.push("/search")} />
         </View>
 
         <View style={styles.recomendedContainer}>
@@ -277,7 +277,7 @@ export default function Home() {
           ) : (
             <View style={styles.clubGrid}>
               {recommendedClubs.map((club: any) => (
-                <TouchableOpacity key={club.id} style={styles.clubGridItem} onPress={() => router.push(`/search/club/${club.id}`)}>
+                <Card key={club.id} bordered padding={0} style={styles.clubGridItem} onPress={() => router.push(`/search/club/${club.id}`)}>
                   <Image 
                     source={{ uri: club.profile?.profileImagePath || club.profile?.bannerPath || club.image || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                     style={styles.clubImage} 
@@ -290,7 +290,7 @@ export default function Home() {
                       <Text style={styles.clubLocation}>{club.city ?? club.location ?? ''}</Text>
                     </View>
                   </View>
-                </TouchableOpacity>
+                </Card>
               ))}
             </View>
           )}
@@ -320,16 +320,6 @@ const styles = StyleSheet.create({
   },
   greeting: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte },
   userName: { fontSize: 20, fontFamily: Fonts.titre, color: Colors.noir },
-  profileBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: Colors.blanc,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   notificationDot: {
     position: 'absolute',
     top: 10,
@@ -359,7 +349,6 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   sectionTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
-  seeAll: { color: Colors.bleu, fontFamily: Fonts.medium, fontSize: 14 },
   
   // --- STYLES ÉVÉNEMENTS ---
   eventCardImage: {
@@ -378,15 +367,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: Colors.rouge,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-  },
-  eventBadgeText: { 
-    color: Colors.blanc, 
-    fontSize: 12, 
-    fontFamily: Fonts.medium 
   },
   eventContent: {
     // Conteneur pour aligner le texte
@@ -443,13 +423,6 @@ const styles = StyleSheet.create({
   },
   categoryName: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.noir },
   recomendedContainer: { paddingHorizontal: 20, marginTop: 16, paddingBottom: 32 },
-  clubCard: {
-    backgroundColor: Colors.blanc,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.grisClair,
-    overflow: 'hidden',
-  },
   clubInfo: { padding: 12 },
   clubName: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
@@ -466,13 +439,9 @@ const styles = StyleSheet.create({
   },
   loginBannerTitle: { color: Colors.noir, fontFamily: Fonts.medium, marginBottom: 12 },
   loginBannerActions: { flexDirection: 'row', gap: 8 },
-  loginBtn: { backgroundColor: Colors.noir, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 999 },
-  loginBtnText: { color: Colors.blanc, fontFamily: Fonts.medium },
-  registerBtn: { borderColor: Colors.noir, borderWidth: 1.5, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 999, backgroundColor: Colors.blanc },
-  registerBtnText: { color: Colors.noir, fontFamily: Fonts.medium },
   carouselDots: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 12 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.grisClair, marginHorizontal: 4 },
   activeDot: { backgroundColor: Colors.noir },
   clubGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
-  clubGridItem: { width: '48%', backgroundColor: Colors.blanc, borderRadius: 16, borderWidth: 1, borderColor: Colors.grisClair, overflow: 'hidden' },
+  clubGridItem: { width: '48%' },
 });
