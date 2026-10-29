@@ -1,5 +1,6 @@
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { LocationProvider } from "@/context/LocationContext";
+import { slideScreenOptions } from "@/constants/navigation";
 import { Stack, useRouter, useSegments } from "expo-router";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -43,7 +44,7 @@ function RootLayoutNav() {
   }
 
   // C'est ICI qu'on définit le Stack unique
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return <Stack screenOptions={slideScreenOptions} />;
 }
 
 export default function RootLayout() {

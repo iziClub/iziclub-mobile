@@ -9,6 +9,8 @@ export default function MainLayout() {
     <Tabs
       screenOptions={{
         tabBarHideOnKeyboard: true,
+        // Glissement horizontal au changement d'onglet
+        animation: "shift",
         headerStyle: {
           height: 44,
           backgroundColor: Colors.fond,
