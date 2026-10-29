@@ -3,10 +3,17 @@ import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
-  backButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 20,
-    left: 16,
+  backButton: {},
+  headerRow: {
+    paddingTop: Platform.OS === 'ios' ? 12 : 8,
+    paddingBottom: 8,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  secondaryButton: {
+    marginHorizontal: 16,
+    marginTop: 12,
   },
   mapWrapper: {
     height: 150,
@@ -98,10 +105,10 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   clubImage: {
-    width: 36,
-    height: 36,
-    borderRadius: 16,
-    marginRight: 8,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: 12,
   },
   clubName: {
     fontSize: 16,

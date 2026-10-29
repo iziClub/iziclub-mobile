@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import { Colors } from "@/constants/colors";
+import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
 
 export default function MainLayout() {
@@ -15,14 +16,15 @@ export default function MainLayout() {
         headerShadowVisible: false,
         tabBarStyle: {
           backgroundColor: Colors.blanc,
-          height: 60,
-          paddingBottom: 4,
-          paddingTop: 4,
-          borderTopWidth: 1,
+          height: 72,
+          paddingBottom: 8,
+          paddingTop: 8,
+          borderTopWidth: 1.5,
           borderTopColor: Colors.grisClair,
         },
+        tabBarLabelStyle: { fontFamily: Fonts.medium, fontSize: 12, marginTop: 2 },
         tabBarActiveTintColor: Colors.noir,
-        tabBarInactiveTintColor: Colors.gris,
+        tabBarInactiveTintColor: Colors.grisTexte,
         sceneStyle: {
           backgroundColor: Colors.fond,
         },
@@ -32,6 +34,7 @@ export default function MainLayout() {
         name="home/index"
         options={{
           title: "",
+          tabBarLabel: "Accueil",
           tabBarIcon: ({ color, size }) => (
             <Icon name="home-outline" size={size} color={color} />
           ),
@@ -48,8 +51,9 @@ export default function MainLayout() {
         })}
         options={{
           title: "",
+          tabBarLabel: "Explorer",
           tabBarIcon: ({ color, size }) => (
-            <Icon name="search-outline" size={size} color={color} />
+            <Icon name="map-outline" size={size} color={color} />
           ),
         }}
       />
@@ -63,6 +67,7 @@ export default function MainLayout() {
         })}
         options={{
           title: "",
+          tabBarLabel: "Profil",
           tabBarIcon: ({ color, size }) => (
             <Icon name="person-outline" size={size} color={color} />
           ),

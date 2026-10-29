@@ -258,14 +258,11 @@ export default function EventDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* IMAGE */}
-      
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: event.coverImagePath ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
+      {/* HEADER */}
+      <View style={styles.headerRow}>
         <IconButton
           name="arrow-back"
           accessibilityLabel="Retour"
-          style={styles.backButton}
           onPress={() => {
             if (router.canGoBack()) {
               router.back();
@@ -274,6 +271,11 @@ export default function EventDetailScreen() {
             }
           }}
         />
+      </View>
+
+      {/* IMAGE */}
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: event.coverImagePath ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
       </View>
 
       {/* TITRE */}
@@ -327,22 +329,9 @@ export default function EventDetailScreen() {
         {/* DATE */}
         <View style={styles.infoRow}>
           <Icon name="time-outline" size={22} color={Colors.bleu} />
-          <Text style={{ ...styles.infoText, flex: 0 }}>
-            Le {formatEventDate(event.eventDate)}
-          </Text>
           <Text style={styles.infoText}>
-            {formatEventTime(event.startDate)} - {formatEventTime(event.endDate)}
+            Le {formatEventDate(event.eventDate)}, {formatEventTime(event.startDate)} - {formatEventTime(event.endDate)}
           </Text>
-
-          <Button
-            label="Ajouter"
-            icon="calendar-outline"
-            variant="secondaire"
-            style={styles.calendarButton}
-            onPress={() => confirmAddToCalendar(event)}
-          />
-
-
         </View>
 
         {event.address.city && event.address.street ? (
@@ -435,6 +424,16 @@ export default function EventDetailScreen() {
           }
         }}
       />
+
+      <Button
+        label="Ajouter à l'agenda"
+        icon="calendar-outline"
+        variant="secondaire"
+        size="l"
+        style={styles.secondaryButton}
+        onPress={() => confirmAddToCalendar(event)}
+      />
+      <View style={{ height: 32 }} />
     </ScrollView>
   );
 }

@@ -21,7 +21,7 @@ export default function SelectSection({ activeSection, setActiveSection, SECTION
                 <Tag
                     key={section}
                     label={section}
-                    variant="neutre"
+                    variant="contour"
                     selected={activeSection === section}
                     onPress={() => setActiveSection(section)}
                     style={styles.sectionButton}
@@ -33,7 +33,7 @@ export default function SelectSection({ activeSection, setActiveSection, SECTION
 
 const styles = StyleSheet.create({
     sectionsContainer: {
-        maxHeight: 52,
+        maxHeight: 60,
         borderBottomWidth: 1,
         borderBottomColor: Colors.grisClair,
         backgroundColor: Colors.blanc,

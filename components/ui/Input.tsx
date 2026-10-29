@@ -16,6 +16,8 @@ type InputProps = TextInputProps & {
   leading?: React.ReactNode;
   /** Élément à droite dans le champ (bouton effacer) */
   trailing?: React.ReactNode;
+  /** "l" : champ de recherche principal d'un écran (56 px) */
+  size?: "m" | "l";
 };
 
 /** Champ de saisie commun : libellé au-dessus, aide ou erreur en dessous. */
@@ -27,6 +29,7 @@ export default function Input({
   password,
   leading,
   trailing,
+  size = "m",
   style,
   onFocus,
   onBlur,
@@ -46,6 +49,7 @@ export default function Input({
       <View
         style={[
           styles.box,
+          size === "l" && styles.boxLarge,
           focused && styles.boxFocused,
           !!error && styles.boxError,
         ]}
@@ -104,6 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.blanc,
     paddingHorizontal: Spacing[3],
   },
+  boxLarge: { minHeight: 56, borderRadius: Radius.l },
   boxFocused: { borderColor: Colors.bleu, borderWidth: 2, paddingHorizontal: Spacing[3] - 1 },
   boxError: { borderColor: Colors.rouge },
   input: {

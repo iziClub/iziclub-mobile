@@ -13,7 +13,7 @@ export default function GalerieSection({club}: Props) {
         <ScrollView style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Galerie photos</Text>
             <View style={styles.gallery}>
-                            {club.gallery.map((picture: Picture) =>(
+                            {club.gallery.slice(0, 16).map((picture: Picture) =>(
                     <Image
                         key={picture.id}
                         source={{ uri: picture.url}}

@@ -5,6 +5,7 @@ import { Club } from "@/types/club";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 import Button from "@/components/ui/Button";
+import IconButton from "@/components/ui/IconButton";
 
 const safeTrim = (value?: string | null) => (value || "").trim();
 
@@ -15,7 +16,19 @@ const ensureUrl = (url?: string, fallback?: string) => {
   return `https://${raw}`;
 };
 
-const openExternalUrl = async (url: string) => {
+const openExternalUrl = (url: string) => {
+  if (!url) return;
+  Alert.alert(
+    "Quitter l'application",
+    "Vous allez quitter iziClub pour ouvrir une autre application.",
+    [
+      { text: "Annuler", style: "cancel" },
+      { text: "Continuer", onPress: () => openUrl(url) },
+    ]
+  );
+};
+
+const openUrl = async (url: string) => {
   try {
     if (!url) return;
     const canOpen = await Linking.canOpenURL(url);
@@ -49,11 +62,18 @@ export default function ContactSection({ club }: { club: Club }) {
   const facebookUrl = facebookValue ? ensureUrl(facebookValue) : "";
   const linkedinUrl = linkedinValue ? ensureUrl(linkedinValue) : "";
   const tiktokUrl = tiktokValue ? ensureUrl(tiktokValue) : "";
+  const socials = [
+    { icon: "instagram", label: "Instagram", url: instagramUrl },
+    { icon: "facebook", label: "Facebook", url: facebookUrl },
+    { icon: "linkedin", label: "LinkedIn", url: linkedinUrl },
+    { icon: "tiktok", label: "TikTok", url: tiktokUrl },
+  ].filter((s) => !!s.url);
 
   const categoriesLabel = (club.categories || []).slice(0, 4).map((c) => c.name).join(" • ") || "Aucune catégorie renseignée";
   const eventsCount = club.events?.length || 0;
   const sessionsCount = club.sessions?.length || 0;
-  const distanceText = typeof club.distanceInKm === "number" ? `${club.distanceInKm.toFixed(1)} km` : "Distance non disponible";
+  const categoriesCount = club.categories?.length || 0;
+  const distanceText = typeof club.distanceInKm === "number" ? `${Math.round(club.distanceInKm)} km` : "-";
 
   const openMaps = async () => {
     const query = encodeURIComponent(fullAddress);
@@ -85,6 +105,17 @@ export default function ContactSection({ club }: { club: Club }) {
     }
   };
 
+  const openMapsWithWarning = () => {
+    Alert.alert(
+      "Quitter l'application",
+      "Vous allez quitter iziClub pour ouvrir une application de navigation.",
+      [
+        { text: "Annuler", style: "cancel" },
+        { text: "Continuer", onPress: openMaps },
+      ]
+    );
+  };
+
   const callPhone = () => {
     if (phoneNumber === "Numero non renseigne") return;
     openExternalUrl(`tel:${phoneNumber}`);
@@ -110,6 +141,10 @@ export default function ContactSection({ club }: { club: Club }) {
             <Text style={styles.statLabel}>Sessions</Text>
           </View>
           <View style={styles.statPill}>
+            <Text style={styles.statValue}>{categoriesCount}</Text>
+            <Text style={styles.statLabel}>Categories</Text>
+          </View>
+          <View style={styles.statPill}>
             <Text style={styles.statValue}>{distanceText}</Text>
             <Text style={styles.statLabel}>Distance</Text>
           </View>
@@ -117,17 +152,17 @@ export default function ContactSection({ club }: { club: Club }) {
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Adresse</Text>
-          <Button variant="lien" icon="map-marker" label={fullAddress} onPress={openMaps} style={styles.linkRow} />
+          <Button icon="map-marker" label={fullAddress} onPress={openMapsWithWarning} fullWidth />
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Telephone</Text>
-          <Button variant="lien" icon="phone" label={phoneNumber} onPress={callPhone} style={styles.linkRow} />
+          <Button icon="phone" label={phoneNumber} onPress={callPhone} fullWidth />
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Email</Text>
-          <Button variant="lien" icon="envelope" label={emailAddress} onPress={sendEmail} style={styles.linkRow} />
+          <Button icon="envelope" label={emailAddress} onPress={sendEmail} fullWidth />
         </View>
 
         <View style={styles.infoBlock}>
@@ -135,41 +170,19 @@ export default function ContactSection({ club }: { club: Club }) {
           <Text style={styles.infoText}>{categoriesLabel}</Text>
         </View>
 
-        <View style={styles.socialRow}>
-          <Button
-            icon="instagram"
-            label={instagramUrl ? "Instagram" : "Non renseigné"}
-            onPress={() => openExternalUrl(instagramUrl)}
-            disabled={!instagramUrl}
-            style={styles.socialButton}
-          />
-
-          <Button
-            icon="facebook"
-            label={facebookUrl ? "Facebook" : "Non renseigné"}
-            onPress={() => openExternalUrl(facebookUrl)}
-            disabled={!facebookUrl}
-            style={styles.socialButton}
-          />
-        </View>
-
-        <View style={styles.socialRow}>
-          <Button
-            icon="linkedin"
-            label={linkedinUrl ? "LinkedIn" : "Non renseigné"}
-            onPress={() => openExternalUrl(linkedinUrl)}
-            disabled={!linkedinUrl}
-            style={styles.socialButton}
-          />
-
-          <Button
-            icon="music"
-            label={tiktokUrl ? "TikTok" : "Non renseigné"}
-            onPress={() => openExternalUrl(tiktokUrl)}
-            disabled={!tiktokUrl}
-            style={styles.socialButton}
-          />
-        </View>
+        {socials.length > 0 && (
+          <View style={styles.socialRow}>
+            {socials.map((s) => (
+              <IconButton
+                key={s.icon}
+                name={s.icon}
+                variant="plein"
+                accessibilityLabel={s.label}
+                onPress={() => openExternalUrl(s.url)}
+              />
+            ))}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -214,8 +227,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   statValue: {
-    fontSize: 14,
-    fontFamily: Fonts.medium,
+    fontSize: 24,
+    fontFamily: Fonts.titre,
     color: Colors.bleu,
   },
   statLabel: {
@@ -238,9 +251,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     marginBottom: 8,
   },
-  linkRow: {
-    alignSelf: "flex-start",
-  },
   infoText: {
     fontSize: 16, fontFamily: Fonts.regular,
     lineHeight: 22,
@@ -250,8 +260,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     marginTop: 16,
-  },
-  socialButton: {
-    flex: 1,
   },
 });

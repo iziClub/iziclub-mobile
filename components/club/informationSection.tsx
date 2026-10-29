@@ -1,5 +1,6 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, ScrollView, Image, Pressable } from "react-native";
+import ImageViewer from "./ImageViewer";
 import Card from "../card";
 import TeamCard from "../teamCard";
 import { Club } from "@/types/club";
@@ -31,6 +32,7 @@ const getCategorySubtitle = (gender: string | null, minAge: number | null, maxAg
 export default function InformationSection({ club, onSeeMore }: Props) {
     const defaultColors = [Colors.vert, Colors.bleu, Colors.rouge, Colors.vertClair, Colors.bleuClair];
     const router = useRouter();
+    const [viewerIndex, setViewerIndex] = useState<number | null>(null);
     
     // On vérifie si la bannière existe
     const hasBanner = !!club.profile.bannerPath;
@@ -119,18 +121,27 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 <>
                     <View style={styles.sectionHeader}>
                         <Text style={styles.bigTitle}>Nos photos</Text>
-                        <Button variant="lien" label="Voir plus" onPress={() => onSeeMore("Galerie")} />
                     </View>
 
                     <View style={styles.gallery}>
-                        {club.gallery.slice(0, 6).map((picture) => (
-                            <Image
+                        {club.gallery.slice(0, 16).map((picture, index) => (
+                            <Pressable
                                 key={picture.id}
-                                source={{ uri: picture.url }}
-                                style={styles.photo} 
-                            />
+                                accessibilityRole="imagebutton"
+                                accessibilityLabel={`Agrandir la photo ${index + 1}`}
+                                style={({ pressed }) => [styles.photoWrap, pressed && { opacity: 0.85 }]}
+                                onPress={() => setViewerIndex(index)}
+                            >
+                                <Image source={{ uri: picture.url }} style={styles.photo} />
+                            </Pressable>
                         ))}
                     </View>
+
+                    <ImageViewer
+                        images={club.gallery.slice(0, 16).map((p) => p.url)}
+                        index={viewerIndex}
+                        onClose={() => setViewerIndex(null)}
+                    />
                 </>
             )}
         </ScrollView>
@@ -205,10 +216,13 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginBottom: 24,
     },
-    photo: {
+    photoWrap: {
         width: "49%",
+        marginBottom: 12,
+    },
+    photo: {
+        width: "100%",
         height: 150,
         borderRadius: 16,
-        marginBottom: 12,
     },
 });

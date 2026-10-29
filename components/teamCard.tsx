@@ -42,7 +42,7 @@ export default function TeamCard({
 
 const styles = StyleSheet.create({
     card: {
-        width: 150,
+        width: "100%",
         padding: 16,
         borderRadius: 16,
         marginBottom: 12,

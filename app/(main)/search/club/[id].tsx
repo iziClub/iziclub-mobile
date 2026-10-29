@@ -3,7 +3,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import ClubCalendar from "@/components/calendar";
 import EventSection from "@/components/club/eventSection";
-import GalerieSection from "@/components/club/galerieSection";
 import ContactSection from "@/components/club/contactSection";
 import InformationSection from "@/components/club/informationSection";
 import MembershipSection from "@/components/club/Membership/MembershipSection"
@@ -19,7 +18,7 @@ import ImportedClubDetail from "./importClubDetail";
 import { getCurrentUser } from "@/services/auth";
 import { Colors } from "@/constants/colors";
 
-const SECTIONS = ["Informations", "Événements", "Adhésion","Galerie", "Calendrier", "Contact"];
+const SECTIONS = ["Informations", "Événements", "Adhésion", "Calendrier", "Contact"];
 
 export default function ClubDetail() {
     const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
@@ -115,11 +114,6 @@ export default function ClubDetail() {
                         isLoggedIn={isLoggedIn} // À remplacer par ton vrai état de connexion (ex: via useAuth)
                     />
                 );      
-
-            case "Galerie":
-                return (
-                    <GalerieSection club={club}/>
-                );
 
             case "Calendrier":
                 return (
