@@ -18,9 +18,9 @@ export default function MainLayout() {
         headerShadowVisible: false,
         tabBarStyle: {
           backgroundColor: Colors.blanc,
-          height: 72,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 92,
+          paddingBottom: 20,
+          paddingTop: 10,
           borderTopWidth: 1.5,
           borderTopColor: Colors.grisClair,
         },

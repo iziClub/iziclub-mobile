@@ -1,6 +1,6 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, FlatList, Image, Platform, StyleSheet, Text, View } from "react-native";
-import MapView, { Callout, Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { useLocation } from "@/context/LocationContext";
@@ -32,9 +32,10 @@ interface Props {
   events: EventSearchItem[];
   loading: boolean;
   onSearchZone: (zone: { latitude: number; longitude: number; radius: number }) => void;
+  onSelectionChange?: (open: boolean) => void;
 }
 
-export default function SearchMapView({ clubs, events, loading, onSearchZone }: Props) {
+export default function SearchMapView({ clubs, events, loading, onSearchZone, onSelectionChange }: Props) {
   const router = useRouter();
   const { location, status } = useLocation();
   const mapRef = useRef<MapView>(null);
@@ -42,6 +43,23 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone }: 
   const [mapReady, setMapReady] = useState(false);
   const [showSearchButton, setShowSearchButton] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [selected, setSelected] = useState<{ kind: "club"; item: ClubSearchItem } | { kind: "event"; item: EventSearchItem } | null>(null);
+
+  const selectedAt = useRef(0);
+
+  useEffect(() => {
+    onSelectionChange?.(!!selected);
+  }, [selected]);
+
+  const select = (s: NonNullable<typeof selected>) => {
+    selectedAt.current = Date.now();
+    setSelected(s);
+    const lat = parseFloat(s.item.latitude);
+    const lng = parseFloat(s.item.longitude);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      mapRef.current?.animateToRegion({ ...region, latitude: lat - region.latitudeDelta * 0.2, longitude: lng }, 300);
+    }
+  };
 
   const previews = useMemo(
     () => [
@@ -83,6 +101,10 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone }: 
     <View style={styles.container}>
       <MapView
         ref={mapRef}
+        onPress={() => {
+          // Un appui sur un marqueur peut aussi déclencher onPress de la carte
+          if (Date.now() - selectedAt.current > 500) setSelected(null);
+        }}
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
         style={StyleSheet.absoluteFill}
         initialRegion={region}
@@ -98,19 +120,13 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone }: 
           <Marker
             key={`club-${club.id}`}
             coordinate={{ latitude: parseFloat(club.latitude), longitude: parseFloat(club.longitude) }}
+            onPress={() => select({ kind: "club", item: club })}
           >
             <View style={styles.markerShadow}>
               <View style={[styles.marker, { backgroundColor: Colors.bleu }]}>
                 <Icon name="people-circle-outline" size={25} color={Colors.blanc} />
               </View>
             </View>
-            <Callout tooltip onPress={() => router.push(`/search/club/${club.id}`)}>
-              <View style={styles.callout}>
-                <Text style={styles.calloutTitle} numberOfLines={1}>{club.name}</Text>
-                <Text style={styles.calloutSub} numberOfLines={1}>{club.city}</Text>
-                <Text style={[styles.calloutLink, { color: Colors.bleu }]}>Voir la fiche →</Text>
-              </View>
-            </Callout>
           </Marker>
         ))}
 
@@ -118,19 +134,13 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone }: 
           <Marker
             key={`event-${event.id}`}
             coordinate={{ latitude: parseFloat(event.latitude), longitude: parseFloat(event.longitude) }}
+            onPress={() => select({ kind: "event", item: event })}
           >
             <View style={styles.markerShadow}>
               <View style={[styles.marker, { backgroundColor: Colors.rouge, borderRadius: 8 }]}>
                 <Icon name="medal-outline" size={25} color={Colors.blanc} />
               </View>
             </View>
-            <Callout tooltip onPress={() => router.push(`/search/event/${event.id}`)}>
-              <View style={styles.callout}>
-                <Text style={styles.calloutTitle} numberOfLines={1}>{event.name}</Text>
-                <Text style={styles.calloutSub} numberOfLines={1}>{event.city}</Text>
-                <Text style={[styles.calloutLink, { color: Colors.rouge }]}>Voir l'événement →</Text>
-              </View>
-            </Callout>
           </Marker>
         ))}
       </MapView>
@@ -152,17 +162,19 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone }: 
         />
       )}
 
-      <IconButton
-        name="locate-outline"
-        variant="plein"
-        iconSize={24}
-        loading={locating}
-        accessibilityLabel="Me recentrer sur ma position"
-        onPress={recenterOnUser}
-        style={styles.fabLocation}
-      />
+      {!selected && (
+        <IconButton
+          name="locate-outline"
+          variant="plein"
+          iconSize={24}
+          loading={locating}
+          accessibilityLabel="Me recentrer sur ma position"
+          onPress={recenterOnUser}
+          style={styles.fabLocation}
+        />
+      )}
 
-      {previews.length > 0 && (
+      {!selected && previews.length > 0 && (
         <FlatList
           style={styles.previewList}
           contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
@@ -177,7 +189,7 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone }: 
                 bordered
                 padding={0}
                 style={styles.previewCard}
-                onPress={() => router.push(p.kind === "club" ? `/search/club/${p.item.id}` : `/search/event/${p.item.id}`)}
+                onPress={() => select(p)}
               >
                 {uri ? <Image source={{ uri }} style={styles.previewImage} /> : <View style={[styles.previewImage, { backgroundColor: Colors.grisClair }]} />}
                 <View style={styles.previewBody}>
@@ -193,6 +205,46 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone }: 
           }}
         />
       )}
+
+      {selected && (
+        <View style={styles.drawer}>
+          <View style={styles.drawerHandle} />
+          <IconButton
+            name="close"
+            variant="fantome"
+            accessibilityLabel="Fermer"
+            onPress={() => setSelected(null)}
+            style={styles.drawerClose}
+          />
+          <View style={styles.drawerRow}>
+            {(() => {
+              const uri = imageOf(selected);
+              return uri ? (
+                <Image source={{ uri }} style={styles.drawerImage} />
+              ) : (
+                <View style={[styles.drawerImage, { backgroundColor: Colors.grisClair }]} />
+              );
+            })()}
+            <View style={{ flex: 1, gap: 4, paddingRight: 24 }}>
+              <Tag label={selected.kind === "club" ? "Club" : "Événement"} variant={selected.kind === "club" ? "doux" : "danger"} style={styles.previewTag} />
+              <Text style={styles.drawerTitle} numberOfLines={2}>{selected.item.name}</Text>
+              <View style={styles.row}>
+                <Icon name="location" size={14} color={Colors.grisTexte} />
+                <Text style={styles.previewCity} numberOfLines={1}>
+                  {[selected.item.street, selected.item.city].filter(Boolean).join(", ")}
+                </Text>
+              </View>
+              <Text style={styles.previewCity} numberOfLines={1}>
+                {[selected.item.sport, typeof selected.item.distanceInKm === "number" ? `${Math.round(selected.item.distanceInKm)} km` : null].filter(Boolean).join(" · ")}
+              </Text>
+            </View>
+          </View>
+          <Button
+            label={selected.kind === "club" ? "Voir la fiche du club" : "Voir l'événement"}
+            onPress={() => router.push(selected.kind === "club" ? `/search/club/${selected.item.id}` : `/search/event/${selected.item.id}`)}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -207,8 +259,8 @@ const styles = StyleSheet.create({
   calloutSub: { fontFamily: Fonts.regular, fontSize: 12, color: Colors.grisTexte, marginTop: 2 },
   calloutLink: { fontFamily: Fonts.medium, fontSize: 12, marginTop: 8, textAlign: "right" },
   searchHereBtn: { position: "absolute", top: 16, alignSelf: "center", ...Shadow.flottante },
-  fabLocation: { position: "absolute", bottom: 212, right: 20, ...Shadow.flottante },
-  previewList: { position: "absolute", bottom: 20, left: 0, right: 0 },
+  fabLocation: { position: "absolute", bottom: 24, right: 20, ...Shadow.flottante },
+  previewList: { position: "absolute", bottom: 92, left: 0, right: 0 },
   previewCard: { width: 280, flexDirection: "row" },
   previewImage: { width: 92, height: 100 },
   previewBody: { flex: 1, padding: 12, gap: 4, justifyContent: "center" },
@@ -216,4 +268,13 @@ const styles = StyleSheet.create({
   previewCity: { fontFamily: Fonts.regular, fontSize: 12, color: Colors.grisTexte, flex: 1 },
   row: { flexDirection: "row", alignItems: "center", gap: 4 },
   previewTag: { alignSelf: "flex-start" },
+  drawer: {
+    position: "absolute", bottom: 16, left: 16, right: 16, backgroundColor: Colors.blanc, borderRadius: 24,
+    zIndex: 30, padding: 16, paddingTop: 20, gap: 16, borderWidth: 1, borderColor: Colors.grisClair, ...Shadow.flottante,
+  },
+  drawerHandle: { position: "absolute", top: 8, alignSelf: "center", width: 36, height: 4, borderRadius: 2, backgroundColor: Colors.grisClair },
+  drawerClose: { position: "absolute", top: 8, right: 8, width: 32, height: 32, zIndex: 1 },
+  drawerRow: { flexDirection: "row", gap: 12 },
+  drawerImage: { width: 88, height: 88, borderRadius: 16 },
+  drawerTitle: { fontFamily: Fonts.titre, fontSize: 18, color: Colors.noir },
 });

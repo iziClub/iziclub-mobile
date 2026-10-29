@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import FilterBottomSheet from "../../../components/search/FilterModal";
 import { useSearch } from "../../../components/search/useSearch";
 import ResultsList from "../../../components/search/ResultsList";
 import SearchMapView from "../../../components/search/SearchMapView";
 import { Colors } from "@/constants/colors";
-import { Radius, Shadow } from "@/constants/theme";
+import { Fonts, Radius, Shadow } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
@@ -29,6 +29,7 @@ export default function SearchScreen() {
   const [eventType, setEventType] = useState("");
   const [zone, setZone] = useState<Zone | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
@@ -47,7 +48,7 @@ export default function SearchScreen() {
   }, [view]);
 
   useEffect(() => {
-    if (viewMode === "list") setZone(null);
+    if (viewMode === "list") { setZone(null); setDrawerOpen(false); }
   }, [viewMode]);
 
   const { clubs, events, loading, loadingMore, refresh, fetchMoreEvents } = useSearch(
@@ -122,17 +123,28 @@ export default function SearchScreen() {
           loadingMore={loadingMore}
         />
       ) : (
-        <SearchMapView clubs={shownClubs} events={shownEvents} loading={loading} onSearchZone={setZone} />
+        <SearchMapView clubs={shownClubs} events={shownEvents} loading={loading} onSearchZone={setZone} onSelectionChange={setDrawerOpen} />
       )}
 
-      <IconButton
-        name={viewMode === "list" ? "map" : "list"}
-        variant="plein"
-        iconSize={24}
-        accessibilityLabel={viewMode === "list" ? "Afficher la carte" : "Afficher la liste"}
-        onPress={() => setViewMode(viewMode === "list" ? "map" : "list")}
-        style={[styles.viewFab, { bottom: viewMode === "map" ? 144 : 24 }]}
-      />
+      {!drawerOpen && (
+        <View style={[styles.viewSwitch, { bottom: 24 }]}>
+          {(["list", "map"] as const).map((mode, i) => {
+            const selected = viewMode === mode;
+            return (
+              <TouchableOpacity
+                key={mode}
+                disabled={selected}
+                onPress={() => setViewMode(mode)}
+                activeOpacity={0.8}
+                style={[styles.switchBtn, i === 0 ? styles.switchLeft : styles.switchRight, selected && styles.switchBtnSelected]}
+              >
+                <Icon name={mode === "list" ? "list" : "map"} size={18} color={selected ? Colors.grisTexte : Colors.noir} />
+                <Text style={[styles.switchText, selected && { color: Colors.grisTexte }]}>{mode === "list" ? "Liste" : "Carte"}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
 
       <FilterBottomSheet
         visible={showFilters}
@@ -163,11 +175,24 @@ const styles = StyleSheet.create({
   clearButton: { width: 32, height: 32 },
   chipRow: { gap: 8, paddingRight: 20, alignItems: "center" },
   filterDot: { position: "absolute", top: 2, right: 2, width: 10, height: 10, borderRadius: Radius.full, backgroundColor: Colors.rouge, borderWidth: 2, borderColor: Colors.fond },
-  viewFab: {
+  viewSwitch: {
     position: "absolute",
-    right: 20,
-    width: 56,
-    height: 56,
+    alignSelf: "center",
+    flexDirection: "row",
     ...Shadow.flottante,
   },
+  switchBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    backgroundColor: Colors.blanc,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
+  },
+  switchLeft: { borderTopLeftRadius: 999, borderBottomLeftRadius: 999 },
+  switchRight: { borderTopRightRadius: 999, borderBottomRightRadius: 999, borderLeftWidth: 0 },
+  switchBtnSelected: { backgroundColor: Colors.grisClair },
+  switchText: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.noir },
 });
