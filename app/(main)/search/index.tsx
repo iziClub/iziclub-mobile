@@ -26,6 +26,7 @@ export default function SearchScreen() {
   const [eventType, setEventType] = useState("");
   const [zone, setZone] = useState<Zone | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
@@ -44,7 +45,7 @@ export default function SearchScreen() {
   }, [view]);
 
   useEffect(() => {
-    if (viewMode === "list") setZone(null);
+    if (viewMode === "list") { setZone(null); setDrawerOpen(false); }
   }, [viewMode]);
 
   const { clubs, events, loading, loadingMore, refresh, fetchMoreEvents } = useSearch(
@@ -123,17 +124,28 @@ export default function SearchScreen() {
           loadingMore={loadingMore}
         />
       ) : (
-        <SearchMapView clubs={shownClubs} events={shownEvents} loading={loading} onSearchZone={setZone} />
+        <SearchMapView clubs={shownClubs} events={shownEvents} loading={loading} onSearchZone={setZone} onSelectionChange={setDrawerOpen} />
       )}
 
-      <TouchableOpacity
-        style={[styles.viewFab, { bottom: viewMode === "map" ? 144 : 24 }]}
-        onPress={() => setViewMode(viewMode === "list" ? "map" : "list")}
-        activeOpacity={0.85}
-        accessibilityLabel={viewMode === "list" ? "Afficher la carte" : "Afficher la liste"}
-      >
-        <Icon name={viewMode === "list" ? "map" : "list"} size={24} color={Colors.blanc} />
-      </TouchableOpacity>
+      {!drawerOpen && (
+        <View style={[styles.viewSwitch, { bottom: viewMode === "map" ? 136 : 24 }]}>
+          {(["list", "map"] as const).map((mode, i) => {
+            const selected = viewMode === mode;
+            return (
+              <TouchableOpacity
+                key={mode}
+                disabled={selected}
+                onPress={() => setViewMode(mode)}
+                activeOpacity={0.8}
+                style={[styles.switchBtn, i === 0 ? styles.switchLeft : styles.switchRight, selected && styles.switchBtnSelected]}
+              >
+                <Icon name={mode === "list" ? "list" : "map"} size={18} color={selected ? Colors.grisTexte : Colors.noir} />
+                <Text style={[styles.switchText, selected && { color: Colors.grisTexte }]}>{mode === "list" ? "Liste" : "Carte"}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
 
       <FilterBottomSheet
         visible={showFilters}
@@ -186,18 +198,27 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: Colors.noir, borderColor: Colors.noir },
   chipText: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.noir },
   filterDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.rouge },
-  viewFab: {
+  viewSwitch: {
     position: "absolute",
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.noir,
+    alignSelf: "center",
+    flexDirection: "row",
     elevation: 6,
     shadowColor: Colors.noir,
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
   },
+  switchBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    backgroundColor: Colors.blanc,
+    borderWidth: 1,
+    borderColor: Colors.grisClair,
+  },
+  switchLeft: { borderTopLeftRadius: 999, borderBottomLeftRadius: 999 },
+  switchRight: { borderTopRightRadius: 999, borderBottomRightRadius: 999, borderLeftWidth: 0 },
+  switchBtnSelected: { backgroundColor: Colors.grisClair },
+  switchText: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.noir },
 });
