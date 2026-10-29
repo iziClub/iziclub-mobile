@@ -258,10 +258,10 @@ const styles = StyleSheet.create({
   },
   searchHereText: { color: Colors.noir, fontFamily: Fonts.medium, fontSize: 14 },
   fabLocation: {
-    position: "absolute", bottom: 212, right: 20, width: 52, height: 52, borderRadius: 26,
+    position: "absolute", bottom: 24, right: 20, width: 52, height: 52, borderRadius: 26,
     alignItems: "center", justifyContent: "center", backgroundColor: Colors.noir, elevation: 6,
   },
-  previewList: { position: "absolute", bottom: 20, left: 0, right: 0 },
+  previewList: { position: "absolute", bottom: 92, left: 0, right: 0 },
   previewCard: {
     width: 280, flexDirection: "row", backgroundColor: Colors.blanc, borderRadius: 16, overflow: "hidden",
     borderWidth: 1, borderColor: Colors.grisClair,

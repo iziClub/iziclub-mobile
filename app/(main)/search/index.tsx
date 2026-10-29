@@ -128,7 +128,7 @@ export default function SearchScreen() {
       )}
 
       {!drawerOpen && (
-        <View style={[styles.viewSwitch, { bottom: viewMode === "map" ? 136 : 24 }]}>
+        <View style={[styles.viewSwitch, { bottom: 24 }]}>
           {(["list", "map"] as const).map((mode, i) => {
             const selected = viewMode === mode;
             return (
