@@ -252,28 +252,10 @@ export default function ProfileScreen() {
           <GravatarImage email={user.user.email} size={90} style={styles.avatar} />
           <Text style={styles.userName}>{userInfo?.firstName} {userInfo?.lastName}</Text>
           <Text style={styles.userLevel}>Membre depuis Janvier 2024</Text>
-
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{stats.likedCount}</Text>
-              <Text style={styles.statLabel}>Favoris</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{stats.clubsCount}</Text>
-              <Text style={styles.statLabel}>Clubs suivis</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{stats.participationsCount}</Text>
-              <Text style={styles.statLabel}>Sorties</Text>
-            </View>
-          </View>
         </View>
 
-        {/* 2. GRILLE PRINCIPALE (Avec Boîte de réception) */}
+        {/* 2. ACCÈS DIRECT */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Espace personnel & Suivis</Text>
           <View style={styles.gridContainer}>
             {savedCategories.map((cat) => (
               <TouchableOpacity key={cat.id} style={styles.gridCard} onPress={() => router.push({ pathname: cat.path })}>
@@ -295,7 +277,6 @@ export default function ProfileScreen() {
 
         {/* 3. SECTION : MES INSCRIPTIONS (Ligne élégante isolée) */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Mes inscriptions</Text>
           <TouchableOpacity
             style={styles.inscriptionsCard}
             onPress={() => router.push("/profile/inscriptions")}

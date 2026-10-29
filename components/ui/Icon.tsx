@@ -1,6 +1,6 @@
 import React from "react";
 import { ColorValue, StyleProp, ViewStyle } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import {
   ArrowLeft, Ban, BadgeCheck, Bell, BellDot, Bike, Bookmark, Building2, Calendar, Camera,
   ChevronRight, CircleAlert, CircleCheck, CircleUser, CircleX, Clock, CloudDownload, CloudUpload,
@@ -8,7 +8,7 @@ import {
   House, Info, Leaf, List, LocateFixed, Lock, LogOut, LucideIcon, Mail, MailOpen, Map, MapPin, Medal,
   MessageSquareMore, Music, Navigation, PawPrint, Pencil, Phone, QrCode, RefreshCw, Search, Send,
   Share2, Shield, SlidersHorizontal, Square, SquareCheck, Trash2, Triangle, Trophy, User, UserPlus,
-  Users, Volleyball, Waves, X, Zap,
+  Users, Volleyball, Waves, X, Zap, Circle, CircleDot,
 } from "lucide-react-native";
 import { Colors } from "@/constants/theme";
 
@@ -67,13 +67,15 @@ const ICONS: Record<string, LucideIcon> = {
   "trophy-outline": Trophy,
   checkbox: SquareCheck, "square-outline": Square,
   waves: Waves,
+  "account-group": Users, "bookmark-border": Bookmark,
+  "radio-button-off": Circle, "radio-button-on": CircleDot,
 };
 
 /** Variantes « pleines » : uniquement les états aimé / enregistré */
 const FILLED = new Set(["heart", "bookmark"]);
 
 /** Marques : pas d'équivalent Lucide, toujours monochromes */
-const BRANDS = new Set(["facebook", "instagram", "linkedin", "music"]);
+const BRANDS = new Set(["facebook", "instagram", "linkedin", "music", "tiktok"]);
 
 type IconProps = {
   name: string;
@@ -84,6 +86,9 @@ type IconProps = {
 
 export default function Icon({ name, size = 20, color: colorValue = Colors.noir, style }: IconProps) {
   const color = colorValue as string;
+  if (name === "tiktok") {
+    return <FontAwesome5 name="tiktok" size={size} color={color} brand style={style as any} />;
+  }
   if (BRANDS.has(name)) {
     return <FontAwesome name={name as any} size={size} color={color} style={style as any} />;
   }

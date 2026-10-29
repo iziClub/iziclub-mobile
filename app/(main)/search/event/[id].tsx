@@ -254,10 +254,8 @@ export default function EventDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* IMAGE */}
-      
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: event.coverImagePath ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
+      {/* HEADER */}
+      <View style={styles.headerRow}>
         <TouchableOpacity 
           style={styles.backButton} 
           onPress={() => {
@@ -271,6 +269,11 @@ export default function EventDetailScreen() {
         >
           <Icon name="arrow-back" size={20} color={Colors.noir} />
         </TouchableOpacity>
+      </View>
+
+      {/* IMAGE */}
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: event.coverImagePath ?? "https://meetings.quebec-cite.com/sites/qda/files/styles/landscape_wide_desktop/public/media/image/%C2%A9James-Startt--peloton-frontenac02_GP-quebec_2018-%281-of-1%29.jpg?h=e397a55a&itok=K1A0H_pt" }} style={styles.image} resizeMode="cover" />
       </View>
 
       {/* TITRE */}
@@ -328,22 +331,9 @@ export default function EventDetailScreen() {
         {/* DATE */}
         <View style={styles.infoRow}>
           <Icon name="time-outline" size={22} color={Colors.bleu} />
-          <Text style={{ ...styles.infoText, flex: 0 }}>
-            Le {formatEventDate(event.eventDate)}
-          </Text>
           <Text style={styles.infoText}>
-            {formatEventTime(event.startDate)} - {formatEventTime(event.endDate)}
+            Le {formatEventDate(event.eventDate)}, {formatEventTime(event.startDate)} - {formatEventTime(event.endDate)}
           </Text>
-
-          <TouchableOpacity
-            style={styles.calendarButton}
-            onPress={() => confirmAddToCalendar(event)}
-          >
-            <Icon name="calendar-outline" size={20} color={Colors.blanc} />
-            <Text style={styles.calendarButtonText}>Ajouter</Text>
-          </TouchableOpacity>
-
-
         </View>
 
         {event.address.city && event.address.street ? (
@@ -414,10 +404,10 @@ export default function EventDetailScreen() {
         isLoggedIn={isLoggedIn}
       />
       <TouchableOpacity style={[styles.calendarButton, {
-        backgroundColor: Colors.noir, justifyContent: "center", marginHorizontal: 16,
+        backgroundColor: Colors.noir, justifyContent: "center", marginHorizontal: 16, marginLeft: 16,
         marginTop: 20,
-        paddingVertical: 16,
-        paddingHorizontal: 12,
+        paddingVertical: 18,
+        paddingHorizontal: 16,
         borderRadius: 999
       }]}
         onPress={async () => {
@@ -440,8 +430,17 @@ export default function EventDetailScreen() {
         }}
       >
         <Icon name="share-social-outline" size={20} color={Colors.blanc} />
-        <Text style={styles.calendarButtonText}>Partager</Text>
+        <Text style={[styles.calendarButtonText, { fontSize: 16 }]}>Partager</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={() => confirmAddToCalendar(event)}
+      >
+        <Icon name="calendar-outline" size={20} color={Colors.noir} />
+        <Text style={styles.secondaryButtonText}>Ajouter à l'agenda</Text>
+      </TouchableOpacity>
+      <View style={{ height: 32 }} />
     </ScrollView>
   );
 }

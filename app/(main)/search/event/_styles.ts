@@ -4,9 +4,6 @@ import { Fonts } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
   backButton: { 
-  position: 'absolute',
-  top: Platform.OS === 'ios' ? 50 : 20,
-  left: 16,
   width: 38, 
   height: 38, 
   justifyContent: 'center', 
@@ -16,6 +13,28 @@ export const styles = StyleSheet.create({
   borderWidth: 1,
   borderColor: Colors.grisClair,
 },
+  headerRow: {
+    paddingTop: Platform.OS === 'ios' ? 12 : 8,
+    paddingBottom: 8,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  secondaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginHorizontal: 16,
+    marginTop: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 999,
+    borderWidth: 1.5,
+    borderColor: Colors.noir,
+    backgroundColor: Colors.blanc,
+  },
+  secondaryButtonText: { color: Colors.noir, fontSize: 16, fontFamily: Fonts.medium },
   mapWrapper: {
     height: 150,
     width: "100%",
@@ -139,10 +158,10 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   clubImage: {
-    width: 36,
-    height: 36,
-    borderRadius: 16,
-    marginRight: 8,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: 12,
   },
   clubName: {
     fontSize: 16,

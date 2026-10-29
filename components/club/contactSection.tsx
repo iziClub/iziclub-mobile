@@ -15,7 +15,19 @@ const ensureUrl = (url?: string, fallback?: string) => {
   return `https://${raw}`;
 };
 
-const openExternalUrl = async (url: string) => {
+const openExternalUrl = (url: string) => {
+  if (!url) return;
+  Alert.alert(
+    "Quitter l'application",
+    "Vous allez quitter iziClub pour ouvrir une autre application.",
+    [
+      { text: "Annuler", style: "cancel" },
+      { text: "Continuer", onPress: () => openUrl(url) },
+    ]
+  );
+};
+
+const openUrl = async (url: string) => {
   try {
     if (!url) return;
     const canOpen = await Linking.canOpenURL(url);
@@ -49,11 +61,18 @@ export default function ContactSection({ club }: { club: Club }) {
   const facebookUrl = facebookValue ? ensureUrl(facebookValue) : "";
   const linkedinUrl = linkedinValue ? ensureUrl(linkedinValue) : "";
   const tiktokUrl = tiktokValue ? ensureUrl(tiktokValue) : "";
+  const socials = [
+    { icon: "instagram", label: "Instagram", url: instagramUrl },
+    { icon: "facebook", label: "Facebook", url: facebookUrl },
+    { icon: "linkedin", label: "LinkedIn", url: linkedinUrl },
+    { icon: "tiktok", label: "TikTok", url: tiktokUrl },
+  ].filter((s) => !!s.url);
 
   const categoriesLabel = (club.categories || []).slice(0, 4).map((c) => c.name).join(" • ") || "Aucune catégorie renseignée";
   const eventsCount = club.events?.length || 0;
   const sessionsCount = club.sessions?.length || 0;
-  const distanceText = typeof club.distanceInKm === "number" ? `${club.distanceInKm.toFixed(1)} km` : "Distance non disponible";
+  const categoriesCount = club.categories?.length || 0;
+  const distanceText = typeof club.distanceInKm === "number" ? `${Math.round(club.distanceInKm)} km` : "-";
 
   const openMaps = async () => {
     const query = encodeURIComponent(fullAddress);
@@ -85,6 +104,17 @@ export default function ContactSection({ club }: { club: Club }) {
     }
   };
 
+  const openMapsWithWarning = () => {
+    Alert.alert(
+      "Quitter l'application",
+      "Vous allez quitter iziClub pour ouvrir une application de navigation.",
+      [
+        { text: "Annuler", style: "cancel" },
+        { text: "Continuer", onPress: openMaps },
+      ]
+    );
+  };
+
   const callPhone = () => {
     if (phoneNumber === "Numero non renseigne") return;
     openExternalUrl(`tel:${phoneNumber}`);
@@ -110,6 +140,10 @@ export default function ContactSection({ club }: { club: Club }) {
             <Text style={styles.statLabel}>Sessions</Text>
           </View>
           <View style={styles.statPill}>
+            <Text style={styles.statValue}>{categoriesCount}</Text>
+            <Text style={styles.statLabel}>Categories</Text>
+          </View>
+          <View style={styles.statPill}>
             <Text style={styles.statValue}>{distanceText}</Text>
             <Text style={styles.statLabel}>Distance</Text>
           </View>
@@ -117,25 +151,25 @@ export default function ContactSection({ club }: { club: Club }) {
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Adresse</Text>
-          <TouchableOpacity onPress={openMaps} style={styles.linkRow}>
-            <Icon name="map-marker" size={16} color={Colors.bleu} />
-            <Text style={styles.linkText}>{fullAddress}</Text>
+          <TouchableOpacity onPress={openMapsWithWarning} style={styles.actionBtn}>
+            <Icon name="map-marker" size={18} color={Colors.blanc} />
+            <Text style={styles.actionBtnText} numberOfLines={2}>{fullAddress}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Telephone</Text>
-          <TouchableOpacity onPress={callPhone} style={styles.linkRow}>
-            <Icon name="phone" size={16} color={Colors.bleu} />
-            <Text style={styles.linkText}>{phoneNumber}</Text>
+          <TouchableOpacity onPress={callPhone} style={styles.actionBtn}>
+            <Icon name="phone" size={18} color={Colors.blanc} />
+            <Text style={styles.actionBtnText}>{phoneNumber}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Email</Text>
-          <TouchableOpacity onPress={sendEmail} style={styles.linkRow}>
-            <Icon name="envelope" size={16} color={Colors.bleu} />
-            <Text style={styles.linkText}>{emailAddress}</Text>
+          <TouchableOpacity onPress={sendEmail} style={styles.actionBtn}>
+            <Icon name="envelope" size={18} color={Colors.blanc} />
+            <Text style={styles.actionBtnText} numberOfLines={1}>{emailAddress}</Text>
           </TouchableOpacity>
         </View>
 
@@ -144,45 +178,20 @@ export default function ContactSection({ club }: { club: Club }) {
           <Text style={styles.infoText}>{categoriesLabel}</Text>
         </View>
 
-        <View style={styles.socialRow}>
-          <TouchableOpacity
-            style={[styles.socialButton, styles.instagramButton, !instagramUrl && styles.socialButtonDisabled]}
-            onPress={() => openExternalUrl(instagramUrl)}
-            disabled={!instagramUrl}
-          >
-            <Icon name="instagram" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{instagramUrl ? "Instagram" : "non renseigne"}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.socialButton, styles.facebookButton, !facebookUrl && styles.socialButtonDisabled]}
-            onPress={() => openExternalUrl(facebookUrl)}
-            disabled={!facebookUrl}
-          >
-            <Icon name="facebook" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{facebookUrl ? "Facebook" : "non renseigne"}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.socialRow}>
-          <TouchableOpacity
-            style={[styles.socialButton, styles.linkedinButton, !linkedinUrl && styles.socialButtonDisabled]}
-            onPress={() => openExternalUrl(linkedinUrl)}
-            disabled={!linkedinUrl}
-          >
-            <Icon name="linkedin" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{linkedinUrl ? "LinkedIn" : "non renseigne"}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.socialButton, styles.tiktokButton, !tiktokUrl && styles.socialButtonDisabled]}
-            onPress={() => openExternalUrl(tiktokUrl)}
-            disabled={!tiktokUrl}
-          >
-            <Icon name="music" size={18} color={Colors.blanc} />
-            <Text style={styles.socialText}>{tiktokUrl ? "TikTok" : "non renseigne"}</Text>
-          </TouchableOpacity>
-        </View>
+        {socials.length > 0 && (
+          <View style={styles.socialRow}>
+            {socials.map((s) => (
+              <TouchableOpacity
+                key={s.icon}
+                style={styles.socialCircle}
+                onPress={() => openExternalUrl(s.url)}
+                accessibilityLabel={s.label}
+              >
+                <Icon name={s.icon} size={20} color={Colors.blanc} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -227,8 +236,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   statValue: {
-    fontSize: 14,
-    fontFamily: Fonts.medium,
+    fontSize: 24,
+    fontFamily: Fonts.titre,
     color: Colors.bleu,
   },
   statLabel: {
@@ -271,6 +280,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     marginTop: 16,
+  },
+  actionBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    minHeight: 48,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: Colors.noir,
+  },
+  actionBtnText: { flex: 1, color: Colors.blanc, fontSize: 16, fontFamily: Fonts.medium },
+  socialCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.noir,
+    alignItems: "center",
+    justifyContent: "center",
   },
   socialButton: {
     flex: 1,

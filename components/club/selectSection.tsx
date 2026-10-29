@@ -42,7 +42,7 @@ export default function SelectSection({ activeSection, setActiveSection, SECTION
 
 const styles = StyleSheet.create({
     sectionsContainer: {
-        maxHeight: 52,
+        maxHeight: 60,
         borderBottomWidth: 1,
         borderBottomColor: Colors.grisClair,
         backgroundColor: Colors.blanc,
@@ -56,12 +56,13 @@ const styles = StyleSheet.create({
 
     sectionButton: {
         paddingHorizontal: 16,
-        paddingVertical: 7,
+        minHeight: 40,
+        justifyContent: "center",
         marginRight: 8,
         borderRadius: 999,
-        backgroundColor: Colors.fond,
-        borderWidth: 1,
-        borderColor: Colors.grisClair,
+        backgroundColor: Colors.blanc,
+        borderWidth: 1.5,
+        borderColor: Colors.noir,
     },
 
     sectionButtonActive: {
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     },
 
     sectionText: {
-        color: Colors.grisTexte,
+        color: Colors.noir,
         fontSize: 14,
         fontFamily: Fonts.medium,
     },

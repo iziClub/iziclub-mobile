@@ -9,6 +9,7 @@ import {
   ImageBackground,
   ActivityIndicator,
   Dimensions,
+  TextInput,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,6 +38,12 @@ export default function Home() {
   const CARD_WIDTH = 260; 
   const [userName, setUserName] = useState<string | null>(null);
   const [notificationsCount, setNotificationsCount] = useState<number>(0);
+  const [searchText, setSearchText] = useState<string>('');
+
+  const submitSearch = () => {
+    const q = searchText.trim();
+    router.push({ pathname: "/search", params: q ? { q } : {} });
+  };
 
   const categories = [
   { id: '1', name: 'Football', icon: 'football' },
@@ -74,12 +81,15 @@ export default function Home() {
         const eventsRes = await getEvents({ per_page: 6, ...locationParams });
         const events = eventsRes?.data ?? eventsRes?.data?.data ?? eventsRes ?? [];
         const eventsAny = events as any;
-        setFeaturedEvents(Array.isArray(eventsAny) ? eventsAny : eventsAny?.data ?? []);
+        setFeaturedEvents((Array.isArray(eventsAny) ? eventsAny : eventsAny?.data ?? []).slice(0, 5));
 
-        const clubsRes = await getClubs({ limit: 6, ...locationParams });
+        const clubsRes = await getClubs({ limit: 20, ...locationParams, radiusInKm: location ? 50 : 1500 });
         const clubs = clubsRes?.data ?? clubsRes ?? [];
         const clubsAny = clubs as any;
-        setRecommendedClubs(Array.isArray(clubsAny) ? clubsAny : clubsAny?.data ?? []);
+        const clubsList: any[] = Array.isArray(clubsAny) ? clubsAny : clubsAny?.data ?? [];
+        // Tri par distance : sans position, la liste n'est pas "près de chez vous"
+        const sorted = [...clubsList].sort((a, b) => (a.distanceInKm ?? Infinity) - (b.distanceInKm ?? Infinity));
+        setRecommendedClubs(sorted.slice(0, 6));
         if (user) {
           const currentUser = await getCurrentUser();
           setUserName(currentUser?.firstName || null);
@@ -118,13 +128,13 @@ export default function Home() {
 
   return (
     <View style={[styles.container]}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 40, paddingBottom: 48 }}>
         
         {/* 1. HEADER */}
         <View style={styles.header}>
-          <View>
+          <View style={{ flex: 1, paddingRight: 16 }}>
             <Text style={styles.greeting}>Bonjour {userName || ''} 👋</Text>
-            <Text style={styles.userName}>Prêt à Bouger ?</Text>
+            <Text style={[styles.greeting, { marginTop: 12 }]}>Prêt à bouger ?</Text>
           </View>
           <TouchableOpacity 
   style={styles.profileBadge} 
@@ -137,17 +147,38 @@ export default function Home() {
         </View>
 
         {/* 2. RECHERCHE */}
-        <TouchableOpacity 
-          activeOpacity={0.9}
-          onPress={() => router.push("/search")}
-          style={styles.searchSection}
-        >
+        <View style={styles.searchSection}>
           <View style={styles.searchBar}>
-            <Icon name="search" size={20} color={Colors.gris} style={{ marginRight: 12 }} />
-            <Text style={{ color: Colors.gris, flex: 1 }}>Rechercher un club, un sport...</Text>
-            <Icon name="options-outline" size={20} color={Colors.noir} />
+            <Icon name="search" size={20} color={Colors.grisTexte} style={{ marginRight: 12 }} />
+            <TextInput
+              value={searchText}
+              onChangeText={setSearchText}
+              onSubmitEditing={submitSearch}
+              returnKeyType="search"
+              placeholder="Rechercher un club, un sport..."
+              placeholderTextColor={Colors.grisTexte}
+              style={{ flex: 1, fontFamily: Fonts.regular, fontSize: 16, color: Colors.noir, paddingVertical: 0 }}
+            />
+            <TouchableOpacity onPress={submitSearch} hitSlop={8}>
+              <Icon name="options-outline" size={20} color={Colors.noir} />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
+
+        {/* 3. SPORTS (CATÉGORIES) */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll} contentContainerStyle={{ paddingRight: 20 }}>
+          {categories.map((cat) => (
+            <TouchableOpacity key={cat.id} style={styles.categoryCard} onPress={() => router.push({
+              pathname: "/search",
+              params: { q: cat.name }
+            })}>
+              <View style={styles.categoryIcon}>
+                <Icon name={cat.icon as any} size={24} color={Colors.bleu} />
+              </View>
+              <Text style={styles.categoryName}>{cat.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
         {!isLoggedIn && (
           <View style={styles.loginBanner}>
@@ -163,7 +194,7 @@ export default function Home() {
           </View>
         )}
 
-        {/* 3. SECTION ÉVÉNEMENTS */}
+        {/* 4. SECTION ÉVÉNEMENTS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Événements à la une</Text>
           <TouchableOpacity onPress={() => router.push({ pathname: "/search", params: { tab: "Événements" } })}>
@@ -176,7 +207,7 @@ export default function Home() {
           pagingEnabled
           decelerationRate="fast"
           showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={{ paddingLeft: 20, paddingRight: 12, marginTop: 16 }}
+          contentContainerStyle={{ paddingLeft: 20, paddingRight: 12, marginTop: 24 }}
           onScroll={({ nativeEvent }) => {
             const x = nativeEvent.contentOffset.x;
             const idx = Math.round(x / (CARD_WIDTH + 15));
@@ -223,9 +254,9 @@ export default function Home() {
           </View>
         )}
 
-        {/* 4. BANNIÈRE MAP */}
+        {/* 5. BANNIÈRE MAP */}
         <TouchableOpacity 
-          onPress={() => router.push("/(main)/search/map")}
+          onPress={() => router.push({ pathname: "/search", params: { view: "map" } })}
           style={styles.mapBanner}
         >
           <View style={styles.mapBannerContent}>
@@ -237,27 +268,9 @@ export default function Home() {
           </View>
         </TouchableOpacity>
 
-        {/* 5. SPORTS (CATÉGORIES) */}
+        {/* 6. PRÈS DE CHEZ VOUS */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Sports</Text>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-          {categories.map((cat) => (
-            <TouchableOpacity key={cat.id} style={styles.categoryCard} onPress={() => router.push({
-        pathname: "/search",
-        params: { q: cat.name }
-      })}>
-              <View style={styles.categoryIcon}>
-                <Icon name={cat.icon as any} size={24} color={Colors.bleu} />
-              </View>
-              <Text style={styles.categoryName}>{cat.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* 6. CLUBS RECOMMANDÉS */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Clubs recommandés</Text>
+          <Text style={styles.sectionTitle}>Près de chez vous</Text>
           <TouchableOpacity onPress={() => router.push("/search")}>
             <Text style={styles.seeAll}>Voir tout</Text>
           </TouchableOpacity>
@@ -287,7 +300,7 @@ export default function Home() {
                     <Text style={styles.clubName}>{club.name}</Text>
                     <View style={styles.locationRow}>
                       <Icon name="location-sharp" size={14} color={Colors.bleu} />
-                      <Text style={styles.clubLocation}>{club.city ?? club.location ?? ''}</Text>
+                      <Text style={styles.clubLocation}>{club.city ?? club.location ?? ''}{typeof club.distanceInKm === 'number' ? ` · ${Math.round(club.distanceInKm)} km` : ''}</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -316,10 +329,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 0,
+    paddingTop: 16,
   },
-  greeting: { fontSize: 14, fontFamily: Fonts.regular, color: Colors.grisTexte },
-  userName: { fontSize: 20, fontFamily: Fonts.titre, color: Colors.noir },
+  greeting: { fontSize: 28, lineHeight: 34, fontFamily: Fonts.titre, color: Colors.noir },
   profileBadge: {
     width: 42,
     height: 42,
@@ -341,7 +353,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Colors.blanc,
   },
-  searchSection: { paddingHorizontal: 20, marginTop: 20 },
+  searchSection: { paddingHorizontal: 20, marginTop: 32 },
   searchBar: {
     flexDirection: 'row',
     backgroundColor: Colors.blanc,
@@ -356,7 +368,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginTop: 24,
+    marginTop: 48,
   },
   sectionTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   seeAll: { color: Colors.bleu, fontFamily: Fonts.medium, fontSize: 14 },
@@ -408,7 +420,8 @@ const styles = StyleSheet.create({
 
   // --- BANNIÈRE MAP ---
   mapBanner: {
-    margin: 20,
+    marginHorizontal: 20,
+    marginTop: 48,
     backgroundColor: Colors.noir,
     borderRadius: 16,
     padding: 20,
@@ -428,7 +441,7 @@ const styles = StyleSheet.create({
   },
 
   // --- CATÉGORIES & CLUBS ---
-  categoriesScroll: { paddingLeft: 20, marginTop: 16 },
+  categoriesScroll: { paddingLeft: 20, marginTop: 32 },
   categoryCard: { marginRight: 20, alignItems: 'center' },
   categoryIcon: {
     width: 56,
@@ -442,7 +455,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   categoryName: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.noir },
-  recomendedContainer: { paddingHorizontal: 20, marginTop: 16, paddingBottom: 32 },
+  recomendedContainer: { paddingHorizontal: 20, marginTop: 24, paddingBottom: 32 },
   clubCard: {
     backgroundColor: Colors.blanc,
     borderRadius: 16,
@@ -470,7 +483,7 @@ const styles = StyleSheet.create({
   loginBtnText: { color: Colors.blanc, fontFamily: Fonts.medium },
   registerBtn: { borderColor: Colors.noir, borderWidth: 1.5, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 999, backgroundColor: Colors.blanc },
   registerBtnText: { color: Colors.noir, fontFamily: Fonts.medium },
-  carouselDots: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 12 },
+  carouselDots: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 20 },
   dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.grisClair, marginHorizontal: 4 },
   activeDot: { backgroundColor: Colors.noir },
   clubGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },

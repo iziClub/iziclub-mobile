@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNotifications, markNotificationAsRead } from '@/services/notifications.service';
@@ -14,7 +15,34 @@ export default function InboxScreen() {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
   const [notifications, setNotifications] = useState<Message[]>([]);
+  const [search, setSearch] = useState('');
+  const [pinned, setPinned] = useState<string[]>([]);
+  const [archived, setArchived] = useState<string[]>([]);
+  const [showArchived, setShowArchived] = useState(false);
 
+  useEffect(() => {
+    AsyncStorage.multiGet(['inbox_pinned', 'inbox_archived']).then(([p, a]) => {
+      if (p[1]) setPinned(JSON.parse(p[1]));
+      if (a[1]) setArchived(JSON.parse(a[1]));
+    });
+  }, []);
+
+  const toggleId = (key: 'inbox_pinned' | 'inbox_archived', id: string) => {
+    const setter = key === 'inbox_pinned' ? setPinned : setArchived;
+    setter((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      AsyncStorage.setItem(key, JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const visibleNotifications = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return notifications
+      .filter((m) => archived.includes(String(m.id)) === showArchived)
+      .filter((m) => !q || [m.title, m.content, m.clubName].some((v) => (v || '').toLowerCase().includes(q)))
+      .sort((a, b) => Number(pinned.includes(String(b.id))) - Number(pinned.includes(String(a.id))));
+  }, [notifications, search, archived, pinned, showArchived]);
   const fetchNotifications = async () => {
     setLoading(true);
     try {
@@ -69,7 +97,7 @@ export default function InboxScreen() {
       return categoryNames.join(" • ");
     }
 
-    return msg.sentTo || "Toutes les catégories";
+    return msg.sentTo || "Tout le monde";
   };
 
   const isMessageUnread = (msg: Message) => msg.isSeen === false || msg.isUnread === true;
@@ -97,6 +125,22 @@ export default function InboxScreen() {
         <View style={{ width: 40 }} />
       </View>
 
+      <View style={styles.searchWrap}>
+        <View style={styles.searchBar}>
+          <Icon name="search" size={22} color={Colors.grisTexte} />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Rechercher un message"
+            placeholderTextColor={Colors.grisTexte}
+            style={styles.searchInput}
+          />
+        </View>
+        <TouchableOpacity style={styles.archiveToggle} onPress={() => setShowArchived((v) => !v)}>
+          <Text style={styles.archiveToggleText}>{showArchived ? 'Voir la boîte de réception' : `Archivés (${archived.length})`}</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* GESTION DE L'AFFICHAGE */}
       {loading ? (
         // 1. Écran de chargement
@@ -120,12 +164,14 @@ export default function InboxScreen() {
       ) : (
         // 3. Liste des messages
         <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-          {notifications.map((msg) => {
+          {visibleNotifications.map((msg) => {
             const unread = isMessageUnread(msg);
+            const isPinned = pinned.includes(String(msg.id));
+            const isArchived = archived.includes(String(msg.id));
             return (
               <TouchableOpacity 
                 key={msg.id} 
-                style={[styles.msgCard, unread && styles.msgCardUnread]}
+                style={[styles.msgCard, !unread && styles.msgCardRead]}
                 onPress={() => handleOpenMessage(msg)}
                 activeOpacity={0.7}
               >
@@ -150,12 +196,20 @@ export default function InboxScreen() {
                   <Icon 
                     name={msg.isUrgent ? "alert-circle" : "people-outline"} 
                     size={12} 
-                    color={msg.isUrgent ? Colors.rouge : Colors.gris} 
+                    color={msg.isUrgent ? Colors.rouge : Colors.grisTexte} 
                     style={{ marginRight: 4 }} 
                   />
                   <Text style={[styles.audienceText, msg.isUrgent && styles.urgentText]}>
                     {msg.isUrgent ? 'URGENT • ' : ''}{getAudienceLabel(msg)}
                   </Text>
+                </View>
+                <View style={styles.actionsRow}>
+                  <TouchableOpacity hitSlop={10} onPress={() => toggleId('inbox_pinned', String(msg.id))} accessibilityLabel={isPinned ? 'Désépingler' : 'Épingler'}>
+                    <Icon name="bookmark" size={20} color={isPinned ? Colors.noir : Colors.gris} />
+                  </TouchableOpacity>
+                  <TouchableOpacity hitSlop={10} onPress={() => toggleId('inbox_archived', String(msg.id))} accessibilityLabel={isArchived ? 'Désarchiver' : 'Archiver'}>
+                    <Icon name="download-outline" size={20} color={Colors.grisTexte} />
+                  </TouchableOpacity>
                 </View>
               </View>
             </TouchableOpacity>
@@ -168,7 +222,7 @@ export default function InboxScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.fond },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, borderBottomWidth: 1, borderBottomColor: Colors.grisClair, backgroundColor: Colors.blanc },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, height: 56, backgroundColor: Colors.blanc },
   backButton: { width: 40, height: 40, justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontFamily: Fonts.titre, color: Colors.noir },
   listContainer: { padding: 20 },
@@ -181,8 +235,14 @@ const styles = StyleSheet.create({
   refreshButtonText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.noir },
 
   // Cartes de messages
-  msgCard: { backgroundColor: Colors.blanc, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: Colors.grisClair, shadowColor: Colors.noir, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
-  msgCardUnread: { backgroundColor: Colors.blanc, borderColor: Colors.bleu, borderWidth: 1.5 },
+  msgCard: { backgroundColor: Colors.blanc, borderRadius: 16, padding: 16, marginBottom: 16 },
+  msgCardRead: { opacity: 0.65 },
+  searchWrap: { paddingHorizontal: 20, paddingTop: 16, gap: 8 },
+  searchBar: { flexDirection: 'row', alignItems: 'center', gap: 12, height: 56, paddingHorizontal: 16, borderRadius: 16, backgroundColor: Colors.blanc },
+  searchInput: { flex: 1, fontSize: 16, fontFamily: Fonts.regular, color: Colors.noir },
+  archiveToggle: { alignSelf: 'flex-start', paddingVertical: 8 },
+  archiveToggleText: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.bleu },
+  actionsRow: { flexDirection: 'row', gap: 16 },
   msgHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   clubRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   clubName: { fontSize: 14, fontFamily: Fonts.medium, color: Colors.grisTexte },

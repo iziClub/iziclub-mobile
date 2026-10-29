@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, TextInput, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { useRouter } from 'expo-router';
-// Tes imports
-import ClubsTab from "./ClubsTab";
-import EventsTab from "./EventsTabs";
+import { View, TextInput, StyleSheet, Text, TouchableOpacity, ScrollView } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import FilterBottomSheet from "../../../components/search/FilterModal";
 import { useSearch } from "../../../components/search/useSearch";
-import { useLocalSearchParams } from 'expo-router';
+import ResultsList from "../../../components/search/ResultsList";
+import SearchMapView from "../../../components/search/SearchMapView";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
 
-type SearchTab = "Clubs" | "Événements";
+type ViewMode = "list" | "map";
+type Zone = { latitude: number; longitude: number; radius: number };
 
 export default function SearchScreen() {
-  const { q, tab } = useLocalSearchParams<{ q?: string, tab?: string }>();
-  const [activeTab, setActiveTab] = useState<SearchTab>(tab === "Événements" ? "Événements" : "Clubs");
+  const { q, tab, view } = useLocalSearchParams<{ q?: string; tab?: string; view?: string }>();
+  const [viewMode, setViewMode] = useState<ViewMode>(view === "map" ? "map" : "list");
+  const [showClubs, setShowClubs] = useState(tab !== "Événements");
+  const [showEvents, setShowEvents] = useState(tab !== "Clubs");
   const [query, setQuery] = useState(q || "");
   const [debouncedQuery, setDebouncedQuery] = useState(q || "");
   const [radius, setRadius] = useState(30);
@@ -23,6 +24,8 @@ export default function SearchScreen() {
   const [useRadius, setUseRadius] = useState(false);
   const [sportQuery, setSportQuery] = useState("");
   const [eventType, setEventType] = useState("");
+  const [zone, setZone] = useState<Zone | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedQuery(query), 300);
@@ -36,108 +39,103 @@ export default function SearchScreen() {
     }
   }, [q]);
 
-  const router = useRouter();
-  // Récupération des données
+  useEffect(() => {
+    if (view === "map") setViewMode("map");
+  }, [view]);
+
+  useEffect(() => {
+    if (viewMode === "list") setZone(null);
+  }, [viewMode]);
+
   const { clubs, events, loading, loadingMore, refresh, fetchMoreEvents } = useSearch(
     debouncedQuery,
-    radius,
-    useRadius,
+    zone ? zone.radius : radius,
+    zone ? true : useRadius,
     "",
-    undefined,
+    zone ? { latitude: zone.latitude, longitude: zone.longitude } : undefined,
     sportQuery,
     eventType
   );
-  
+
   const upcomingEvents = useMemo(() => {
-  const now = new Date();
+    const now = new Date();
+    return (events || []).filter((e) => e.starts_at && new Date(e.starts_at) >= now);
+  }, [events]);
 
-  return (events || []).filter((event) => {
-    if (!event.starts_at) return false;
+  const shownClubs = showClubs ? clubs : [];
+  const shownEvents = showEvents ? upcomingEvents : [];
 
-    return new Date(event.starts_at) >= now;
-  });
-}, [events]);
-
-  const [showFilters, setShowFilters] = useState(false);
+  const toggleType = (type: "clubs" | "events") => {
+    if (type === "clubs") {
+      if (showClubs && !showEvents) { setShowEvents(true); setShowClubs(false); } else setShowClubs(!showClubs);
+    } else if (showEvents && !showClubs) { setShowClubs(true); setShowEvents(false); } else setShowEvents(!showEvents);
+  };
 
   const hasActiveFilters = radius !== 30 || !!sportQuery.trim() || useRadius || !!eventType;
 
+  const Chip = ({ label, icon, active, onPress }: { label: string; icon: string; active: boolean; onPress: () => void }) => (
+    <TouchableOpacity style={[styles.chip, active && styles.chipActive]} onPress={onPress} activeOpacity={0.8}>
+      <Icon name={icon} size={16} color={active ? Colors.blanc : Colors.noir} />
+      <Text style={[styles.chipText, active && { color: Colors.blanc }]}>{label}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: Colors.fond }}>
-      
-      {/* HEADER DE RECHERCHE */}
       <View style={styles.headerArea}>
         <View style={styles.searchBar}>
           <TextInput
-            placeholder="Rechercher"
+            placeholder="Rechercher un club, un événement..."
             value={query}
             onChangeText={setQuery}
-            placeholderTextColor={Colors.gris}
+            placeholderTextColor={Colors.grisTexte}
             style={{ flex: 1, fontSize: 16, fontFamily: Fonts.regular, color: Colors.noir }}
           />
           {query.length > 0 ? (
             <TouchableOpacity onPress={() => setQuery("")}>
-               <Icon name="close-circle" size={20} color={Colors.gris} />
+              <Icon name="close-circle" size={20} color={Colors.gris} />
             </TouchableOpacity>
           ) : (
-            <Icon name="search" size={20} color={Colors.gris} />
+            <Icon name="search" size={20} color={Colors.grisTexte} />
           )}
         </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
+          <TouchableOpacity style={styles.chip} onPress={() => setShowFilters(true)} activeOpacity={0.8}>
+            <Icon name="options-outline" size={16} color={Colors.noir} />
+            <Text style={styles.chipText}>Filtres</Text>
+            {hasActiveFilters && <View style={styles.filterDot} />}
+          </TouchableOpacity>
+          <Chip label="Clubs" icon="people-outline" active={showClubs} onPress={() => toggleType("clubs")} />
+          <Chip label="Événements" icon="calendar-outline" active={showEvents} onPress={() => toggleType("events")} />
+          <Chip label={`Autour de moi (${radius} km)`} icon="locate-outline" active={useRadius} onPress={() => setUseRadius((v) => !v)} />
+        </ScrollView>
+
       </View>
 
-      {/* TABS NAVIGATION */}
-      <View style={styles.tabBar}>
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab("Clubs")}
-        >
-          <Text style={[styles.tabLabel, activeTab === "Clubs" && styles.tabLabelActive]}>
-            Clubs ({clubs?.length || 0})
-          </Text>
-          {activeTab === "Clubs" && <View style={styles.tabIndicator} />}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.tabItem}
-          onPress={() => setActiveTab("Événements")}
-        >
-          <Text style={[styles.tabLabel, activeTab === "Événements" && styles.tabLabelActive]}>
-            Événements ({upcomingEvents?.length || 0})
-          </Text>
-          {activeTab === "Événements" && <View style={styles.tabIndicator} />}
-        </TouchableOpacity>
-      </View>
-
-      {activeTab === "Clubs" ? (
-        <ClubsTab data={clubs} refreshing={loading} onRefresh={refresh} />
+      {viewMode === "list" ? (
+        <ResultsList
+          clubs={shownClubs}
+          events={shownEvents}
+          refreshing={loading}
+          onRefresh={refresh}
+          onEndReached={fetchMoreEvents}
+          loadingMore={loadingMore}
+        />
       ) : (
-        <EventsTab data={upcomingEvents} refreshing={loading} onRefresh={refresh} onEndReached={fetchMoreEvents} loadingMore={loadingMore} />
+        <SearchMapView clubs={shownClubs} events={shownEvents} loading={loading} onSearchZone={setZone} />
       )}
 
-      {/* BOUTONS FLOTTANTS (FABs) */}
-      <View style={styles.fabContainer}>
-        {/* BOUTON FILTRES */}
-        <TouchableOpacity 
-          style={styles.fabWhite} 
-          onPress={() => setShowFilters(true)}
-        >
-          <Icon name="options-outline" size={20} color={Colors.noir} />
-          <Text style={styles.fabTextBlack}>Filtres</Text>
-          {hasActiveFilters && <View style={styles.badge} />}
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.viewFab, { bottom: viewMode === "map" ? 144 : 24 }]}
+        onPress={() => setViewMode(viewMode === "list" ? "map" : "list")}
+        activeOpacity={0.85}
+        accessibilityLabel={viewMode === "list" ? "Afficher la carte" : "Afficher la liste"}
+      >
+        <Icon name={viewMode === "list" ? "map" : "list"} size={24} color={Colors.blanc} />
+      </TouchableOpacity>
 
-        {/* BOUTON CARTE */}
-        <TouchableOpacity 
-          style={styles.fabBlue}
-          onPress={() => router.push('/(main)/search/map')}
-        >
-          <Text style={styles.fabTextWhite}>Carte</Text>
-          <Icon name="map-outline" size={20} color={Colors.blanc} />
-        </TouchableOpacity>
-      </View>
-
-      {/* OVERLAY FILTRES */}
-      <FilterBottomSheet 
+      <FilterBottomSheet
         visible={showFilters}
         onClose={() => setShowFilters(false)}
         radius={radius}
@@ -162,96 +160,44 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  headerArea: { 
-    paddingHorizontal: 20, 
-    paddingTop: 20, 
-    paddingBottom: 16,
-    backgroundColor: Colors.fond,
-  },
-  tabBar: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.grisClair,
-    backgroundColor: Colors.fond,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  tabLabel: {
-    fontFamily: Fonts.medium,
-    fontSize: 16,
-    color: Colors.grisTexte,
-  },
-  tabLabelActive: {
-    color: Colors.noir,
-  },
-  tabIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2.5,
-    backgroundColor: Colors.noir,
-  },
+  headerArea: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 12, gap: 12, backgroundColor: Colors.fond },
   searchBar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: Colors.blanc,
     paddingHorizontal: 16,
     height: 48,
     borderRadius: 16,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
-  fabContainer: {
-    position: 'absolute',
-    bottom: 30,
-    flexDirection: 'row',
-    alignSelf: 'center',
-    gap: 12,
-    zIndex: 0,
-  },
-  fabWhite: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  chipRow: { gap: 8, paddingRight: 20 },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 999,
     backgroundColor: Colors.blanc,
-    paddingVertical: 12,
-    paddingHorizontal: 22,
-    borderRadius: 999,
     borderWidth: 1,
     borderColor: Colors.grisClair,
   },
-  fabBlue: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  chipActive: { backgroundColor: Colors.noir, borderColor: Colors.noir },
+  chipText: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.noir },
+  filterDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.rouge },
+  viewFab: {
+    position: "absolute",
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: Colors.noir,
-    paddingVertical: 12,
-    paddingHorizontal: 22,
-    borderRadius: 999,
+    elevation: 6,
+    shadowColor: Colors.noir,
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
   },
-  fabTextBlack: { 
-    marginLeft: 8, 
-    fontFamily: Fonts.medium, 
-    fontSize: 16,
-    color: Colors.noir,
-  },
-  fabTextWhite: { 
-    marginRight: 8, 
-    fontFamily: Fonts.medium, 
-    fontSize: 16, 
-    color: Colors.blanc,
-  },
-  badge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: Colors.rouge,
-    borderWidth: 2,
-    borderColor: Colors.blanc,
-  }
 });

@@ -126,8 +126,6 @@ export default function HeaderClubDetails({
         <Icon name="arrow-back" size={24} color={Colors.noir} />
       </TouchableOpacity>
 
-      <View style={{ flex: 1 }} />
-
       {/* Informations sur le Club */}
       <View style={styles.clubInfo}>
         <Text style={styles.clubName} numberOfLines={1}>{club.name}</Text>
@@ -211,8 +209,9 @@ const styles = StyleSheet.create({
   },
   clubInfo: { 
     marginRight: 12, 
-    alignItems: "flex-end",
-    flexShrink: 1,
+    marginLeft: 4,
+    alignItems: "flex-start",
+    flex: 1,
   },
   clubName: { 
     fontSize: 16, 
