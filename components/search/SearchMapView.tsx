@@ -69,6 +69,17 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone, on
     [clubs, events],
   );
 
+  const radiusFor = (r: Region) => Math.min(Math.max(Math.round(((r.latitudeDelta * 111) / 2) * 1.2), 1), 1000);
+
+  // Les résultats de la carte viennent toujours d'une recherche de zone, dès l'ouverture autour de l'utilisateur
+  const autoSearched = useRef(false);
+  useEffect(() => {
+    if (!mapReady || autoSearched.current || !location) return;
+    autoSearched.current = true;
+    const r = toRegion(location);
+    onSearchZone({ latitude: r.latitude, longitude: r.longitude, radius: radiusFor(r) });
+  }, [mapReady, location]);
+
   const recenterOnUser = async () => {
     try {
       setLocating(true);
@@ -81,6 +92,8 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone, on
       const next = toRegion(pos.coords);
       mapRef.current?.animateToRegion(next, 400);
       setRegion(next);
+      onSearchZone({ latitude: next.latitude, longitude: next.longitude, radius: radiusFor(next) });
+      setShowSearchButton(false);
     } catch {
       Alert.alert("Géolocalisation", "Impossible de récupérer ta position.");
     } finally {
@@ -89,8 +102,7 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone, on
   };
 
   const handleSearchHere = () => {
-    const radius = Math.min(Math.max(Math.round(((region.latitudeDelta * 111) / 2) * 1.2), 1), 1000);
-    onSearchZone({ latitude: region.latitude, longitude: region.longitude, radius });
+    onSearchZone({ latitude: region.latitude, longitude: region.longitude, radius: radiusFor(region) });
     setShowSearchButton(false);
   };
 
@@ -153,7 +165,7 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone, on
 
       {showSearchButton && (
         <Button
-          variant="secondaire"
+          variant="primaire"
           icon="refresh"
           label="Rechercher dans cette zone"
           loading={loading}
@@ -258,7 +270,7 @@ const styles = StyleSheet.create({
   calloutTitle: { fontFamily: Fonts.medium, fontSize: 14, color: Colors.noir },
   calloutSub: { fontFamily: Fonts.regular, fontSize: 12, color: Colors.grisTexte, marginTop: 2 },
   calloutLink: { fontFamily: Fonts.medium, fontSize: 12, marginTop: 8, textAlign: "right" },
-  searchHereBtn: { position: "absolute", top: 16, alignSelf: "center", ...Shadow.flottante },
+  searchHereBtn: { position: "absolute", top: 16, alignSelf: "center", borderRadius: 999, paddingHorizontal: 24, ...Shadow.flottante },
   fabLocation: { position: "absolute", bottom: 24, right: 20, ...Shadow.flottante },
   previewList: { position: "absolute", bottom: 92, left: 0, right: 0 },
   previewCard: { width: 280, flexDirection: "row" },
