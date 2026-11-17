@@ -44,7 +44,6 @@ export default function SavedItemsScreen() {
             const eventId = save.eventId || save.id;
             const eventDetail = await getEventById(eventId);
             return {
-              ...eventDetail?.data,
               ...eventDetail,
               saveId: save.id,
               id: eventId,

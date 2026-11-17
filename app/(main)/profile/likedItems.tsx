@@ -46,13 +46,8 @@ export default function LikedItemsScreen() {
             const eventId = like.eventId || like.id;
             const eventDetail = await getEventById(eventId);
             
-            // 💡 SÉCURITÉ : Extraction si c'est un tableau enveloppé dans data
-            const eventData = Array.isArray(eventDetail?.data)
-              ? eventDetail.data[0]
-              : (eventDetail?.data || eventDetail);
-
             return {
-              ...eventData,
+              ...eventDetail,
               likeId: like.id,      
               id: eventId        
             };

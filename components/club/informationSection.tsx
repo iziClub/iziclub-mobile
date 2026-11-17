@@ -48,7 +48,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
         >
             {/* On n'affiche l'image QUE si elle existe. Pas de fallback gris artificiel. */}
             {hasBanner && (
-                <Image source={{ uri: club.profile.bannerPath }} style={styles.banner} />
+                <Image source={{ uri: club.profile.bannerPath ?? undefined }} style={styles.banner} />
             )}
 
             {/* Si pas de bannière, on applique un style "header" plus aéré et flatteur */}
@@ -81,8 +81,8 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                                 title={event.name}
                                 banner={event.coverImagePath ?? "https://via.placeholder.com/300x150"}
                                 address={`${event.address.street}, ${event.address.city}`}
-                                distanceInKm={event.distanceInKm}
-                                tags={[event.sport || "Sport non précisé", event.type]}
+                                distanceInKm={event.distanceInKm ?? undefined}
+                                tags={["Sport non précisé", event.eventType]}
                                 type="event"
                                 onPress={() => router.push(`/search/event/${event.id}`) }
                                 width={220}
@@ -100,7 +100,11 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                     <View style={styles.teamContainer}>
                         {club.categories.map((category, index) => {
                             const cardColor = category.color || defaultColors[index % defaultColors.length];
-                            const subtitle = getCategorySubtitle(category.gender, category.minAge, category.maxAge);
+                            const subtitle = getCategorySubtitle(
+                                category.gender ?? null,
+                                category.minAge ?? null,
+                                category.maxAge ?? null
+                            );
 
                             return (
                                 <View key={category.id} style={styles.teamItem}>

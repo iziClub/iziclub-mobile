@@ -17,6 +17,7 @@ import { Event } from "@/types/event";
 import { getClubById } from "@/services/clubs.service";
 import { getEventById, getEventsLikeCount, getEventStatus } from "@/services/events.service";
 import { Club } from "@/types/club";
+import { mapApiClubToDetail } from "@/mappers/club.mapper";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import EngagementBar from "@/components/EngagementBar";
 import { useAuth } from "@/context/AuthContext";
@@ -187,14 +188,13 @@ export default function EventDetailScreen() {
   };
   const [region, setRegion] = useState(regionFake);
   const [isMapReady, setIsMapReady] = useState(false);
-  const eventTags = event?.tags || [];
 
   useEffect(() => {
     const fetchClub = async () => {
       if (event?.clubId) {
         try {
           const clubData = await getClubById(event.clubId);
-          setClub(clubData.data[0] ?? null);
+          setClub(clubData.data[0] ? mapApiClubToDetail(clubData.data[0]) : null);
         } catch (error) {
           console.error("Erreur lors de la récupération du club organisateur:", error);
           setClub(null);
@@ -214,18 +214,18 @@ export default function EventDetailScreen() {
             const eventStatus = await getEventStatus(eventId);
             eventData.status = eventStatus;
             const eventLikeCount = await getEventsLikeCount(eventId);
-            eventData.status.countLikes = eventLikeCount;
+            eventData.status.countLikes = eventLikeCount.count;
           } else {
             eventData.status = {};
           }
 
           const sportDetails = await getSportById(eventData?.sportId);
-          setResolvedSportName(eventData?.sport || sportDetails?.name || null);
+          setResolvedSportName(sportDetails?.name || null);
 
           setEvent(eventData);
           const newRegion = { ...regionFake };
-          newRegion.latitude = parseFloat(eventData?.address.latitude || "49.1191");
-          newRegion.longitude = parseFloat(eventData?.address.longitude || "6.1727");
+          newRegion.latitude = Number(eventData?.address.latitude || 49.1191);
+          newRegion.longitude = Number(eventData?.address.longitude || 6.1727);
 
           setRegion(newRegion);
         } catch (error) {
@@ -282,14 +282,12 @@ export default function EventDetailScreen() {
       <Text style={styles.title}>{event.name}</Text>
 
       {/* TAGS */}
-      {(eventTags.length > 0 || resolvedSportName) && (
+      {(event.eventType || resolvedSportName) && (
         <View style={styles.tagContainer}>
           {resolvedSportName ? (
             <Tag label={resolvedSportName} variant="doux" style={styles.tag} />
           ) : null}
-          {eventTags.map((tag) => (
-            <Tag key={tag} label={tag} variant="doux" style={styles.tag} />
-          ))}
+          {event.eventType ? <Tag label={event.eventType} variant="doux" style={styles.tag} /> : null}
         </View>
       )}
 
@@ -393,7 +391,7 @@ export default function EventDetailScreen() {
       </View>
 
       <EngagementBar
-        item={{ id: event.id, kind: "event", name: event.name, imageUrl: event.banner_url || undefined }}
+        item={{ id: event.id, kind: "event", name: event.name, imageUrl: event.coverImagePath || undefined }}
         initialLiked={isLoggedIn ? (event.status?.isLiked ?? false) : false}
         initialSaved={isLoggedIn ? (event.status?.isSaved ?? false) : false}
         initialParticipating={isLoggedIn ? (event.status?.isParticipating ?? false) : false}
@@ -406,7 +404,7 @@ export default function EventDetailScreen() {
         size="l"
         style={styles.shareButton}
         onPress={async () => {
-          const tags = ["iziclub", "sport", event.type?.toLowerCase() || "event", event.address.city?.toLowerCase().replace(/\s+/g, "")]
+          const tags = ["iziclub", "sport", event.eventType?.toLowerCase() || "event", event.address.city?.toLowerCase().replace(/\s+/g, "")]
             .filter(Boolean)
             .map((tag) => `#${tag}`)
             .join(" ");

@@ -25,7 +25,7 @@ export default function EventSection({events}: {events: any[]}) {
                     banner={item.coverImagePath ?? "https://via.placeholder.com/300x150"}
                     address={`${item.address?.street || item.street || ''}, ${item.address?.city || item.city || ''}`}
                     distanceInKm={item.distanceInKm}
-                    tags={[item.type]}
+                    tags={[item.eventType]}
                     type="event"
                     onPress={() =>
                       router.push({

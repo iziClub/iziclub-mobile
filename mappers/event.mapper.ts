@@ -1,43 +1,17 @@
 import { EventSearchItem } from "@/components/search/types";
-
-// Interface basée sur ton JSON de réponse
-export interface ApiEvent {
-  id: string;
-  name: string;
-  sport: string | null;
-  sportId?: number;
-  eventType?: string | null;
-  address: {
-    city: string | null;
-    street: string | null;
-    latitude: string | number | null;
-    longitude: string | number | null;
-  };
-  starts_at: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
-  banner_url: string | null;
-  coverImagePath?: string | null;
-  pricing: string | null;
-  price?: string | null;
-  tags?: string[];
-  clubId: string;
-  distanceInKm?: number; // Ajout de la distance ici pour le mapping
-}
+import { Event as ApiEvent } from "@/types/event";
 
 export const mapEventToSearchItem = (
   event: ApiEvent,
   sportsById?: Record<number, { name: string }>
 ): EventSearchItem => {
-  const startDateValue = event.starts_at || event.startDate || null;
-  const endDateValue = event.endDate || null;
+  const startDateValue = event.startDate;
+  const endDateValue = event.endDate;
   const startDate = startDateValue ? new Date(startDateValue) : null;
-  const resolvedSport =
-    event.sport ||
-    (event.sportId ? sportsById?.[event.sportId]?.name ?? null : null);
+  const resolvedSport = sportsById?.[event.sportId]?.name ?? null;
   const resolvedType = event.eventType || "event";
-  const resolvedPricing = event.pricing || event.price || null;
-  const resolvedImage = event.coverImagePath || event.banner_url || null;
+  const resolvedPricing = event.price;
+  const resolvedImage = event.coverImagePath;
 
   return {
     id: event.id,
@@ -54,9 +28,9 @@ export const mapEventToSearchItem = (
     image: resolvedImage,
     latitude: String(event.address?.latitude ?? "0"),
     longitude: String(event.address?.longitude ?? "0"),
-    tags: event.tags || [resolvedType].filter(Boolean),
+    tags: [resolvedType],
     clubId: event.clubId,
-    distanceInKm: event.distanceInKm, // Ajout de la distance au mapping
+    distanceInKm: event.distanceInKm ?? undefined,
     coverImagePath: resolvedImage,
   };
 };

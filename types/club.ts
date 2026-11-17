@@ -6,10 +6,18 @@ export interface Address {
   city: string;
   zip_code?: string;
   zipCode?: string;
-  latitude: string | number;
-  longitude: string | number;
+  latitude: string | number | null;
+  longitude: string | number | null;
   department_code?: string;
   region?: string;
+}
+
+export interface ClubAddressApi {
+  street: string;
+  city: string;
+  zipCode: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface SocialLinks {
@@ -19,31 +27,62 @@ export interface SocialLinks {
   tiktok?: string;
 }
 
+export interface ClubSport {
+  id: number;
+  codeAps: string;
+  famille: string;
+  activite: string;
+}
+
+export interface ClubApi {
+  id: string;
+  name: string;
+  sport: ClubSport | null;
+  clubManagerId: string | null;
+  profile: {
+    description: string;
+    slogan: string;
+    phone: string;
+    socialLinks: Required<SocialLinks>;
+    address: ClubAddressApi;
+    bannerPath: string | null;
+    profileImagePath: string | null;
+  };
+  createdAt: string;
+  distanceInKm?: number | null;
+  isLiked?: boolean;
+  isSaved?: boolean;
+  isRegistered?: boolean;
+  isParticipating?: boolean;
+}
+
 export interface Category {
   id: string;
   name: string;
-  minAge: number | null;
-  maxAge: number | null;
-  color: string | null;
-  gender: "male" | "female" | "mixed" | null
+  minAge?: number | null;
+  maxAge?: number | null;
+  color?: string | null;
+  gender?: "male" | "female" | "mixed" | null
 }
 
 export interface Status {
   isLiked: boolean;
   isSaved: boolean;
-  isParticipating: boolean;
+  isParticipating?: boolean;
+  isRegistered?: boolean;
+  hasActiveLicense?: boolean;
 }
 
 export interface Session {
   id: string;
   name: string;
   clubId: string;
-  description: string;
+  description?: string | null;
   dayOfWeek: string;
   startTime: string;
   endTime: string;
-  categoryId: string;
-  category: Category;
+  categoryId?: string | null;
+  category?: Category | null;
   createdAt: string;
 }
 
@@ -58,8 +97,8 @@ export interface Club {
   profile: {
     slogan: string;
     address: Address;
-    profileImagePath: string;
-    bannerPath: string;
+    profileImagePath: string | null;
+    bannerPath: string | null;
     description: string;
     phone?: string;
     email?: string;
@@ -74,54 +113,33 @@ export interface Club {
 }
 
 export interface ClubsResponse {
-  data: Club[];
+  data: ClubApi[];
   pagination: {
     total: number;
     page: number;
     limit: number;
     totalPages: number;
     links: {
-      first: string;
-      "last": string;
-      "next": string;
+      first: string | null;
+      "last": string | null;
+      "next": string | null;
       "prev": string | null
     }
-  };
-  meta: {
-    total: number;
-    currentPage: number;
-    lastPage: number;
   };
 }
 
 export interface MemberClubsResponse {
-  data: Club[];
+  data: ClubApi[];
 }
 
-export interface ClubDetailDTO {
-    id: string;
-    name: string;
-    title: string;
-    type: string;
-    city: string;
-    addressLine1: string;
-    profile: {
-      slogan: string;
-      description: string;
-      address: Address;
-      profileImagePath: string;
-      bannerPath: string;
-      phone?: string;
-      email?: string;
-      socialLinks?: SocialLinks;
-    };
-    events: Event[]; // Remplace any par ton type Event si tu l'as
-    sport: string | null;
-    // profile_image_url: string | null;
-    // banner_url: string | null;
-    gallery: Picture[]; // Si tu as une galerie d'images pour le club
-    distanceInKm?: number; // Si tu as cette info, sinon tu peux l'ignorer
-    categories?: Category[]; // Si tu as des catégories pour le club
-    sessions?: Session[]; // Si tu as des sessions pour le club
-    status?: Status; // Si tu as un statut pour le club
+export interface ClubDetailDTO extends ClubApi {
+  title?: string;
+  type?: string;
+  city?: string;
+  addressLine1?: string;
+  events?: Event[];
+  gallery?: Picture[];
+  categories?: Category[];
+  sessions?: Session[];
+  status?: Status;
 }

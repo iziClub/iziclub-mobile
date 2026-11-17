@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system/legacy';
+import { SubmissionAnswer } from '@/types/forms';
 
 import { InscriptionStatus } from './inscriptions';
 import QuestionCard from "@/components/club/Membership/QuestionCard"; 
@@ -97,15 +99,15 @@ export default function InscriptionDetailScreen() {
     setFormResponses((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  const handleRadioSelect = (questionId: string, optionLabel: string) => {
-    setFormResponses((prev) => ({ ...prev, [questionId]: optionLabel }));
+  const handleRadioSelect = (questionId: string, optionId: string) => {
+    setFormResponses((prev) => ({ ...prev, [questionId]: optionId }));
   };
 
-  const handleCheckboxSelect = (questionId: string, optionLabel: string) => {
+  const handleCheckboxSelect = (questionId: string, optionId: string) => {
     const currentAnswers = formResponses[questionId] || [];
-    const updatedAnswers = currentAnswers.includes(optionLabel)
-      ? currentAnswers.filter((label: string) => label !== optionLabel)
-      : [...currentAnswers, optionLabel];
+    const updatedAnswers = currentAnswers.includes(optionId)
+      ? currentAnswers.filter((id: string) => id !== optionId)
+      : [...currentAnswers, optionId];
     setFormResponses((prev) => ({ ...prev, [questionId]: updatedAnswers }));
   };
 
@@ -124,21 +126,17 @@ export default function InscriptionDetailScreen() {
       setUploadingQuestionId(questionId);
 
       const urlResponse = await getUploadUrl(submissionId, contentType);
-      const { uploadUrl, filePath } = urlResponse?.data?.data || urlResponse?.data || urlResponse;
-
-      const fileToUpload = {
-        uri: file.uri.startsWith('file://') ? file.uri : `file://${file.uri}`,
-        type: contentType,
-        name: file.name || `document_${questionId}.pdf`,
-      };
-
-      const s3Response = await fetch(uploadUrl, {
-        method: "PUT",
-        body: fileToUpload as any,
+      const { uploadUrl, filePath } = urlResponse.data;
+      const localUri = file.uri.startsWith('file://') ? file.uri : `file://${file.uri}`;
+      const uploadResult = await FileSystem.uploadAsync(uploadUrl, localUri, {
+        httpMethod: "PUT",
+        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
         headers: { "Content-Type": contentType },
       });
 
-      if (!s3Response.ok) throw new Error("Le dépôt sur S3 a échoué.");
+      if (uploadResult.status < 200 || uploadResult.status >= 300) {
+        throw new Error("Le dépôt sur S3 a échoué.");
+      }
 
       setFormResponses((prev) => ({
         ...prev,
@@ -153,17 +151,16 @@ export default function InscriptionDetailScreen() {
     }
   };
 
-  const formatAnswersForApi = () => {
+  const formatAnswersForApi = (): SubmissionAnswer[] => {
     return Object.entries(formResponses).map(([questionId, value]) => {
-      let formattedValue = value;
-      if (Array.isArray(value)) {
-        formattedValue = value.join(", ");
-      } else if (value && typeof value === "object" && "filePath" in value) {
-        formattedValue = value.filePath;
-      }
+      const formattedValue = Array.isArray(value)
+        ? value
+        : value && typeof value === "object" && "filePath" in value
+          ? String(value.filePath)
+          : String(value ?? "");
       return {
         questionId,
-        value: String(formattedValue),
+        value: formattedValue,
       };
     });
   };

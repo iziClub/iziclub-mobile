@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import * as DocumentPicker from 'expo-document-picker'; 
 import * as FileSystem from 'expo-file-system/legacy';
+import { SubmissionAnswer } from "@/types/forms";
 import { useRouter } from "expo-router";
 
 import MembershipHeader from "./MembershipHeader";
@@ -57,7 +58,12 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
     (rawAnswers || []).forEach((answer: any) => {
       if (!answer) return;
       const value = answer.value;
-      if (typeof value === "string" && value.includes(", ")) {
+      if (typeof value === "string" && value.startsWith("submissions/")) {
+        parsed[answer.questionId] = {
+          filePath: value,
+          fileName: value.split("/").pop() || "Document existant",
+        };
+      } else if (typeof value === "string" && value.includes(", ")) {
         parsed[answer.questionId] = value.split(", ");
       } else {
         parsed[answer.questionId] = value;
@@ -70,7 +76,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
   const checkForExistingDraft = async (formId: string) => {
     try {
       const response = await getAllSubmissions();
-      const submissions = response?.data?.submissions || response?.submissions || [];
+      const submissions = response.data.submissions;
       const draft = submissions.find(
         (submission: any) => submission.formId === formId && submission.status === "draft"
       );
@@ -142,7 +148,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
       let submissionId = activeSubmissionId;
       if (!submissionId && currentForm) {
         const draftResponse = await createDraftSubmission(currentForm.id);
-        submissionId = draftResponse?.data?.id || draftResponse?.id;
+        submissionId = draftResponse.data.id;
         if (submissionId) setActiveSubmissionId(submissionId);
       }
 
@@ -151,7 +157,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
       }
 
       const urlResponse = await getUploadUrl(submissionId, contentType);
-      const { uploadUrl, filePath } = urlResponse?.data.data;
+      const { uploadUrl, filePath } = urlResponse.data;
       const localUri = file.uri.startsWith('file://') ? file.uri : `file://${file.uri}`;
 
       // Upload direct du binaire local vers l'URL pré-signée S3 (fetch n'accepte plus
@@ -170,7 +176,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
       }
 
       // 💡 On garde la logique de stockage intacte pour ne rien casser en BDD/API
-      setFormResponses((prev) => ({ ...prev, [questionId]: filePath, fileName: file.name }));
+      setFormResponses((prev) => ({ ...prev, [questionId]: { filePath, fileName: file.name } }));
       Alert.alert("Succès", `Le fichier "${file.name}" a été téléversé.`);
 
     } catch (error: any) {
@@ -185,29 +191,28 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
     setFormResponses((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  const handleRadioSelect = (questionId: string, optionLabel: string) => {
-    setFormResponses((prev) => ({ ...prev, [questionId]: optionLabel }));
+  const handleRadioSelect = (questionId: string, optionId: string) => {
+    setFormResponses((prev) => ({ ...prev, [questionId]: optionId }));
   };
 
-  const handleCheckboxSelect = (questionId: string, optionLabel: string) => {
+  const handleCheckboxSelect = (questionId: string, optionId: string) => {
     const currentAnswers = formResponses[questionId] || [];
-    const updatedAnswers = currentAnswers.includes(optionLabel)
-      ? currentAnswers.filter((label: string) => label !== optionLabel)
-      : [...currentAnswers, optionLabel];
+    const updatedAnswers = currentAnswers.includes(optionId)
+      ? currentAnswers.filter((id: string) => id !== optionId)
+      : [...currentAnswers, optionId];
     setFormResponses((prev) => ({ ...prev, [questionId]: updatedAnswers }));
   };
 
-  const formatAnswersForApi = () => {
+  const formatAnswersForApi = (): SubmissionAnswer[] => {
     return Object.entries(formResponses).map(([questionId, value]) => {
-      let formattedValue = value;
-      if (Array.isArray(value)) {
-        formattedValue = value.join(", ");
-      } else if (value && typeof value === "object" && "filePath" in value) {
-        formattedValue = value.filePath;
-      }
+      const formattedValue = Array.isArray(value)
+        ? value
+        : value && typeof value === "object" && "filePath" in value
+          ? String(value.filePath)
+          : String(value ?? "");
       return {
         questionId,
-        value: String(formattedValue),
+        value: formattedValue,
       };
     });
   };
@@ -217,7 +222,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
 
     if (!submissionId && currentForm) {
       const draftResponse = await createDraftSubmission(currentForm.id);
-      submissionId = draftResponse?.data?.id || draftResponse?.id;
+      submissionId = draftResponse.data.id;
       if (submissionId) setActiveSubmissionId(submissionId);
     }
 

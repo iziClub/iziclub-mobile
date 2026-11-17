@@ -45,12 +45,6 @@ export default function MainLayout() {
 
       <Tabs.Screen
         name="search"
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            e.preventDefault();
-            navigation.navigate("search", { screen: "index" });
-          },
-        })}
         options={{
           title: "",
           tabBarLabel: "Explorer",

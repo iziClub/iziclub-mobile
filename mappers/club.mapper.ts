@@ -1,7 +1,7 @@
-import { Club, ClubDetailDTO } from "../types/club";
+import { Club, ClubApi, ClubDetailDTO } from "../types/club";
 import { ClubSearchItem } from "@/components/search/types";
 
-export const mapClubToSearchItem = (club: Club): ClubSearchItem => {
+export const mapClubToSearchItem = (club: ClubApi): ClubSearchItem => {
   return {
     id: club.id,
     name: club.name,
@@ -12,8 +12,8 @@ export const mapClubToSearchItem = (club: Club): ClubSearchItem => {
     image: club.profile.profileImagePath,
     banner : club.profile.bannerPath,
     street: club.profile.address.street,
-    sport: club.sport || "Sport non précisé", // Ajout du sport si disponible, sinon une valeur par défaut
-    distanceInKm: club.distanceInKm, // Si tu as cette info, mappe-la ici
+    sport: club.sport?.famille ?? club.sport?.activite ?? "Sport non précisé",
+    distanceInKm: club.distanceInKm ?? undefined,
   };
 };
 
@@ -23,9 +23,9 @@ export const mapApiClubToDetail = (apiClub: ClubDetailDTO) : Club => {
     id: apiClub.id,
     name: apiClub.name || "Club sans nom",
     title: apiClub.title || "Bienvenue au club", // Si tu as un titre court
-    type: apiClub.sport || "Multisport",
-    city: apiClub.profile.address?.city || "Ville non renseignée",
-    addressLine1: apiClub.profile.address?.street || "Adresse non renseignée",
+    type: apiClub.sport?.famille || "Multisport",
+    city: apiClub.profile.address.city || "Ville non renseignée",
+    addressLine1: apiClub.profile.address.street || "Adresse non renseignée",
     events: apiClub.events || [], // Tu peux remplir cette section avec les événements liés au club si tu as une API pour ça
     gallery: apiClub.gallery || [], // Si tu as une galerie d'images, mappe-la ici
     profile :{
@@ -34,17 +34,13 @@ export const mapApiClubToDetail = (apiClub: ClubDetailDTO) : Club => {
       address: {
         street: apiClub.profile.address?.street || "Adresse non renseignée",
         city: apiClub.profile.address?.city || "Ville non renseignée",
-        latitude: apiClub.profile.address?.latitude || "0",
-        longitude: apiClub.profile.address?.longitude || "0",
-        zip_code: apiClub.profile.address?.zip_code || apiClub.profile.address?.zipCode,
-        zipCode: apiClub.profile.address?.zipCode || apiClub.profile.address?.zip_code,
-        department_code: apiClub.profile.address.department_code, // Si tu as cette info, mappe-la ici
-        region: apiClub.profile.address.region, // Si tu as cette info, mappe-la ici
+        latitude: apiClub.profile.address.latitude ?? "0",
+        longitude: apiClub.profile.address.longitude ?? "0",
+        zipCode: apiClub.profile.address.zipCode,
       },
       profileImagePath: apiClub.profile.profileImagePath,
       bannerPath: apiClub.profile.bannerPath,
       phone: apiClub.profile.phone,
-      email: apiClub.profile.email,
       socialLinks: {
         instagram: apiClub.profile.socialLinks?.instagram,
         linkedin: apiClub.profile.socialLinks?.linkedin,
@@ -52,10 +48,14 @@ export const mapApiClubToDetail = (apiClub: ClubDetailDTO) : Club => {
         tiktok: apiClub.profile.socialLinks?.tiktok,
       },
     },
-    sport: apiClub.sport || null, // Ajout du sport si disponible, sinon null
-    distanceInKm: apiClub.distanceInKm, // Si tu as cette info, mappe-la ici
+    sport: apiClub.sport?.famille ?? apiClub.sport?.activite ?? null,
+    distanceInKm: apiClub.distanceInKm ?? undefined,
     categories: apiClub.categories || [], // Ajout des catégories si disponibles, sinon un tableau vide
     sessions: apiClub.sessions || [], // Ajout des sessions si disponibles, sinon un tableau vide
-    status: apiClub.status || { isLiked: false, isSaved: false, isParticipating: false }, // Ajout du statut si disponible, sinon un objet par défaut
+    status: apiClub.status || {
+      isLiked: apiClub.isLiked ?? false,
+      isSaved: apiClub.isSaved ?? false,
+      isRegistered: apiClub.isRegistered ?? false,
+    },
   };
 };

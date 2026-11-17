@@ -45,7 +45,7 @@ export default function Home() {
 
   const submitSearch = () => {
     const q = searchText.trim();
-    router.push({ pathname: "/search", params: q ? { q } : {} });
+    router.navigate({ pathname: "/search", params: q ? { q } : {} });
   };
 
   const categories = [
@@ -81,10 +81,8 @@ export default function Home() {
           radiusInKm: 1500,
         };
 
-        const eventsRes = await getEvents({ per_page: 6, ...locationParams });
-        const events = eventsRes?.data ?? eventsRes?.data?.data ?? eventsRes ?? [];
-        const eventsAny = events as any;
-        setFeaturedEvents((Array.isArray(eventsAny) ? eventsAny : eventsAny?.data ?? []).slice(0, 5));
+        const eventsRes = await getEvents({ limit: 6, ...locationParams });
+        setFeaturedEvents(eventsRes.data.slice(0, 5));
 
         const clubsRes = await getClubs({ limit: 20, ...locationParams, radiusInKm: location ? 50 : 1500 });
         const clubs = clubsRes?.data ?? clubsRes ?? [];
@@ -160,7 +158,14 @@ export default function Home() {
             onChangeText={setSearchText}
             onSubmitEditing={submitSearch}
             returnKeyType="search"
-            leading={<Icon name="search" size={20} color={Colors.grisTexte} />}
+            leading={
+              <IconButton
+                name="search"
+                variant="fantome"
+                accessibilityLabel="Lancer la recherche"
+                onPress={submitSearch}
+              />
+            }
             trailing={
               <IconButton
                 name="options-outline"
@@ -179,7 +184,7 @@ export default function Home() {
               key={cat.id}
               accessibilityRole="button"
               style={({ pressed }) => [styles.categoryCard, pressed && { opacity: 0.6 }]}
-              onPress={() => router.push({ pathname: "/search", params: { q: cat.name } })}
+              onPress={() => router.navigate({ pathname: "/search", params: { q: cat.name } })}
             >
               <View style={styles.categoryIcon}>
                 <Icon name={cat.icon as any} size={24} color={Colors.bleu} />
@@ -202,7 +207,7 @@ export default function Home() {
         {/* 4. SECTION ÉVÉNEMENTS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Événements à la une</Text>
-          <Button variant="lien" label="Voir tout" onPress={() => router.push({ pathname: "/search", params: { tab: "Événements" } })} />
+          <Button variant="lien" label="Voir tout" onPress={() => router.navigate({ pathname: "/search", params: { tab: "Événements" } })} />
         </View>
         
         <ScrollView 
@@ -234,8 +239,8 @@ export default function Home() {
                     colors={['transparent', 'rgba(0,0,0,0.85)']}
                     style={styles.eventGradient}
                   >
-                    {!!(event.type ?? event.category) && (
-                      <Tag label={event.type ?? event.category} variant="actif" style={styles.eventBadge} />
+                    {!!(event.eventType ?? event.category) && (
+                      <Tag label={event.eventType ?? event.category} variant="actif" style={styles.eventBadge} />
                     )}
                     <View style={styles.eventContent}>
                       <Text style={styles.eventDate}>{event.eventDate ? new Date(event.eventDate).toLocaleDateString('fr-FR',{day:'numeric',month:'short'}) : ''}</Text>
@@ -259,7 +264,7 @@ export default function Home() {
 
         {/* 5. BANNIÈRE MAP */}
         <Pressable
-          onPress={() => router.push({ pathname: "/search", params: { view: "map" } })}
+          onPress={() => router.navigate({ pathname: "/search", params: { view: "map" } })}
           accessibilityRole="button"
           style={({ pressed }) => [styles.mapBanner, pressed && { backgroundColor: Colors.noirSurvol }]}
         >
@@ -275,7 +280,7 @@ export default function Home() {
         {/* 6. PRÈS DE CHEZ VOUS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Près de chez vous</Text>
-          <Button variant="lien" label="Voir tout" onPress={() => router.push("/search")} />
+          <Button variant="lien" label="Voir tout" onPress={() => router.navigate("/search")} />
         </View>
 
         <View style={styles.recomendedContainer}>

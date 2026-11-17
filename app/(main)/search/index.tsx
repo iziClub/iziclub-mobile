@@ -37,10 +37,9 @@ export default function SearchScreen() {
   }, [query]);
 
   useEffect(() => {
-    if (q) {
-      setQuery(q);
-      setDebouncedQuery(q);
-    }
+    const nextQuery = q ?? "";
+    setQuery(nextQuery);
+    setDebouncedQuery(nextQuery);
   }, [q]);
 
   useEffect(() => {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getClubs } from '../services/clubs.service';
 import { Club } from '../types/club';
+import { mapApiClubToDetail } from '../mappers/club.mapper';
 
 export const useClubs = () => {
   const [clubs, setClubs] = useState<Club[]>([]);
@@ -13,7 +14,7 @@ export const useClubs = () => {
     try {
       setLoading(true);
       const data = await getClubs();
-      setClubs(data.data);
+      setClubs(data.data.map(mapApiClubToDetail));
     } catch (err) {
       setError('Erreur lors du fetch des clubs');
     } finally {

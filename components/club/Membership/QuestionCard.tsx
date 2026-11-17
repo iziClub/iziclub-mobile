@@ -14,8 +14,8 @@ type Props = {
   value: any;
   onTextChange: (value: string) => void;
   // 💡 On passe des labels textuels (string) désormais
-  onRadioChange: (optionLabel: string) => void;
-  onCheckboxChange: (optionLabel: string) => void;
+  onRadioChange: (optionId: string) => void;
+  onCheckboxChange: (optionId: string) => void;
   onDocumentUpload: () => void;
 };
 
@@ -28,6 +28,8 @@ export default function QuestionCard({
   onDocumentUpload,
 }: Props) {
   const isAnswered = !!value;
+  const isRadioQuestion = question.type === "radio" || question.type === "single_choice";
+  const isCheckboxQuestion = question.type === "checkbox" || question.type === "multiple_choice";
 
   return (
     <View style={styles.card}>
@@ -75,7 +77,7 @@ export default function QuestionCard({
 
           <View style={styles.uploadTextContainer}>
             <Text style={[styles.uploadTitle, isAnswered && { fontFamily: Fonts.medium }]}>
-              {isAnswered ? value : "Sélectionner un fichier"}
+                {isAnswered ? (typeof value === "object" ? value.fileName || value.filePath : value) : "Sélectionner un fichier"}
             </Text>
 
             <Text style={styles.uploadSubtitle}>
@@ -86,10 +88,10 @@ export default function QuestionCard({
       )}
 
       {/* TYPE: RADIO */}
-      {question.type === "radio" &&
+      {isRadioQuestion &&
         question.options?.map((option) => {
           // 💡 Comparaison basée sur le label textuel
-          const selected = value === option.label;
+          const selected = value === option.id;
 
           return (
             <Choice
@@ -98,16 +100,16 @@ export default function QuestionCard({
               label={option.label}
               selected={selected}
               // 💡 On renvoie le label
-              onPress={() => onRadioChange(option.label)}
+              onPress={() => onRadioChange(option.id)}
             />
           );
         })}
 
       {/* TYPE: CHECKBOX */}
-      {question.type === "checkbox" &&
+      {isCheckboxQuestion &&
         question.options?.map((option) => {
           // 💡 Vérification si le tableau de valeurs contient ce label précis
-          const checked = value?.includes(option.label);
+          const checked = value?.includes(option.id);
 
           return (
             <Choice
@@ -116,7 +118,7 @@ export default function QuestionCard({
               label={option.label}
               selected={!!checked}
               // 💡 On renvoie le label
-              onPress={() => onCheckboxChange(option.label)}
+              onPress={() => onCheckboxChange(option.id)}
             />
           );
         })}

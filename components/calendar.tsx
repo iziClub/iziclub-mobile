@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { Calendar, CalendarEvent } from "react-native-big-calendar";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
+import { Session } from "@/types/club";
 
 const { width } = Dimensions.get("window");
 
@@ -19,20 +20,6 @@ const DAYS_MAP: Record<string, number> = {
 
 // Couleurs par défaut au cas où la catégorie n'a pas de couleur définie
 const DEFAULT_COLORS = [Colors.vert, Colors.bleu, Colors.rouge, Colors.vertClair, Colors.bleuClair];
-
-interface Session {
-    id: string;
-    name: string;
-    dayOfWeek: string;
-    startTime: string; // Ex: "19:00"
-    endTime: string;   // Ex: "20:30"
-    description?: string;
-    category?: {
-        id: string;
-        name: string;
-        color: string | null;
-    };
-}
 
 interface Props {
     sessions: Session[] | undefined;
@@ -75,7 +62,7 @@ export default function ClubCalendar({ sessions }: Props) {
                 start,
                 end,
                 color,
-                description: session.description,
+                description: session.description ?? undefined,
             };
         });
     }, [sessions]);

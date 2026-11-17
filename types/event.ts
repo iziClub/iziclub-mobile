@@ -6,34 +6,38 @@ export interface PartnerClub {
 
 export interface Event {
   id: string;
+  clubId: string;
   name: string;
   description: string;
-  sport: string | null;
-  sportId?: number;
-  type: string;
-  latitude: string;
-  longitude: string;
-  imageUrl: string | undefined;
-  banner_url?: string | null;
-  startDate: string | null;
-  endDate: string | null;
-  price: string | null;
-  eventDate: string | null;
-  distanceInKm?: number; // en km, optionnel
-  tags?: string[]; // ex: ["Tournoi", "Gratuit"]
-  clubId: string;
   address: {
     street: string;
     city: string;
-    latitude: string;
-    longitude: string;
+    zipCode: string;
+    latitude: number;
+    longitude: number;
   };
+  eventDate: string;
+  startDate: string;
+  endDate: string;
+  price: string;
+  sportId: number;
+  eventType: string;
   coverImagePath: string | null;
-  partnerClubs?: PartnerClub[];
+  isArchived: boolean;
+  isPublished: boolean;
+  createdFromEventId: string | null;
+  createdAt: string;
+  updatedAt: string | null;
+  partnerClubs: PartnerClub[];
+  isLiked?: boolean;
+  isSaved?: boolean;
+  isRegistered?: boolean;
+  isParticipating?: boolean;
+  distanceInKm?: number | null;
   status?: {
-    isLiked: boolean;
-    isSaved: boolean;
-    isParticipating: boolean;
-    countLikes: number; // Ajout du nombre de likes
+    isLiked?: boolean;
+    isSaved?: boolean;
+    isParticipating?: boolean;
+    countLikes?: number;
   };
 }

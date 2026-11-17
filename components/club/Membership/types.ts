@@ -3,11 +3,7 @@ export type QuestionOption = {
   label: string;
 };
 
-export type QuestionType =
-  | "text"
-  | "document"
-  | "radio"
-  | "checkbox";
+export type QuestionType = string;
 
 export type Question = {
   id: string;
@@ -21,7 +17,7 @@ export type Question = {
 export type DynamicForm = {
   id: string;
   name: string;
-  status: "active" | "draft";
+  status: string;
   createdAt: string;
   information: string;
   questions: Question[];

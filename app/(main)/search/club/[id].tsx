@@ -11,7 +11,7 @@ import SelectSection from "@/components/club/selectSection";
 import { getClubById, getGalleryImagesByClubId, getCategoryByClubId, getSessionsByClubId, getClubStatus } from "@/services/clubs.service";
 import { mapApiClubToDetail } from "@/mappers/club.mapper";
 import { getEventsByClubId } from "@/services/events.service";
-import { ClubDetailDTO } from "@/types/club";
+import { Club } from "@/types/club";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocation } from "../../../../context/LocationContext";
 import ImportedClubDetail from "./importClubDetail";
@@ -24,7 +24,7 @@ export default function ClubDetail() {
     const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
     const [activeSection, setActiveSection] = useState(SECTIONS[0]);
     const [isLoading, setIsLoading] = useState(true);
-    const [club, setClub] = useState<ClubDetailDTO>();
+    const [club, setClub] = useState<Club>();
     const { user } = useAuth();
     const { location } = useLocation();
     const [userData, setUserData] = useState<any>(null);
@@ -42,20 +42,20 @@ export default function ClubDetail() {
                 };
                                 const dataClub = await getClubById(id, locationParams);
                 const eventsFromClub = await getEventsByClubId(id, locationParams);
-                dataClub.data[0].events = eventsFromClub.data; // Ajoute les événements au club
                 const galleryImages = await getGalleryImagesByClubId(id);
-                dataClub.data[0].gallery = galleryImages.data;
                 const categories = await getCategoryByClubId(id);
-                dataClub.data[0].categories = categories.data;
                 const sessions = await getSessionsByClubId(id);
-                dataClub.data[0].sessions = sessions.data;
-
-                if (isLoggedIn) {
-                    const status = await getClubStatus(id);
-                    dataClub.data[0].status = status;
-                }
-
-                const mappedDataClub = mapApiClubToDetail(dataClub.data[0]);
+                                const apiClub = dataClub.data[0];
+                                if (!apiClub) throw new Error("Club not found");
+                                const status = isLoggedIn ? await getClubStatus(id) : undefined;
+                                const mappedDataClub = mapApiClubToDetail({
+                                    ...apiClub,
+                                    events: eventsFromClub.data,
+                                    gallery: galleryImages.data,
+                                    categories: categories.data,
+                                    sessions: sessions.data,
+                                    status,
+                                });
                 setClub(mappedDataClub);
 
                 if (isLoggedIn) {
@@ -141,7 +141,7 @@ export default function ClubDetail() {
             await Share.share({
                 message: shareMessage,
                 title: `Regarde ce club : ${club.name}`,
-                url: shareImage,
+                url: shareImage ?? undefined,
             });
         } catch (error) {
             console.error("Erreur partage natif :", error);

@@ -1,8 +1,10 @@
 import api from "./api";
-import { ClubsResponse, Club } from "../types/club";
+import { Category, ClubsResponse, MemberClubsResponse, Session } from "../types/club";
+import { Form } from "../types/forms";
 
 interface GetClubsParams {
   nameQuery?: string;
+  sportId?: number;
   page?: number;
   limit?: number;
   latitude?: number;
@@ -17,22 +19,61 @@ interface GetClubByIdParams {
   radiusInKm?: number;
 }
 
-export interface MemberClubsResponse {
-  data: Club[];
+export interface ClubRelationRecord {
+  id: string;
+  userId: string;
+  clubId: string;
+  createdAt: string;
+}
+
+export interface RelationMeta {
+  total: number;
+  currentPage: number;
+  perPage: number;
+  lastPage: number;
+  firstPageUrl: string;
+  lastPageUrl: string;
+  nextPageUrl: string | null;
+  previousPageUrl: string | null;
+}
+
+export interface ClubRelationListResponse {
+  data: ClubRelationRecord[];
+  meta: RelationMeta;
+}
+
+export interface ClubStatusResponse {
+  isLiked: boolean;
+  isSaved: boolean;
+  isRegistered: boolean;
+  hasActiveLicense: boolean;
+}
+
+export interface ClubGalleryResponse {
+  data: { id: string; clubId: string; url: string }[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  firstPageUrl: string;
+  lastPageUrl: string;
+  nextPageUrl: string | null;
+  previousPageUrl: string | null;
 }
 
 export const getClubs = async (
-  params?: GetClubsParams // 👈 IMPORTANT
+  params?: GetClubsParams
 ): Promise<ClubsResponse> => {
 
-  const cleanParams: any = {};
+  const cleanParams: Record<string, string | number> = {};
 
   if (params?.nameQuery) cleanParams.nameQuery = params.nameQuery;
-  if (params?.page) cleanParams.page = params.page.toString();
-  if (params?.limit) cleanParams.limit = params.limit.toString();
-  if (params?.latitude) cleanParams.latitude = params.latitude.toString();
-  if (params?.longitude) cleanParams.longitude = params.longitude.toString();
-  if (params?.radiusInKm) cleanParams.radiusInKm = params.radiusInKm.toString();
+  if (params?.sportId !== undefined) cleanParams.sportId = params.sportId;
+  if (params?.page !== undefined) cleanParams.page = params.page;
+  if (params?.limit !== undefined) cleanParams.limit = params.limit;
+  if (params?.latitude !== undefined) cleanParams.latitude = params.latitude;
+  if (params?.longitude !== undefined) cleanParams.longitude = params.longitude;
+  if (params?.radiusInKm !== undefined) cleanParams.radiusInKm = params.radiusInKm;
   if (params?.city) cleanParams.city = params.city;
 
   const response = await api.get("/clubs", {
@@ -41,17 +82,11 @@ export const getClubs = async (
   return response.data;
 };
 
-export const getClubById = async (id: string, params?: GetClubByIdParams) => {
-  const latitude = params?.latitude ?? 48.8566;
-  const longitude = params?.longitude ?? 2.3522;
-  const radiusInKm = params?.radiusInKm ?? 1500;
-
-  const cleanParams = {
-    clubId: id,
-    latitude: latitude.toString(),
-    longitude: longitude.toString(),
-    radiusInKm: radiusInKm.toString(),
-  };
+export const getClubById = async (id: string, params?: GetClubByIdParams): Promise<ClubsResponse> => {
+  const cleanParams: Record<string, string | number> = { clubId: id };
+  if (params?.latitude !== undefined) cleanParams.latitude = params.latitude;
+  if (params?.longitude !== undefined) cleanParams.longitude = params.longitude;
+  if (params?.radiusInKm !== undefined) cleanParams.radiusInKm = params.radiusInKm;
 
   const response = await api.get(`/clubs`, {
     params: cleanParams,
@@ -59,50 +94,54 @@ export const getClubById = async (id: string, params?: GetClubByIdParams) => {
   return response.data;
 }
 
-export const getGalleryImagesByClubId = async (clubId: string) => {
-  const response = await api.get(`/clubs/${clubId}/profile/gallery`, {
-    params: { clubId },
-  });
+export const getGalleryImagesByClubId = async (
+  clubId: string,
+  params?: { page?: number; limit?: number }
+): Promise<ClubGalleryResponse> => {
+  const response = await api.get(`/clubs/${clubId}/profile/gallery`, { params });
   return response.data;
 };
 
 
-export const getLikedClubs = async () => {
+export const getLikedClubs = async (): Promise<ClubRelationListResponse> => {
   const response = await api.get(`/clubs/likes/user`);
   return response.data;
 }
 
-export const getCategoryByClubId = async (clubId: string) => {
+export const getCategoryByClubId = async (clubId: string): Promise<{ data: Category[] }> => {
   const response = await api.get(`/clubs/${clubId}/categories`);
   return response.data;
 }
 
-export const getSessionsByClubId = async (clubId: string) => {
-  const response = await api.get(`/clubs/${clubId}/sessions`);
+export const getSessionsByClubId = async (
+  clubId: string,
+  categoryId?: string
+): Promise<{ data: Session[] }> => {
+  const response = await api.get(`/clubs/${clubId}/sessions`, {
+    params: categoryId ? { categoryId } : undefined,
+  });
   return response.data;
 }
 
-export const likeClub = async (clubId: string) => {
+export const likeClub = async (clubId: string): Promise<ClubRelationRecord> => {
   const response = await api.post(`/clubs/${clubId}/like`);
   return response.data;
 }
 
-export const unlikeClub = async (clubId: string) => {
-  const response = await api.delete(`/clubs/${clubId}/like`);
-  return response.data;
+export const unlikeClub = async (clubId: string): Promise<void> => {
+  await api.delete(`/clubs/${clubId}/like`);
 }
 
-export const saveClub = async (clubId: string) => {
+export const saveClub = async (clubId: string): Promise<ClubRelationRecord> => {
   const response = await api.post(`/clubs/${clubId}/save`);
   return response.data;
 }
 
-export const unsaveClub = async (clubId: string) => {
-  const response = await api.delete(`/clubs/${clubId}/save`);
-  return response.data;
+export const unsaveClub = async (clubId: string): Promise<void> => {
+  await api.delete(`/clubs/${clubId}/save`);
 }
 
-export const getSavedClubs = async () => {
+export const getSavedClubs = async (): Promise<ClubRelationListResponse> => {
   const response = await api.get(`/clubs/saves/user`);
   return response.data;
 }
@@ -112,17 +151,17 @@ export const getMemberClubs = async (): Promise<MemberClubsResponse> => {
   return response.data;
 }
 
-export const getClubStatus = async (clubId: string) => {
+export const getClubStatus = async (clubId: string): Promise<ClubStatusResponse> => {
   const response = await api.get(`/clubs/${clubId}/status`);
   return response.data;
 }
 
-export const getClubsLikeCount = async (clubId: string) => {
+export const getClubsLikeCount = async (clubId: string): Promise<{ count: number }> => {
   const response = await api.get(`/clubs/${clubId}/likes/count`);
   return response.data;
 }
 
-export const getClubForm = async (clubId: string) => {
+export const getClubForm = async (clubId: string): Promise<{ message: string; data: Form }> => {
   const response = await api.get(`/clubs/${clubId}/forms/active`);
   return response.data;
 }
