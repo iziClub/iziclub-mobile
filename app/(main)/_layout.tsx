@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import React from "react";
+import { StackActions } from "@react-navigation/native";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 import Icon from "@/components/ui/Icon";
@@ -7,6 +8,7 @@ import Icon from "@/components/ui/Icon";
 export default function MainLayout() {
   return (
     <Tabs
+      backBehavior="history"
       screenOptions={{
         tabBarHideOnKeyboard: true,
         // Glissement horizontal au changement d'onglet
@@ -45,6 +47,20 @@ export default function MainLayout() {
 
       <Tabs.Screen
         name="search"
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            const searchState = navigation.getState().routes.find(
+              (route: { name: string; state?: { key?: string } }) => route.name === "search"
+            )?.state;
+            if (searchState?.key) {
+              navigation.dispatch({ ...StackActions.popTo("index"), target: searchState.key });
+              navigation.navigate("search");
+            } else {
+              navigation.navigate("search", { screen: "index" });
+            }
+          },
+        })}
         options={{
           title: "",
           tabBarLabel: "Explorer",
@@ -58,7 +74,15 @@ export default function MainLayout() {
         listeners={({ navigation }) => ({
           tabPress: (e) => {
             e.preventDefault();
-            navigation.navigate("profile", { screen: "index" });
+            const profileState = navigation.getState().routes.find(
+              (route: { name: string; state?: { key?: string } }) => route.name === "profile"
+            )?.state;
+            if (profileState?.key) {
+              navigation.dispatch({ ...StackActions.popTo("index"), target: profileState.key });
+              navigation.navigate("profile");
+            } else {
+              navigation.navigate("profile", { screen: "index" });
+            }
           },
         })}
         options={{

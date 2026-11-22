@@ -102,6 +102,11 @@ export default function HeaderClubDetails({
   };
 
   const handleGoBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
     if (from === 'myClubs') {
       router.replace('/profile/myClubs');
       return;
@@ -112,11 +117,7 @@ export default function HeaderClubDetails({
       return;
     }
 
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/search');
-    }
+    router.replace('/search');
   };
 
   return (

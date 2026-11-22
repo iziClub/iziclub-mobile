@@ -112,7 +112,8 @@ export const getEventById = async (id: string): Promise<Event> => {
       params: { eventId: id }
     }
   );
-  const event = response.data.data[0] as Event | undefined;
+  const event = response.data.data as Event | undefined;
+  console.log("Fetched event:", response.data.data);
   if (!event) throw new Error(`Event ${id} was not found`);
   return event;
 }
@@ -123,6 +124,8 @@ export const getEventsByClubId = async (
     latitude?: number;
     longitude?: number;
     radiusInKm?: number;
+    page?: number;
+    limit?: number;
   }
 ): Promise<EventsResponse> => {
   const requestParams: Record<string, string | number> = { clubId };
@@ -130,6 +133,8 @@ export const getEventsByClubId = async (
   if (params?.latitude !== undefined) requestParams.latitude = params.latitude;
   if (params?.longitude !== undefined) requestParams.longitude = params.longitude;
   if (params?.radiusInKm !== undefined) requestParams.radiusInKm = params.radiusInKm;
+  if (params?.page !== undefined) requestParams.page = params.page;
+  if (params?.limit !== undefined) requestParams.limit = params.limit;
 
   const response = await api.get(`/events`, {
     params: requestParams,

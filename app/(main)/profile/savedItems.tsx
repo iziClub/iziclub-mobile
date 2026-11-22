@@ -130,7 +130,7 @@ useFocusEffect(
         bordered
         padding={12}
         style={styles.clubCard}
-        onPress={() => router.push(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
+        onPress={() => router.navigate(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
       >
         <Image source={{ uri: imageSource }} style={styles.clubImage} />
         
@@ -177,7 +177,7 @@ useFocusEffect(
           ? "Sauvegarde des événements pour planifier tes futures séances de sport."
           : "Enregistre des clubs pour retrouver facilement leurs horaires et actus."}
       </Text>
-      <Button label="Parcourir la carte" onPress={() => router.push("/search")} />
+      <Button label="Parcourir la carte" onPress={() => router.navigate("/search")} />
     </View>
   );
 

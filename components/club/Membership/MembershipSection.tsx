@@ -281,7 +281,7 @@ export default function MembershipSection({ club, isLoggedIn, user }: Props) {
       Alert.alert(
         "Félicitations !",
         "Votre dossier complet a été envoyé avec succès au club. Tu peux suivre son avancement à tout moment depuis tes inscriptions.",
-        [{ text: "Voir mon dossier", onPress: () => router.replace("/profile/inscriptions") }]
+        [{ text: "Voir mon dossier", onPress: () => router.navigate("/profile/inscriptions", { withAnchor: true }) }]
       );
     } catch (error) {
       console.error("Erreur soumission finale :", error);

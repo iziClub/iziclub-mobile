@@ -155,7 +155,7 @@ export default function LikedItemsScreen() {
         bordered
         padding={0}
         style={styles.card}
-        onPress={() => router.push(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
+        onPress={() => router.navigate(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
       >
         <ImageBackground 
           source={{ uri: imageSource }} 
@@ -218,7 +218,7 @@ export default function LikedItemsScreen() {
           ? "Les événements que tu ajouteras en favoris apparaîtront ici."
           : "Trouve tes clubs préférés et rejoins la communauté !"}
       </Text>
-      <Button label="Découvrir" onPress={() => router.push("/search")} />
+      <Button label="Découvrir" onPress={() => router.navigate("/search")} />
     </View>
   );
 

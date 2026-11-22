@@ -39,7 +39,7 @@ export default function MyClubsScreen() {
     return (
       <Card bordered padding={0}
         style={styles.clubCard}
-        onPress={() => router.push({ pathname: `/search/club/${item.id}`, params: { from: 'myClubs' } })}>
+        onPress={() => router.navigate({ pathname: '/search/club/[id]', params: { id: item.id, from: 'myClubs' } })}>
         <Image source={{ uri: imageUrl }} style={styles.clubImage} />
         <View style={styles.clubContent}>
           <Text style={styles.clubTitle} numberOfLines={1}>{item.name}</Text>
@@ -80,7 +80,7 @@ export default function MyClubsScreen() {
               <Icon name="people-outline" size={56} color={Colors.gris} />
               <Text style={styles.emptyTitle}>Aucun club affilié</Text>
               <Text style={styles.emptySubtitle}>Rejoins un club pour le retrouver ici et suivre tes informations membres.</Text>
-              <Button label="Explorer les clubs" onPress={() => router.push('/search')} style={{ marginTop: 20 }} />
+              <Button label="Explorer les clubs" onPress={() => router.navigate('/search')} style={{ marginTop: 20 }} />
             </View>
           }
         />

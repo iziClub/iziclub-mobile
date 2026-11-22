@@ -213,7 +213,7 @@ export default function InscriptionDetailScreen() {
       }
       await submitFormSubmission(submissionId);
       Alert.alert("Félicitations !", "Votre dossier complet a été envoyé avec succès au club.", [
-        { text: "OK", onPress: () => router.replace("/profile/inscriptions") }
+        { text: "OK", onPress: () => router.dismissTo("/profile/inscriptions") }
       ]);
     } catch (error) {
       console.error("Erreur soumission finale :", error);
@@ -247,7 +247,7 @@ export default function InscriptionDetailScreen() {
       }
       await submitFormSubmission(submissionId);
       Alert.alert("Soumission renvoyée", "Votre réponse a bien été renvoyée au club.", [
-        { text: "OK", onPress: () => router.replace("/profile/inscriptions") }
+        { text: "OK", onPress: () => router.dismissTo("/profile/inscriptions") }
       ]);
     } catch (error) {
       console.error("Erreur renvoi soumission :", error);
@@ -270,7 +270,7 @@ export default function InscriptionDetailScreen() {
             try {
               setIsDeleting(true);
               await deleteSubmission(submissionId);
-              router.replace("/profile/inscriptions");
+              router.dismissTo("/profile/inscriptions");
             } catch (error) {
               console.error("Erreur lors de la suppression:", error);
               Alert.alert("Erreur", "Impossible de supprimer la demande.");

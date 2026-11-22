@@ -27,6 +27,7 @@ import Card from "@/components/ui/Card";
 import IconButton from "@/components/ui/IconButton";
 import Tag from "@/components/ui/Tag";
 import Input from "@/components/ui/Input";
+import ClubFeed from "@/components/home/ClubFeed";
 
 export default function Home() {
   const insets = useSafeAreaInsets();
@@ -36,6 +37,7 @@ export default function Home() {
   const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
   const [recommendedClubs, setRecommendedClubs] = useState<any[]>([]);
   const [loadingHome, setLoadingHome] = useState<boolean>(true);
+  const [clubsError, setClubsError] = useState(false);
   const isLoggedIn = !!user;
   const [carouselIndex, setCarouselIndex] = useState<number>(0);
   const CARD_WIDTH = 260; 
@@ -72,38 +74,55 @@ export default function Home() {
 ];
 
   useEffect(() => {
+    let active = true;
     const loadHome = async () => {
       setLoadingHome(true);
-      try {
-        const locationParams = {
-          latitude: location?.latitude,
-          longitude: location?.longitude,
-          radiusInKm: 1500,
-        };
+      setClubsError(false);
+      const locationParams = {
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+        radiusInKm: 1500,
+      };
+      const [eventsResult, clubsResult] = await Promise.allSettled([
+        getEvents({ limit: 6, ...locationParams }),
+        getClubs({ limit: 20, ...locationParams, radiusInKm: location ? 50 : 1500 }),
+      ]);
+      if (!active) return;
 
-        const eventsRes = await getEvents({ limit: 6, ...locationParams });
-        setFeaturedEvents(eventsRes.data.slice(0, 5));
-
-        const clubsRes = await getClubs({ limit: 20, ...locationParams, radiusInKm: location ? 50 : 1500 });
-        const clubs = clubsRes?.data ?? clubsRes ?? [];
-        const clubsAny = clubs as any;
-        const clubsList: any[] = Array.isArray(clubsAny) ? clubsAny : clubsAny?.data ?? [];
-        // Tri par distance : sans position, la liste n'est pas "près de chez vous"
-        const sorted = [...clubsList].sort((a, b) => (a.distanceInKm ?? Infinity) - (b.distanceInKm ?? Infinity));
-        setRecommendedClubs(sorted.slice(0, 6));
-        if (user) {
-          const currentUser = await getCurrentUser();
-          setUserName(currentUser?.firstName || null);
-        }
-      } catch (err) {
-        console.error('Erreur chargement homepage :', err);
-      } finally {
-        setLoadingHome(false);
+      if (eventsResult.status === 'fulfilled') {
+        setFeaturedEvents(eventsResult.value.data.slice(0, 5));
+      } else {
+        console.error('Erreur chargement événements :', eventsResult.reason);
+        setFeaturedEvents([]);
       }
+
+      if (clubsResult.status === 'fulfilled') {
+        const sorted = [...clubsResult.value.data].sort((first, second) =>
+          (first.distanceInKm ?? Infinity) - (second.distanceInKm ?? Infinity)
+        );
+        setRecommendedClubs(sorted.slice(0, 6));
+      } else {
+        console.error('Erreur chargement clubs :', clubsResult.reason);
+        setClubsError(true);
+        setRecommendedClubs([]);
+      }
+      setLoadingHome(false);
     };
 
     loadHome();
-  }, [user, location?.latitude, location?.longitude]);
+    return () => { active = false; };
+  }, [location?.latitude, location?.longitude]);
+
+  useEffect(() => {
+    let active = true;
+    setUserName(null);
+    if (user) {
+      getCurrentUser().then(currentUser => {
+        if (active) setUserName(currentUser?.firstName || null);
+      }).catch(err => console.error('Erreur chargement utilisateur :', err));
+    }
+    return () => { active = false; };
+  }, [user]);
 
   useFocusEffect(
     useCallback(() => {
@@ -204,6 +223,7 @@ export default function Home() {
           </View>
         )}
 
+
         {/* 4. SECTION ÉVÉNEMENTS */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Événements à la une</Text>
@@ -229,7 +249,7 @@ export default function Home() {
             ))
           ) : (
             featuredEvents.map((event: any) => (
-              <Card key={event.id} padding={0} onPress={() => router.push(`/search/event/${event.id}`)} style={{ marginRight: 16 }}>
+              <Card key={event.id} padding={0} onPress={() => router.navigate(`/search/event/${event.id}`)} style={{ marginRight: 16 }}>
                 <ImageBackground 
                   source={{ uri: event.coverImagePath || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                   style={styles.eventCardImage}
@@ -276,10 +296,11 @@ export default function Home() {
             <Icon name="map" size={24} color={Colors.blanc} />
           </View>
         </Pressable>
+        {isLoggedIn && <ClubFeed user={user} />}
 
         {/* 6. PRÈS DE CHEZ VOUS */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Près de chez vous</Text>
+          <Text style={styles.sectionTitle}>{location ? 'Près de chez vous' : 'Clubs à découvrir'}</Text>
           <Button variant="lien" label="Voir tout" onPress={() => router.navigate("/search")} />
         </View>
 
@@ -294,10 +315,16 @@ export default function Home() {
                 </View>
               ))}
             </View>
+          ) : clubsError ? (
+            <Text style={styles.emptyText}>Impossible de charger les clubs pour le moment.</Text>
+          ) : recommendedClubs.length === 0 ? (
+            <Text style={styles.emptyText}>
+              {location ? 'Aucun club à moins de 50 km de chez vous.' : 'Aucun club à découvrir pour le moment.'}
+            </Text>
           ) : (
             <View style={styles.clubGrid}>
               {recommendedClubs.map((club: any) => (
-                <Card key={club.id} bordered padding={0} style={styles.clubGridItem} onPress={() => router.push(`/search/club/${club.id}`)}>
+                <Card key={club.id} bordered padding={0} style={styles.clubGridItem} onPress={() => router.navigate(`/search/club/${club.id}`)}>
                   <Image 
                     source={{ uri: club.profile?.profileImagePath || club.profile?.bannerPath || club.image || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                     style={styles.clubImage} 
@@ -434,6 +461,7 @@ const styles = StyleSheet.create({
   },
   categoryName: { fontSize: 12, fontFamily: Fonts.medium, color: Colors.noir },
   recomendedContainer: { paddingHorizontal: 20, marginTop: 24, paddingBottom: 32 },
+  emptyText: { color: Colors.grisTexte, fontSize: 14, fontFamily: Fonts.regular },
   clubInfo: { padding: 12 },
   clubName: { fontSize: 16, fontFamily: Fonts.medium, color: Colors.noir },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },

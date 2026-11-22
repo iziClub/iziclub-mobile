@@ -28,8 +28,7 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    console.log("➡️ REQUEST:", config.method?.toUpperCase(), config.url);
-    console.log("URL:", config.url);
+    console.log("➡️ REQUEST:", config.method?.toUpperCase(), api.getUri(config));
     console.log("METHOD:", config.method);
     console.log("DATA:", config.data);
     console.log("PARAMS:", config.params);
