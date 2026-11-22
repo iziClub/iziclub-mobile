@@ -4,7 +4,7 @@
     "slug": "iziClub",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/app-icon.png",
+    "icon": "./assets/images/icone_app_store_1024_noire.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "ios": {
