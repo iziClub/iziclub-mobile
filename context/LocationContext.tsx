@@ -9,7 +9,7 @@ export type UserLocation = {
 type LocationContextType = {
   location: UserLocation | null;
   status: 'idle' | 'granted' | 'denied' | 'loading';
-  requestLocation: () => Promise<boolean>;
+  requestLocation: () => Promise<UserLocation | null>;
 };
 
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
@@ -25,44 +25,27 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
 
       if (permissionStatus !== 'granted') {
         setStatus('denied');
-        return false;
+        setLocation(null);
+        return null;
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      setLocation({
+      const nextLocation = {
         latitude: currentLocation.coords.latitude,
         longitude: currentLocation.coords.longitude,
-      });
+      };
+      setLocation(nextLocation);
       setStatus('granted');
-      return true;
+      return nextLocation;
     } catch (error) {
       console.error('Erreur localisation :', error);
       setStatus('denied');
-      return false;
+      return null;
     }
   };
 
   useEffect(() => {
-    const bootstrapLocation = async () => {
-      try {
-        const { status: permissionStatus } = await Location.getForegroundPermissionsAsync();
-        if (permissionStatus === 'granted') {
-          const currentLocation = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-          setLocation({
-            latitude: currentLocation.coords.latitude,
-            longitude: currentLocation.coords.longitude,
-          });
-          setStatus('granted');
-        } else {
-          setStatus('idle');
-        }
-      } catch (error) {
-        console.error('Erreur initiale localisation :', error);
-        setStatus('idle');
-      }
-    };
-
-    bootstrapLocation();
+    requestLocation();
   }, []);
 
   return (

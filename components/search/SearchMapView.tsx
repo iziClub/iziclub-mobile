@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Image, Platform, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Image, Linking, Platform, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
@@ -37,7 +37,7 @@ interface Props {
 
 export default function SearchMapView({ clubs, events, loading, onSearchZone, onSelectionChange }: Props) {
   const router = useRouter();
-  const { location, status } = useLocation();
+  const { location, status, requestLocation } = useLocation();
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>(() => (location ? toRegion(location) : DEFAULT_REGION));
   const [mapReady, setMapReady] = useState(false);
@@ -83,13 +83,22 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone, on
   const recenterOnUser = async () => {
     try {
       setLocating(true);
-      const { status: perm } = await Location.requestForegroundPermissionsAsync();
-      if (perm !== "granted") {
-        Alert.alert("Géolocalisation", "Autorise la localisation pour te recentrer sur ta position.");
+      const position = await requestLocation();
+      if (!position) {
+        const permission = await Location.getForegroundPermissionsAsync();
+        if (permission.status !== "granted" && !permission.canAskAgain) {
+          Alert.alert("Géolocalisation", "Autorise la localisation dans les réglages pour te recentrer sur ta position.", [
+            { text: "Annuler", style: "cancel" },
+            { text: "Ouvrir les réglages", onPress: () => { Linking.openSettings().catch(() => Alert.alert("Géolocalisation", "Impossible d'ouvrir les réglages.")); } },
+          ]);
+        } else {
+          Alert.alert("Géolocalisation", permission.status === "granted"
+            ? "Impossible de récupérer ta position."
+            : "Autorise la localisation pour te recentrer sur ta position.");
+        }
         return;
       }
-      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      const next = toRegion(pos.coords);
+      const next = toRegion(position);
       mapRef.current?.animateToRegion(next, 400);
       setRegion(next);
       onSearchZone({ latitude: next.latitude, longitude: next.longitude, radius: radiusFor(next) });
