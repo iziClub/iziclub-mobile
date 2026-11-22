@@ -40,7 +40,7 @@ export default function StartRegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Image
-          source={require("../../assets/images/background-auth.png")}
+          source={require("../../assets/illustrations/snowboard.png")}
           style={styles.image}
           resizeMode="contain"
         />
@@ -83,8 +83,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   image: {
-    width: "100%",
-    height: 400,
+    width: "80%",
+    maxWidth: 280,
+    height: 220,
+    alignSelf: "center",
+    marginVertical: 20,
     resizeMode: "contain",
   },
   title: {

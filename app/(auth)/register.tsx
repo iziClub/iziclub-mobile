@@ -60,7 +60,7 @@ export default function RegisterScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Image
-          source={require("../../assets/images/background-auth.png")}
+          source={require("../../assets/illustrations/snowboard.png")}
           style={styles.image}
           resizeMode="contain"
         />
@@ -119,8 +119,11 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   image: {
-    width: "100%",
-    height: 350,
+    width: "80%",
+    maxWidth: 280,
+    height: 220,
+    alignSelf: "center",
+    marginVertical: Spacing[5],
   },
   form: {
     paddingHorizontal: Spacing[5],

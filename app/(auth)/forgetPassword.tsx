@@ -35,7 +35,7 @@ export default function ForgotPassword() {
         keyboardShouldPersistTaps="handled"
       >
         <Image
-          source={require("../../assets/images/background-auth.png")}
+          source={require("../../assets/illustrations/tennis.png")}
           style={styles.image}
           resizeMode="contain"
         />
@@ -78,8 +78,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   image: {
-    width: "100%",
-    height: 400,
+    width: "80%",
+    maxWidth: 260,
+    height: 220,
+    alignSelf: "center",
+    marginVertical: Spacing[5],
     resizeMode: "contain",
   },
   form: {
