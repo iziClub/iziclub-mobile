@@ -9,10 +9,9 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "infoPlist": {
-        "NSCalendarsUsageDescription": "Cette application a besoin d'accéder à votre calendrier pour ajouter des événements.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "fr.iziclub.mobile"
     },
     "android": {
@@ -42,12 +41,27 @@
         }
       ],
       [
+        "expo-image-picker",
+        {
+          "cameraPermission": "iziClub utilise l'appareil photo pour prendre en photo un justificatif à joindre à ton dossier.",
+          "photosPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "iziClub ajoute à ton calendrier les événements que tu choisis.",
+          "remindersPermission": "iziClub n'utilise pas tes rappels."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "image": "./assets/images/splash-logo.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#EDF2F4"
         }
       ],
       "expo-secure-store",

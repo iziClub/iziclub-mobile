@@ -45,7 +45,7 @@ type Props = {
 // ─────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────
-const APP_DOWNLOAD_LINK = "https://example.com/download"; // ← ton vrai lien
+const APP_DOWNLOAD_LINK = "https://iziclub.fr";
 const DEFAULT_HASHTAGS = ["iziclub", "sport", "club"];
 
 // ─────────────────────────────────────────────

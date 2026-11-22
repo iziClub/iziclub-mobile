@@ -59,8 +59,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    await logoutUser();
-    await SecureStore.deleteItemAsync('user_data');
+    // La déconnexion locale doit toujours aboutir, même si le serveur refuse l'appel
+    // (session expirée, compte supprimé, pas de réseau).
+    try {
+      await logoutUser();
+    } catch {
+      // Rien à faire : on nettoie quand même la session locale ci-dessous.
+    }
+    try {
+      await SecureStore.deleteItemAsync('user_data');
+    } catch {
+      // Stockage indisponible : la session en mémoire est tout de même fermée.
+    }
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Modal, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal, Pressable, Alert, Linking } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
@@ -23,6 +24,13 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import IconButton from "@/components/ui/IconButton";
 import ListItem from "@/components/ui/ListItem";
+
+const PRIVACY_URL = 'https://iziclub.fr/confidentialite';
+const SUPPORT_EMAIL = 'iziclub.eip@gmail.com';
+
+const openPrivacyPolicy = () => {
+  WebBrowser.openBrowserAsync(PRIVACY_URL).catch(() => Linking.openURL(PRIVACY_URL));
+};
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -192,6 +200,33 @@ export default function ProfileScreen() {
     { id: '4', title: 'Mes clubs', icon: 'people', color: Colors.bleu, path: "/(main)/profile/myClubs", badge: stats.affiliatedClubsCount > 0 ? stats.affiliatedClubsCount : undefined },
     { id: '3', title: 'Mes participations', icon: 'calendar', color: Colors.rouge, path: "/(main)/profile/upcomingEvents" },
   ];
+  // Suppression de compte : la demande part par email à l'équipe, puis la session est fermée.
+  // À remplacer par un appel API dès qu'une route de suppression existe côté serveur.
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      'Supprimer mon compte',
+      'Ton compte et tes données seront supprimés sous 30 jours. Cette action est définitive.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            const email = user?.user?.email ?? '';
+            const subject = encodeURIComponent('Suppression de mon compte iziClub');
+            const body = encodeURIComponent(`Bonjour,\n\nJe demande la suppression de mon compte iziClub et de mes données.\n\nEmail du compte : ${email}\n`);
+            try {
+              await Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`);
+              await logout();
+            } catch {
+              Alert.alert('Envoi impossible', `Écris-nous à ${SUPPORT_EMAIL} depuis l'adresse de ton compte pour demander sa suppression.`);
+            }
+          },
+        },
+      ],
+    );
+  };
+
   // --- GUEST VIEW ---
   if (!user) {
     const guestFeatures = [
@@ -237,6 +272,7 @@ export default function ProfileScreen() {
         <View style={styles.guestActions}>
           <Button label="Se connecter" size="l" fullWidth onPress={() => router.push("/(auth)/login")} />
           <Button label="Créer un compte" variant="secondaire" size="l" fullWidth onPress={() => router.push("/(auth)/register")} />
+          <Button label="Politique de confidentialité" variant="tertiaire" onPress={openPrivacyPolicy} />
         </View>
       </ScrollView>
     );
@@ -300,7 +336,9 @@ export default function ProfileScreen() {
         {/* 5. DÉCONNEXION */}
         <View style={styles.navigationMenu}>
           <Text style={styles.navHeader}>Compte & Sécurité</Text>
+          <ListItem label="Politique de confidentialité" icon="shield-outline" onPress={openPrivacyPolicy} />
           <ListItem label="Déconnexion" icon="log-out-outline" danger chevron={false} onPress={logout} />
+          <ListItem label="Supprimer mon compte" icon="trash-outline" danger chevron={false} onPress={confirmDeleteAccount} />
         </View>
       </ScrollView>
 

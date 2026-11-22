@@ -35,15 +35,9 @@ import ListItem from "@/components/ui/ListItem";
 // -------------------
 
 async function getCalendarPermission() {
-  const { status: calendarStatus } = await Calendar.requestCalendarPermissionsAsync();
-  let remindersStatus = "granted";
-
-  if (Platform.OS === "ios") {
-    const reminders = await Calendar.requestRemindersPermissionsAsync();
-    remindersStatus = reminders.status;
-  }
-
-  return calendarStatus === "granted" && remindersStatus === "granted";
+  // Seul le calendrier est utilisé : pas de demande d'accès aux rappels.
+  const { status } = await Calendar.requestCalendarPermissionsAsync();
+  return status === "granted";
 }
 
 async function addToCalendar(event: Event) {

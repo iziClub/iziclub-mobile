@@ -23,7 +23,7 @@ export const mapApiClubToDetail = (apiClub: ClubDetailDTO) : Club => {
     id: apiClub.id,
     name: apiClub.name || "Club sans nom",
     title: apiClub.title || "Bienvenue au club", // Si tu as un titre court
-    type: apiClub.sport?.famille || "Multisport",
+    type: typeof apiClub.sport?.famille === "string" && apiClub.sport.famille ? apiClub.sport.famille : "Multisport",
     city: apiClub.profile.address.city || "Ville non renseignée",
     addressLine1: apiClub.profile.address.street || "Adresse non renseignée",
     events: apiClub.events || [], // Tu peux remplir cette section avec les événements liés au club si tu as une API pour ça

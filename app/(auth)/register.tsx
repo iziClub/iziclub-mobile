@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as WebBrowser from "expo-web-browser";
 import {
   View,
   Text,
@@ -106,6 +107,11 @@ export default function RegisterScreen() {
             style={{ marginTop: Spacing[4] }}
           />
           <Button variant="tertiaire" label="J'ai déjà un compte" onPress={handleAlreadyAccount} />
+          <Button
+            variant="tertiaire"
+            label="En créant un compte, tu acceptes la politique de confidentialité"
+            onPress={() => { WebBrowser.openBrowserAsync("https://iziclub.fr/confidentialite").catch(() => {}); }}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

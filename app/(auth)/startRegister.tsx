@@ -52,25 +52,6 @@ export default function StartRegisterScreen() {
           <Button label="Créer un compte" size="l" fullWidth onPress={handleCreateAccount} />
           <Button label="J'ai déjà un compte" variant="secondaire" size="l" fullWidth onPress={handleLogin} />
         </View>
-        <View style={styles.separatorContainer}>
-          <View style={styles.line} />
-          <Text style={styles.separatorText}>Ou</Text>
-          <View style={styles.line} />
-        </View>
-        <View style={styles.actions}>
-          <Button
-            label="Se connecter avec Google"
-            variant="secondaire"
-            size="l"
-            fullWidth
-            leading={
-              <Image
-                source={require("../../assets/images/google-logo.png")}
-                style={{ width: 20, height: 20 }}
-              />
-            }
-          />
-        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

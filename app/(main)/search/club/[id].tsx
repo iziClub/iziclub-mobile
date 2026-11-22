@@ -127,7 +127,9 @@ export default function ClubDetail() {
         }
     };
 
-    const shareTags = ["iziclub", "sport", club.type?.toLowerCase() || "club", club.city?.toLowerCase().replace(/\s+/g, "")]
+    // type et city viennent de l'API : on n'en fait des mots-clés que si ce sont bien des textes.
+    const shareTags = ["iziclub", "sport", club.type, club.city]
+      .map((tag) => (typeof tag === "string" ? tag.toLowerCase().replace(/\s+/g, "") : ""))
       .filter(Boolean)
       .map((tag) => `#${tag}`)
       .join(" ");

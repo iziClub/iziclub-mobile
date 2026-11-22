@@ -40,6 +40,8 @@ export async function registerUser(
 export async function logoutUser() {
   try {
     await api.post("/logout");
+  } catch {
+    // Session déjà invalide côté serveur ou réseau coupé : on nettoie quand même en local.
   } finally {
     await tokenStorage.clearToken();
     await SecureStore.deleteItemAsync('user_data');
