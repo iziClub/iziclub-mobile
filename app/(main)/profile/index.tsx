@@ -308,6 +308,7 @@ export default function ProfileScreen() {
         {/* 5. DÉCONNEXION */}
         <View style={styles.navigationMenu}>
           <Text style={styles.navHeader}>Compte & Sécurité</Text>
+          <ListItem label="Modifier mes informations" icon="edit" onPress={() => router.push("/profile/editProfile")} />
           <ListItem label="Communication" icon="notifications-outline" onPress={() => router.push("/profile/communication")} />
           <ListItem label="Politique de confidentialité" icon="shield-outline" onPress={openPrivacyPolicy} />
           <ListItem label="Déconnexion" icon="log-out-outline" danger chevron={false} onPress={logout} />
