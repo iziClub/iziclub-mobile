@@ -64,7 +64,7 @@ export default function ForgotPassword() {
             onPress={handleResetPassword}
             style={{ marginTop: Spacing[4] }}
           />
-          <Button variant="tertiaire" label="Retour à la connexion" onPress={() => router.push("/login")} />
+          <Button variant="tertiaire" label="Retour à la connexion" onPress={() => router.dismissTo("/login")} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

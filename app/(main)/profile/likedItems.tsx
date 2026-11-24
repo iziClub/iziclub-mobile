@@ -155,7 +155,7 @@ export default function LikedItemsScreen() {
         bordered
         padding={0}
         style={styles.card}
-        onPress={() => router.navigate(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
+        onPress={() => router.push(isEvent ? `/event/${item.id}` : `/club/${item.id}`)}
       >
         <ImageBackground 
           source={{ uri: imageSource }} 

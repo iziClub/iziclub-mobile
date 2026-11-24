@@ -104,7 +104,7 @@ export default function UpcomingEventsScreen() {
                 {/* CONTENU DE L'ÉVÉNEMENT */}
                 <Card bordered padding={0} 
                   style={styles.eventCard}
-                  onPress={() => router.navigate(`/search/event/${eventDetails.id}`)} // Redirection vers le détail si applicable
+                  onPress={() => router.push(`/event/${eventDetails.id}`)} // Redirection vers le détail si applicable
                 >
                   <View style={styles.cardHeader}>
                     {/* Tu peux afficher un tag fixe ou utiliser un fallback s'il n'y a pas de catégorie */}

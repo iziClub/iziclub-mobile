@@ -80,7 +80,7 @@ export default function ClubsTab({ data, refreshing, onRefresh }: Props) {
             distanceInKm={item.distanceInKm}
             tags={[item.sport ?? "Sport non précisé"]}
             type="club"
-            onPress={() => router.push(`/search/club/${item.id}`)}
+            onPress={() => router.push(`/club/${item.id}`)}
           />
             </View>
         )}

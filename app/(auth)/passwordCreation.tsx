@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLeaveAuth } from "@/hooks/useLeaveAuth";
 import { registerUser } from "../../services/auth";
 import { Colors } from "@/constants/colors";
 import { Fonts, Spacing } from "@/constants/theme";
@@ -28,6 +29,7 @@ export default function PasswordCreationScreen() {
     last_name: string 
   }>();
   const router = useRouter();
+  const leaveAuth = useLeaveAuth();
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,9 +73,7 @@ export default function PasswordCreationScreen() {
 
       // 2. Connexion automatique après succès
       await login(email as string, password);
-      router.replace("/(main)/home")
-      // Note: Le AuthContext redirigera l'utilisateur vers le home/app 
-      // si votre layout est configuré pour écouter l'état 'user'.
+      leaveAuth();
     } catch (e: any) {
       console.error("Registration failed", e);
       Alert.alert("Erreur", "Impossible de créer le compte. L'email est peut-être déjà utilisé.");

@@ -29,7 +29,7 @@ export default function EventSection({events}: {events: any[]}) {
                     type="event"
                     onPress={() =>
                       router.push({
-                        pathname: "/search/event/[id]",
+                        pathname: "/event/[id]",
                         params: { id: item.id }
                       })
                     }

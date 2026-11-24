@@ -7,9 +7,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { router } from "expo-router";
+import { useLeaveAuth } from "@/hooks/useLeaveAuth";
 import { Colors } from "@/constants/colors";
 import { Fonts, Spacing } from "@/constants/theme";
 import Button from "@/components/ui/Button";
@@ -17,15 +19,17 @@ import Input from "@/components/ui/Input";
 
 export default function LoginScreen() {
   const { login } = useAuth();
+  const leaveAuth = useLeaveAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
     try {
       await login(email, password);
-      router.replace("/(main)/home");
+      leaveAuth();
     } catch (e) {
       console.error("Login failed", e);
+      Alert.alert("Connexion impossible", "Vérifie ton email et ton mot de passe, puis réessaie.");
     }
   };
 
@@ -34,7 +38,7 @@ export default function LoginScreen() {
   };
 
   const handleCreateAccount = () => {
-    router.push("/register");
+    router.replace("/register");
   }
 
   return (

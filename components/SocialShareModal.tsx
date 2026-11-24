@@ -1,3 +1,4 @@
+import { APP_SHARE_LINK } from "@/constants/links";
 import React, { useState } from "react";
 import {
   View,
@@ -45,7 +46,7 @@ type Props = {
 // ─────────────────────────────────────────────
 // Constants
 // ─────────────────────────────────────────────
-const APP_DOWNLOAD_LINK = "https://iziclub.fr";
+const APP_DOWNLOAD_LINK = APP_SHARE_LINK;
 const DEFAULT_HASHTAGS = ["iziclub", "sport", "club"];
 
 // ─────────────────────────────────────────────

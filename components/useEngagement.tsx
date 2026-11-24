@@ -10,6 +10,7 @@
  *     Remplacer les TODO par tes appels de service quand prêt.
  */
 
+import { Alert } from "react-native";
 import { useState, useCallback } from "react";
 import { likeEvent, unlikeEvent, saveEvent, unsaveEvent, unparticipateInEvent, participateInEvent } from "@/services/events.service";
 import { likeClub, unlikeClub, saveClub, unsaveClub } from "@/services/clubs.service";
@@ -104,6 +105,14 @@ export function useEngagement(
       });
     } catch (error) {
       console.error("Erreur lors de la modification de la participation :", error);
+      // 402 : événement payant, le paiement en ligne n'est pas encore disponible.
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      Alert.alert(
+        "Inscription impossible",
+        status === 402
+          ? "Cet événement est payant. Le paiement dans l'application arrive bientôt : contacte le club pour t'inscrire."
+          : "Une erreur est survenue. Réessaie dans un instant."
+      );
     }
 
   }, [item.id, item.kind, state]);

@@ -23,10 +23,10 @@ export default function StartRegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleCreateAccount = () => {
-    router.push("/register");
+    router.replace("/register");
   };
   const handleLogin = () => {
-    router.push("/login");
+    router.replace("/login");
   };
 
   return (

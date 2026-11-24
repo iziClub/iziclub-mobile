@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, FlatList, RefreshControl, ActivityIndicator } from "react-native";
 import Card from "@/components/card";
-import { EventSearchItem } from "../../../components/search/types";
+import { EventSearchItem } from "./types";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
@@ -94,7 +94,7 @@ export default function EventsTab({ data, refreshing, onRefresh, onEndReached, l
               type="event"
               onPress={() =>
                 router.push({
-                  pathname: "/search/event/[id]",
+                  pathname: "/event/[id]",
                   params: { id: item.id }
                 })
               }

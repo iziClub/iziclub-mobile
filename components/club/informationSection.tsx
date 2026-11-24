@@ -84,7 +84,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                                 distanceInKm={event.distanceInKm ?? undefined}
                                 tags={["Sport non précisé", event.eventType]}
                                 type="event"
-                                onPress={() => router.push(`/search/event/${event.id}`) }
+                                onPress={() => router.push(`/event/${event.id}`) }
                                 width={220}
                             />
                             </View>
