@@ -8,20 +8,40 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Colors } from "@/constants/colors";
 import { Fonts, Spacing } from "@/constants/theme";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { requestPasswordReset } from "@/services/account.service";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
 
   const isValidEmail = (mail: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
 
-  const handleResetPassword = () => {
-    alert("Un email de réinitialisation a été envoyé !");
+  const handleResetPassword = async () => {
+    setSending(true);
+    try {
+      await requestPasswordReset(email);
+      Alert.alert(
+        "Email envoyé",
+        "Si un compte existe avec cette adresse, tu vas recevoir un lien pour choisir un nouveau mot de passe.",
+        [{ text: "OK", onPress: () => router.dismissTo("/login") }]
+      );
+    } catch (e: any) {
+      Alert.alert(
+        "Envoi impossible",
+        e?.response?.status === 429
+          ? "Trop de demandes. Réessaie dans quelques minutes."
+          : "Une erreur est survenue. Vérifie ta connexion et réessaie."
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -60,11 +80,12 @@ export default function ForgotPassword() {
             label="Envoyer le lien de réinitialisation"
             size="l"
             fullWidth
-            disabled={!isValidEmail(email)}
+            disabled={!isValidEmail(email) || sending}
+            loading={sending}
             onPress={handleResetPassword}
             style={{ marginTop: Spacing[4] }}
           />
-          <Button variant="tertiaire" label="Retour à la connexion" onPress={() => router.push("/login")} />
+          <Button variant="tertiaire" label="Retour à la connexion" onPress={() => router.dismissTo("/login")} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

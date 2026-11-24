@@ -19,7 +19,7 @@ export default function MembershipHeader({ form }: Props) {
       )}
 
       <Text style={styles.dateText}>
-        Formulaire publié le : {form.createdAt}
+        Formulaire publié le : {new Date(form.createdAt).toLocaleDateString("fr-FR")}
       </Text>
     </View>
   );

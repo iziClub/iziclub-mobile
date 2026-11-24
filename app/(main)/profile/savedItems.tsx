@@ -130,7 +130,7 @@ useFocusEffect(
         bordered
         padding={12}
         style={styles.clubCard}
-        onPress={() => router.navigate(isEvent ? `/search/event/${item.id}` : `/search/club/${item.id}`)}
+        onPress={() => router.push(isEvent ? `/event/${item.id}` : `/club/${item.id}`)}
       >
         <Image source={{ uri: imageSource }} style={styles.clubImage} />
         

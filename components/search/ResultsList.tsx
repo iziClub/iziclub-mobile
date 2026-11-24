@@ -70,7 +70,7 @@ export default function ResultsList({ clubs, events, refreshing, onRefresh, onEn
                 distanceInKm={r.item.distanceInKm}
                 tags={[r.item.sport ?? "Sport non précisé"]}
                 type="club"
-                onPress={() => router.push(`/search/club/${r.item.id}`)}
+                onPress={() => router.push(`/club/${r.item.id}`)}
               />
             ) : (
               <Card
@@ -80,7 +80,7 @@ export default function ResultsList({ clubs, events, refreshing, onRefresh, onEn
                 distanceInKm={r.item.distanceInKm}
                 tags={[r.item.sport || "Sport non précisé", r.item.type]}
                 type="event"
-                onPress={() => router.push({ pathname: "/search/event/[id]", params: { id: r.item.id } })}
+                onPress={() => router.push({ pathname: "/event/[id]", params: { id: r.item.id } })}
               />
             )}
           </View>

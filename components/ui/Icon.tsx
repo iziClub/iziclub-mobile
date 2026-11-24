@@ -7,7 +7,7 @@ import {
   Download, Droplets, Dumbbell, Euro, File, FileText, Footprints, Hand, Heart, HeartPulse, Hourglass,
   House, Info, Leaf, List, LocateFixed, Lock, LogOut, LucideIcon, Mail, MailOpen, Map, MapPin, Medal,
   MessageSquareMore, Music, Navigation, PawPrint, Pencil, Phone, QrCode, RefreshCw, Search, Send,
-  Share2, Shield, SlidersHorizontal, Square, SquareCheck, Trash2, Triangle, Trophy, User, UserPlus,
+  Share2, Shield, SlidersHorizontal, Square, SquareCheck, Star, Trash2, Triangle, Trophy, User, UserPlus,
   Users, Volleyball, Waves, X, Zap, Circle, CircleDot,
 } from "lucide-react-native";
 import { Colors } from "@/constants/theme";
@@ -62,6 +62,7 @@ const ICONS: Record<string, LucideIcon> = {
   search: Search, "search-outline": Search,
   "share-social-outline": Share2,
   shield: Shield, "shield-outline": Shield,
+  star: Star, "star-outline": Star,
   time: Clock, "time-outline": Clock,
   "trash-outline": Trash2,
   "trophy-outline": Trophy,
@@ -72,7 +73,7 @@ const ICONS: Record<string, LucideIcon> = {
 };
 
 /** Variantes « pleines » : uniquement les états aimé / enregistré */
-const FILLED = new Set(["heart", "bookmark"]);
+const FILLED = new Set(["heart", "bookmark", "star"]);
 
 /** Marques : pas d'équivalent Lucide, toujours monochromes */
 const BRANDS = new Set(["facebook", "instagram", "linkedin", "music", "tiktok"]);

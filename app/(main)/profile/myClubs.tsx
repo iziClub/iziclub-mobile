@@ -39,7 +39,7 @@ export default function MyClubsScreen() {
     return (
       <Card bordered padding={0}
         style={styles.clubCard}
-        onPress={() => router.navigate({ pathname: '/search/club/[id]', params: { id: item.id, from: 'myClubs' } })}>
+        onPress={() => router.push({ pathname: "/club/[id]", params: { id: item.id, from: 'myClubs' } })}>
         <Image source={{ uri: imageUrl }} style={styles.clubImage} />
         <View style={styles.clubContent}>
           <Text style={styles.clubTitle} numberOfLines={1}>{item.name}</Text>

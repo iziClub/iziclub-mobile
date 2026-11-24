@@ -262,7 +262,7 @@ export default function SearchMapView({ clubs, events, loading, onSearchZone, on
           </View>
           <Button
             label={selected.kind === "club" ? "Voir la fiche du club" : "Voir l'événement"}
-            onPress={() => router.push(selected.kind === "club" ? `/search/club/${selected.item.id}` : `/search/event/${selected.item.id}`)}
+            onPress={() => router.push(selected.kind === "club" ? `/club/${selected.item.id}` : `/event/${selected.item.id}`)}
           />
         </View>
       )}

@@ -47,7 +47,7 @@ export default function RegisterScreen() {
   };
 
   const handleAlreadyAccount = () => {
-    router.push("/login");
+    router.replace("/login");
   };
 
   return (

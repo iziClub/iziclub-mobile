@@ -1,3 +1,5 @@
+import { SafeAreaView } from "react-native-safe-area-context";
+import { APP_SHARE_LINK } from "@/constants/links";
 import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, Share } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -12,15 +14,15 @@ import { getClubById, getGalleryImagesByClubId, getCategoryByClubId, getSessions
 import { mapApiClubToDetail } from "@/mappers/club.mapper";
 import { getEventsByClubId } from "@/services/events.service";
 import { Club } from "@/types/club";
-import { useAuth } from "../../../../context/AuthContext";
-import { useLocation } from "../../../../context/LocationContext";
-import ImportedClubDetail from "./importClubDetail";
+import { useAuth } from "@/context/AuthContext";
+import { useLocation } from "@/context/LocationContext";
+import ImportedClubDetail from "@/components/club/ImportedClubDetail";
 import { getCurrentUser } from "@/services/auth";
 import { Colors } from "@/constants/colors";
 
 const SECTIONS = ["Informations", "Événements", "Adhésion", "Calendrier", "Contact"];
 
-export default function ClubDetail() {
+function ClubDetailContent() {
     const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
     const [activeSection, setActiveSection] = useState(SECTIONS[0]);
     const [isLoading, setIsLoading] = useState(true);
@@ -136,7 +138,7 @@ export default function ClubDetail() {
 
     const shareImage = club.profile.profileImagePath || club.profile.bannerPath;
 
-    const shareMessage = `Regarde ce club !\n\n🏆 ${club.name}\n📍 ${club.city}\n${club.profile.slogan || club.profile.description || "Un club à découvrir sur iziclub."}\n\n${shareTags}\n\nDécouvre ce club sur iziclub : https://iziclub.fr`;
+    const shareMessage = `Regarde ce club !\n\n🏆 ${club.name}\n📍 ${club.city}\n${club.profile.slogan || club.profile.description || "Un club à découvrir sur iziclub."}\n\n${shareTags}\n\nDécouvre ce club sur iziclub : ${APP_SHARE_LINK}`;
 
     const handleNativeShare = async () => {
         try {
@@ -190,3 +192,12 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.fond,
     },
 });
+
+// Écran plein écran (hors onglets) : on réserve les zones système en haut et en bas.
+export default function ClubDetail() {
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.fond }} edges={["top", "bottom"]}>
+      <ClubDetailContent />
+    </SafeAreaView>
+  );
+}

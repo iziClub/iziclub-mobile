@@ -52,7 +52,7 @@ export default function ContactSection({ club }: { club: Club }) {
   const hasCoords = Number.isFinite(latitude) && Number.isFinite(longitude);
 
   const normalizedClubName = safeTrim(club.name).toLowerCase().replace(/\s+/g, "") || "club";
-  const phoneNumber = safeTrim(club.profile?.phone) || "Numero non renseigne";
+  const phoneNumber = safeTrim(club.profile?.phone) || "Numéro non renseigné";
   const emailAddress = safeTrim(club.profile?.email) || `contact@${normalizedClubName}.com`;
   const instagramValue = safeTrim(club.profile?.socialLinks?.instagram);
   const facebookValue = safeTrim(club.profile?.socialLinks?.facebook);
@@ -117,7 +117,7 @@ export default function ContactSection({ club }: { club: Club }) {
   };
 
   const callPhone = () => {
-    if (phoneNumber === "Numero non renseigne") return;
+    if (phoneNumber === "Numéro non renseigné") return;
     openExternalUrl(`tel:${phoneNumber}`);
   };
 
@@ -128,13 +128,13 @@ export default function ContactSection({ club }: { club: Club }) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Coordonnees du club</Text>
+        <Text style={styles.title}>Coordonnées du club</Text>
         <Text style={styles.subtitle}>{club.name}</Text>
 
         <View style={styles.statsRow}>
           <View style={styles.statPill}>
             <Text style={styles.statValue}>{eventsCount}</Text>
-            <Text style={styles.statLabel}>Evenements</Text>
+            <Text style={styles.statLabel}>Événements</Text>
           </View>
           <View style={styles.statPill}>
             <Text style={styles.statValue}>{sessionsCount}</Text>
@@ -142,7 +142,7 @@ export default function ContactSection({ club }: { club: Club }) {
           </View>
           <View style={styles.statPill}>
             <Text style={styles.statValue}>{categoriesCount}</Text>
-            <Text style={styles.statLabel}>Categories</Text>
+            <Text style={styles.statLabel}>Catégories</Text>
           </View>
           <View style={styles.statPill}>
             <Text style={styles.statValue}>{distanceText}</Text>
@@ -156,7 +156,7 @@ export default function ContactSection({ club }: { club: Club }) {
         </View>
 
         <View style={styles.infoBlock}>
-          <Text style={styles.infoLabel}>Telephone</Text>
+          <Text style={styles.infoLabel}>Téléphone</Text>
           <Button icon="phone" label={phoneNumber} onPress={callPhone} fullWidth />
         </View>
 
@@ -166,7 +166,7 @@ export default function ContactSection({ club }: { club: Club }) {
         </View>
 
         <View style={styles.infoBlock}>
-          <Text style={styles.infoLabel}>Categories</Text>
+          <Text style={styles.infoLabel}>Catégories</Text>
           <Text style={styles.infoText}>{categoriesLabel}</Text>
         </View>
 

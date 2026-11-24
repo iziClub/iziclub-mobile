@@ -115,7 +115,7 @@ export default function InboxScreen() {
       console.error(`Erreur marquage notification ${msg.id} comme lue :`, error);
     }
 
-    router.push(`../notifications/${msg.id}`);
+    router.push(`/notifications/${msg.id}`);
   };
 
   return (

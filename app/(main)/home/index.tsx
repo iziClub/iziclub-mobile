@@ -249,7 +249,7 @@ export default function Home() {
             ))
           ) : (
             featuredEvents.map((event: any) => (
-              <Card key={event.id} padding={0} onPress={() => router.navigate(`/search/event/${event.id}`)} style={{ marginRight: 16 }}>
+              <Card key={event.id} padding={0} onPress={() => router.push(`/event/${event.id}`)} style={{ marginRight: 16 }}>
                 <ImageBackground 
                   source={{ uri: event.coverImagePath || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                   style={styles.eventCardImage}
@@ -324,7 +324,7 @@ export default function Home() {
           ) : (
             <View style={styles.clubGrid}>
               {recommendedClubs.map((club: any) => (
-                <Card key={club.id} bordered padding={0} style={styles.clubGridItem} onPress={() => router.navigate(`/search/club/${club.id}`)}>
+                <Card key={club.id} bordered padding={0} style={styles.clubGridItem} onPress={() => router.push(`/club/${club.id}`)}>
                   <Image 
                     source={{ uri: club.profile?.profileImagePath || club.profile?.bannerPath || club.image || 'https://t4.ftcdn.net/jpg/04/70/29/97/360_F_470299797_UD0eoVMMSUbHCcNJCdv2t8B2g1GVqYgs.jpg' }} 
                     style={styles.clubImage} 

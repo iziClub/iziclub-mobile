@@ -89,7 +89,7 @@ export default function ClubFeed({ user }: { user: unknown }) {
           {clubs.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.clubs}>
               {clubs.map(club => (
-                <Pressable key={club.id} accessibilityRole="button" style={styles.club} onPress={() => router.navigate({ pathname: '/search/club/[id]', params: { id: club.id } })}>
+                <Pressable key={club.id} accessibilityRole="button" style={styles.club} onPress={() => router.push({ pathname: "/club/[id]", params: { id: club.id } })}>
                   {club.profile?.profileImagePath ? (
                     <Image source={{ uri: club.profile.profileImagePath }} style={styles.clubImage} />
                   ) : (
@@ -116,7 +116,7 @@ export default function ClubFeed({ user }: { user: unknown }) {
             <Text style={styles.empty}>Aucune actualité de tes clubs pour le moment.</Text>
           )}
           {items.map(({ event, club }) => (
-            <Pressable key={`${club.id}-${event.id}`} accessibilityRole="button" style={styles.event} onPress={() => router.navigate({ pathname: '/search/event/[id]', params: { id: event.id } })}>
+            <Pressable key={`${club.id}-${event.id}`} accessibilityRole="button" style={styles.event} onPress={() => router.push({ pathname: "/event/[id]", params: { id: event.id } })}>
               <View style={styles.eventIcon}><Icon name="calendar-outline" size={22} color={Colors.bleu} /></View>
               <View style={styles.eventContent}>
                 <Text style={styles.eventClub}>{club.name}</Text>

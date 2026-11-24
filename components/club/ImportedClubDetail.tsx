@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Linking, Platform, ScrollView } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { ClubDetailDTO } from "@/types/club";
-import { styles } from "./_styles";
+import { styles } from "@/components/club/clubDetail.styles";
 import { Colors } from "@/constants/colors";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";

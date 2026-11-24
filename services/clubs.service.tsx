@@ -91,6 +91,13 @@ export const getClubById = async (id: string, params?: GetClubByIdParams): Promi
   const response = await api.get(`/clubs`, {
     params: cleanParams,
   });
+  // Avec une position, l'API ne renvoie que les clubs situés dans le rayon :
+  // un club sans adresse géolocalisée (ou trop loin) serait « introuvable »
+  // alors qu'on le demande par son identifiant. On le redemande sans position.
+  if (response.data?.data?.length === 0 && cleanParams.latitude !== undefined) {
+    const fallback = await api.get(`/clubs`, { params: { clubId: id } });
+    return fallback.data;
+  }
   return response.data;
 }
 

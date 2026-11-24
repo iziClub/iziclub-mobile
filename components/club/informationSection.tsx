@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import { Colors } from "@/constants/colors";
 import { Fonts } from "@/constants/theme";
 import Button from "@/components/ui/Button";
+import ClubRatingCard from "./ClubRatingCard";
 
 interface Props {
     club: Club;
@@ -62,6 +63,9 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                 <Text style={styles.description}>{club.profile.description}</Text>
             </View>
 
+            {/* Notation : réservée aux membres du club */}
+            {club.status?.isRegistered ? <ClubRatingCard clubId={club.id} /> : null}
+
             {/* SECTION ÉVÉNEMENTS */}
             {club.events && club.events.length > 0 && (
                 <>
@@ -84,7 +88,7 @@ export default function InformationSection({ club, onSeeMore }: Props) {
                                 distanceInKm={event.distanceInKm ?? undefined}
                                 tags={["Sport non précisé", event.eventType]}
                                 type="event"
-                                onPress={() => router.push(`/search/event/${event.id}`) }
+                                onPress={() => router.push(`/event/${event.id}`) }
                                 width={220}
                             />
                             </View>

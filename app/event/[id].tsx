@@ -1,3 +1,5 @@
+import { SafeAreaView } from "react-native-safe-area-context";
+import { APP_SHARE_LINK } from "@/constants/links";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -22,7 +24,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import EngagementBar from "@/components/EngagementBar";
 import { useAuth } from "@/context/AuthContext";
 import { getSportById } from "@/services/sports.service";
-import { styles } from "./_styles";
+import { styles } from "@/components/event/eventDetail.styles";
 import { Colors } from "@/constants/colors";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
@@ -46,7 +48,7 @@ async function addToCalendar(event: Event) {
     if (!hasPermission) {
       Alert.alert(
         "Permission refusée",
-        "Impossible d'accéder au calendrier ou aux rappels"
+        "Impossible d'accéder au calendrier"
       );
       return;
     }
@@ -54,7 +56,7 @@ async function addToCalendar(event: Event) {
     let defaultCalendarId: string | undefined;
 
     if (Platform.OS === "ios") {
-      const calendars = await Calendar.getCalendarsAsync();
+      const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
       const cal = calendars.find((c) => c.allowsModifications);
       defaultCalendarId = cal?.id;
     } else {
@@ -164,7 +166,7 @@ const openNavigation = (street: string, city: string) => {
 // -------------------
 // Composant principal
 // -------------------
-export default function EventDetailScreen() {
+function EventDetailScreenContent() {
   const params = useGlobalSearchParams();
   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
   const [event, setEvent] = useState<Event | null>(null);
@@ -289,7 +291,7 @@ export default function EventDetailScreen() {
         accessibilityRole="link"
         style={({ pressed }) => [styles.clubContainer, pressed && { opacity: 0.6 }]}
         disabled={!event.clubId}
-        onPress={() => event.clubId && router.push(`/search/club/${event.clubId}`)}
+        onPress={() => event.clubId && router.push(`/club/${event.clubId}`)}
       >
         {club?.profile.profileImagePath != undefined && (
           <Image source={{ uri: club.profile.profileImagePath }} style={styles.clubImage} />
@@ -305,7 +307,7 @@ export default function EventDetailScreen() {
               key={partner.id}
               label={partner.name}
               style={styles.partnerChip}
-              onPress={() => router.push(`/search/club/${partner.id}`)}
+              onPress={() => router.push(`/club/${partner.id}`)}
             />
           ))}
         </View>
@@ -403,7 +405,7 @@ export default function EventDetailScreen() {
             .map((tag) => `#${tag}`)
             .join(" ");
 
-          const shareText = `Regarde cet événement !\n\n🎉 ${event.name}\n📍 ${event.address.city}\n🗓️ ${formatEventDate(event.eventDate)}\n⏰ ${formatEventTime(event.startDate)} - ${formatEventTime(event.endDate)}\n\n${event.description || "Un événement à découvrir sur iziclub."}\n\n${tags}\n\nDécouvre l'événement sur iziclub : https://iziclub.fr`;
+          const shareText = `Regarde cet événement !\n\n🎉 ${event.name}\n📍 ${event.address.city}\n🗓️ ${formatEventDate(event.eventDate)}\n⏰ ${formatEventTime(event.startDate)} - ${formatEventTime(event.endDate)}\n\n${event.description || "Un événement à découvrir sur iziclub."}\n\n${tags}\n\nDécouvre l'événement sur iziclub : ${APP_SHARE_LINK}`;
 
           try {
             await Share.share({
@@ -427,5 +429,14 @@ export default function EventDetailScreen() {
       />
       <View style={{ height: 32 }} />
     </ScrollView>
+  );
+}
+
+// Écran plein écran (hors onglets) : on réserve les zones système en haut et en bas.
+export default function EventDetailScreen() {
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.fond }} edges={["top", "bottom"]}>
+      <EventDetailScreenContent />
+    </SafeAreaView>
   );
 }
