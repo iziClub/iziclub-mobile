@@ -113,7 +113,6 @@ export const getEventById = async (id: string): Promise<Event> => {
     }
   );
   const event = response.data.data as Event | undefined;
-  console.log("Fetched event:", response.data.data);
   if (!event) throw new Error(`Event ${id} was not found`);
   return event;
 }

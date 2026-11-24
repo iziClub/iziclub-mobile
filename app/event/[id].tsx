@@ -48,7 +48,7 @@ async function addToCalendar(event: Event) {
     if (!hasPermission) {
       Alert.alert(
         "Permission refusée",
-        "Impossible d'accéder au calendrier ou aux rappels"
+        "Impossible d'accéder au calendrier"
       );
       return;
     }
@@ -56,7 +56,7 @@ async function addToCalendar(event: Event) {
     let defaultCalendarId: string | undefined;
 
     if (Platform.OS === "ios") {
-      const calendars = await Calendar.getCalendarsAsync();
+      const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
       const cal = calendars.find((c) => c.allowsModifications);
       defaultCalendarId = cal?.id;
     } else {
