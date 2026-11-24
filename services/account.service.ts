@@ -5,11 +5,6 @@ export const requestPasswordReset = async (email: string): Promise<void> => {
   await api.post("/forgot-password", { email: email.trim().toLowerCase() });
 };
 
-/** Supprime définitivement le compte connecté. Le mot de passe est redemandé par l'API. */
-export const deleteMyAccount = async (password: string): Promise<void> => {
-  await api.delete("/me", { data: { password } });
-};
-
 export interface MemberProfile {
   id: string;
   firstName: string;
